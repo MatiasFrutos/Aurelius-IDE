@@ -11,18 +11,18 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 7px;
-  padding: 0 8px;
+  gap: 5px;
+  padding: 0 6px;
   overflow: hidden;
   border-top: 1px solid var(--au-border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.014), transparent),
     var(--au-bg-topbar);
   color: var(--au-muted-strong);
-  font-size: 10.2px;
+  font-size: 9.4px;
   box-shadow:
-    0 -1px 0 rgba(255, 255, 255, 0.024) inset,
-    0 -8px 22px rgba(0, 0, 0, 0.07);
+    0 -1px 0 rgba(255, 255, 255, 0.02) inset,
+    0 -6px 16px rgba(0, 0, 0, 0.055);
   z-index: 70;
 }
 
@@ -31,20 +31,20 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(34, 197, 94, 0.055), transparent 38%, rgba(34, 197, 94, 0.035));
-  opacity: 0.72;
+    linear-gradient(90deg, rgba(34, 197, 94, 0.045), transparent 40%, rgba(34, 197, 94, 0.028));
+  opacity: 0.68;
   pointer-events: none;
 }
 
 .au-statusbar::after {
   content: "";
   position: absolute;
-  inset: 0 8px auto;
+  inset: 0 6px auto;
   height: 1px;
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(34, 197, 94, 0.26),
+    rgba(34, 197, 94, 0.22),
     transparent
   );
   pointer-events: none;
@@ -58,13 +58,13 @@
   color: #475569;
   box-shadow:
     0 -1px 0 rgba(255, 255, 255, 0.72) inset,
-    0 -8px 18px rgba(15, 23, 42, 0.035);
+    0 -6px 14px rgba(15, 23, 42, 0.032);
 }
 
 :root[data-theme="light"] .au-statusbar::before {
   background:
-    linear-gradient(90deg, rgba(22, 163, 74, 0.05), transparent 42%, rgba(22, 163, 74, 0.03));
-  opacity: 0.7;
+    linear-gradient(90deg, rgba(22, 163, 74, 0.045), transparent 42%, rgba(22, 163, 74, 0.028));
+  opacity: 0.66;
 }
 
 /* ==========================================================================
@@ -77,16 +77,18 @@
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   min-width: 0;
 }
 
 .au-statusbar__left {
   justify-content: flex-start;
+  overflow: hidden;
 }
 
 .au-statusbar__right {
   justify-content: flex-end;
+  overflow: hidden;
 }
 
 /* ==========================================================================
@@ -96,11 +98,12 @@
 .au-statusbar__item {
   position: relative;
   min-width: 0;
-  height: 20px;
+  height: 18px;
+  max-width: 100%;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 0 7px;
+  gap: 4px;
+  padding: 0 6px;
   border: 1px solid transparent;
   border-radius: 999px;
   color: var(--au-muted-strong);
@@ -120,11 +123,11 @@
 }
 
 .au-statusbar__item svg {
-  width: 11.5px;
-  height: 11.5px;
+  width: 10.5px;
+  height: 10.5px;
   flex: 0 0 auto;
   stroke: currentColor;
-  stroke-width: 2.15;
+  stroke-width: 2.1;
   opacity: 0.92;
 }
 
@@ -136,14 +139,14 @@
 
 .au-statusbar__item:hover {
   border-color: var(--au-border);
-  background: rgba(255, 255, 255, 0.045);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--au-text);
-  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.035) inset;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.03) inset;
 }
 
 :root[data-theme="light"] .au-statusbar__item:hover {
   border-color: rgba(15, 23, 42, 0.08);
-  background: rgba(15, 23, 42, 0.035);
+  background: rgba(15, 23, 42, 0.032);
   color: #0f172a;
 }
 
@@ -152,7 +155,7 @@
    ========================================================================== */
 
 .au-statusbar__project {
-  max-width: 190px;
+  max-width: clamp(96px, 13vw, 160px);
   font-weight: 820;
   color: var(--au-text);
 }
@@ -162,7 +165,7 @@
 }
 
 .au-statusbar__file {
-  max-width: min(480px, 40vw);
+  max-width: min(360px, 34vw);
   color: var(--au-muted);
 }
 
@@ -171,11 +174,11 @@
   position: absolute;
   left: -3px;
   width: 1px;
-  height: 12px;
+  height: 11px;
   background: linear-gradient(
     180deg,
     transparent,
-    rgba(148, 163, 184, 0.24),
+    rgba(148, 163, 184, 0.22),
     transparent
   );
 }
@@ -193,8 +196,8 @@
 }
 
 .au-statusbar__state.is-saved {
-  border-color: rgba(34, 197, 94, 0.18);
-  background: rgba(34, 197, 94, 0.075);
+  border-color: rgba(34, 197, 94, 0.16);
+  background: rgba(34, 197, 94, 0.068);
   color: var(--au-primary-strong);
 }
 
@@ -203,10 +206,10 @@
 }
 
 .au-statusbar__state.is-dirty {
-  border-color: rgba(245, 158, 11, 0.26);
-  background: rgba(245, 158, 11, 0.105);
+  border-color: rgba(245, 158, 11, 0.24);
+  background: rgba(245, 158, 11, 0.095);
   color: var(--au-warning);
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.035) inset;
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.032) inset;
 }
 
 .au-statusbar__state.is-dirty svg {
@@ -230,7 +233,7 @@
 }
 
 .au-statusbar__version {
-  padding-right: 4px;
+  padding-right: 3px;
   font-weight: 760;
   letter-spacing: 0.005em;
 }
@@ -244,29 +247,41 @@
    ========================================================================== */
 
 .au-statusbar__live-server {
-  max-width: 200px;
+  max-width: clamp(116px, 16vw, 180px);
   font-weight: 820;
   font-variant-numeric: tabular-nums;
+  user-select: none;
 }
 
 .au-statusbar__live-server span {
-  max-width: 168px;
+  max-width: 148px;
 }
 
 .au-statusbar__live-server.is-running {
-  border-color: rgba(34, 197, 94, 0.2);
-  background: rgba(34, 197, 94, 0.085);
+  cursor: pointer;
+  border-color: rgba(34, 197, 94, 0.19);
+  background: rgba(34, 197, 94, 0.078);
   color: var(--au-primary-strong);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.035) inset;
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.032) inset;
 }
 
 .au-statusbar__live-server.is-running svg {
   color: var(--au-primary-strong);
 }
 
+.au-statusbar__live-server.is-running:hover {
+  border-color: rgba(34, 197, 94, 0.28);
+  background: rgba(34, 197, 94, 0.105);
+  color: var(--au-primary-strong);
+}
+
+.au-statusbar__live-server.is-running:active {
+  background: rgba(34, 197, 94, 0.14);
+}
+
 .au-statusbar__live-server.is-stopped {
-  border-color: rgba(148, 163, 184, 0.11);
-  background: rgba(148, 163, 184, 0.055);
+  border-color: rgba(148, 163, 184, 0.1);
+  background: rgba(148, 163, 184, 0.05);
   color: var(--au-muted);
 }
 
@@ -275,8 +290,8 @@
 }
 
 .au-statusbar__live-server.is-loading {
-  border-color: rgba(59, 130, 246, 0.22);
-  background: rgba(59, 130, 246, 0.085);
+  border-color: rgba(59, 130, 246, 0.2);
+  background: rgba(59, 130, 246, 0.078);
   color: #60a5fa;
 }
 
@@ -311,53 +326,13 @@
    09. RESPONSIVE
    ========================================================================== */
 
-@media (max-width: 1180px) {
-  .au-statusbar__live-server {
-    max-width: 180px;
-  }
-
-  .au-statusbar__live-server span {
-    max-width: 150px;
-  }
-
+@media (max-width: 1320px) {
   .au-statusbar__project {
-    max-width: 170px;
+    max-width: 140px;
   }
 
   .au-statusbar__file {
-    max-width: min(360px, 36vw);
-  }
-}
-
-@media (max-width: 1080px) {
-  .au-statusbar {
-    gap: 6px;
-    padding: 0 7px;
-  }
-
-  .au-statusbar__left,
-  .au-statusbar__right {
-    gap: 4px;
-  }
-
-  .au-statusbar__item {
-    height: 19px;
-    gap: 4px;
-    padding: 0 6px;
-    font-size: 9.8px;
-  }
-
-  .au-statusbar__item svg {
-    width: 11px;
-    height: 11px;
-  }
-
-  .au-statusbar__project {
-    max-width: 150px;
-  }
-
-  .au-statusbar__file {
-    max-width: min(300px, 34vw);
+    max-width: min(320px, 30vw);
   }
 
   .au-statusbar__live-server {
@@ -365,37 +340,67 @@
   }
 
   .au-statusbar__live-server span {
-    max-width: 130px;
+    max-width: 128px;
   }
 }
 
-@media (max-width: 980px) {
-  .au-statusbar__live-server {
-    display: none;
-  }
-}
-
-@media (max-width: 900px) {
+@media (max-width: 1160px) {
   .au-statusbar {
-    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px;
+    padding: 0 6px;
+  }
+
+  .au-statusbar__left,
+  .au-statusbar__right {
+    gap: 3px;
+  }
+
+  .au-statusbar__item {
+    height: 17px;
+    gap: 3px;
+    padding: 0 5px;
+    font-size: 9px;
+  }
+
+  .au-statusbar__item svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .au-statusbar__project {
+    max-width: 120px;
   }
 
   .au-statusbar__file {
-    max-width: 250px;
+    max-width: min(260px, 28vw);
   }
 
+  .au-statusbar__live-server {
+    max-width: 140px;
+  }
+
+  .au-statusbar__live-server span {
+    max-width: 112px;
+  }
+}
+
+@media (max-width: 1040px) {
   .au-statusbar__version {
     display: none;
   }
-}
 
-@media (max-width: 760px) {
-  .au-statusbar__project {
-    max-width: 130px;
+  .au-statusbar__live-server {
+    max-width: 128px;
   }
 
-  .au-statusbar__file {
-    max-width: 190px;
+  .au-statusbar__live-server span {
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 940px) {
+  .au-statusbar__live-server {
+    display: none;
   }
 
   .au-statusbar__language {
@@ -403,17 +408,41 @@
   }
 }
 
-@media (max-width: 640px) {
-  .au-statusbar__cursor {
-    display: none;
+@media (max-width: 840px) {
+  .au-statusbar {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .au-statusbar__file {
-    max-width: 180px;
+    max-width: 220px;
+  }
+
+  .au-statusbar__cursor {
+    display: none;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 720px) {
+  .au-statusbar__project {
+    max-width: 104px;
+  }
+
+  .au-statusbar__file {
+    max-width: 170px;
+  }
+
+  .au-statusbar__state span {
+    display: none;
+  }
+
+  .au-statusbar__state {
+    width: 22px;
+    justify-content: center;
+    padding: 0;
+  }
+}
+
+@media (max-width: 620px) {
   .au-statusbar {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -437,13 +466,29 @@
   }
 }
 
-@media (max-height: 720px) {
+@media (max-height: 820px) {
   .au-statusbar {
-    font-size: 9.8px;
+    font-size: 9px;
   }
 
   .au-statusbar__item {
-    height: 19px;
+    height: 17px;
+  }
+}
+
+@media (max-height: 700px) {
+  .au-statusbar {
+    font-size: 8.8px;
+  }
+
+  .au-statusbar__item {
+    height: 16px;
+    padding-inline: 5px;
+  }
+
+  .au-statusbar__item svg {
+    width: 9.5px;
+    height: 9.5px;
   }
 }
 

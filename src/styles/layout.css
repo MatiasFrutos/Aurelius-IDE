@@ -5,15 +5,14 @@
    ========================================================================== */
 
 .aurelius-shell {
-  width: calc(100% / var(--au-ui-scale));
-  height: calc(100% / var(--au-ui-scale));
+  width: 100%;
+  height: 100%;
   min-width: 0;
   min-height: 0;
   display: grid;
   grid-template-rows: var(--au-topbar-height) minmax(0, 1fr) var(--au-statusbar-height);
   overflow: hidden;
   background: var(--au-bg);
-  zoom: var(--au-ui-scale);
   transform-origin: top left;
 }
 
@@ -26,9 +25,9 @@
    ========================================================================== */
 
 .aurelius-main {
-  --au-effective-sidebar-width: var(--au-sidebar-width);
-  --au-effective-right-panel-width: 360px;
-  --au-effective-bottom-panel-height: 220px;
+  --au-effective-sidebar-width: clamp(220px, var(--au-sidebar-width), 286px);
+  --au-effective-right-panel-width: clamp(300px, 24vw, 360px);
+  --au-effective-bottom-panel-height: clamp(150px, 24vh, 220px);
 
   width: 100%;
   height: 100%;
@@ -88,13 +87,13 @@
   overflow: hidden;
   border-right: 1px solid var(--au-border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 150px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent 130px),
     var(--au-bg-sidebar);
 }
 
 :root[data-theme="light"] .aurelius-side-panel {
   background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.01), transparent 150px),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.01), transparent 130px),
     var(--au-bg-sidebar);
 }
 
@@ -149,13 +148,13 @@
   overflow: hidden;
   border-left: 1px solid var(--au-border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 150px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent 130px),
     var(--au-bg-sidebar);
 }
 
 :root[data-theme="light"] .aurelius-right-panel {
   background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.01), transparent 150px),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.01), transparent 130px),
     var(--au-bg-sidebar);
 }
 
@@ -169,7 +168,7 @@
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: 34px minmax(0, 1fr);
+  grid-template-rows: 30px minmax(0, 1fr);
   overflow: hidden;
   background: var(--au-bg-workspace);
 }
@@ -194,15 +193,15 @@
 .aurelius-tabs {
   min-width: 0;
   min-height: 0;
-  height: 34px;
+  height: 30px;
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 0 8px;
+  gap: 4px;
+  padding: 0 6px;
   overflow-x: auto;
   overflow-y: hidden;
   border-bottom: 1px solid var(--au-border);
-  background: rgba(255, 255, 255, 0.018);
+  background: rgba(255, 255, 255, 0.016);
   scrollbar-width: none;
 }
 
@@ -211,22 +210,22 @@
 }
 
 :root[data-theme="light"] .aurelius-tabs {
-  background: rgba(15, 23, 42, 0.018);
+  background: rgba(15, 23, 42, 0.016);
 }
 
 .aurelius-tab {
   min-width: 0;
-  max-width: 240px;
-  height: 27px;
+  max-width: 210px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 0 6px 0 10px;
+  gap: 5px;
+  padding: 0 5px 0 8px;
   border: 1px solid transparent;
-  border-radius: 9px;
+  border-radius: 8px;
   background: transparent;
   color: var(--au-muted-strong);
-  font-size: 11.5px;
+  font-size: 10.4px;
   white-space: nowrap;
   transition:
     background var(--au-transition-fast),
@@ -242,17 +241,17 @@
 }
 
 .aurelius-tab.is-active {
-  border-color: rgba(34, 197, 94, 0.24);
-  background: rgba(34, 197, 94, 0.078);
+  border-color: rgba(34, 197, 94, 0.22);
+  background: rgba(34, 197, 94, 0.072);
   color: var(--au-text);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.035) inset;
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.032) inset;
 }
 
 .aurelius-tab__button {
   min-width: 0;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -269,8 +268,8 @@
 
 .aurelius-tab__dirty {
   flex: 0 0 auto;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 999px;
   background: var(--au-warning);
   box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
@@ -278,12 +277,12 @@
 
 .aurelius-tab__close {
   flex: 0 0 auto;
-  width: 19px;
-  height: 19px;
+  width: 17px;
+  height: 17px;
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: 7px;
+  border-radius: 6px;
   background: transparent;
   color: var(--au-muted);
   cursor: pointer;
@@ -298,8 +297,8 @@
 }
 
 .aurelius-tab__close svg {
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
 }
 
 .aurelius-editor-area {
@@ -360,37 +359,75 @@ body.is-resizing-layout * {
    10. RESPONSIVE
    ========================================================================== */
 
+@media (max-width: 1366px) {
+  .aurelius-main {
+    --au-effective-sidebar-width: clamp(214px, var(--au-sidebar-width), 260px);
+    --au-effective-right-panel-width: clamp(280px, 23vw, 330px);
+    --au-effective-bottom-panel-height: clamp(140px, 22vh, 200px);
+  }
+
+  .aurelius-tab {
+    max-width: 190px;
+  }
+}
+
 @media (max-width: 1180px) {
+  .aurelius-main {
+    --au-effective-sidebar-width: clamp(204px, var(--au-sidebar-width), 244px);
+    --au-effective-right-panel-width: clamp(270px, 22vw, 310px);
+    --au-effective-bottom-panel-height: clamp(132px, 21vh, 190px);
+  }
+
   .aurelius-main.has-sidebar.has-right-panel {
     grid-template-columns:
       var(--au-activity-width)
-      minmax(240px, var(--au-effective-sidebar-width))
+      minmax(210px, var(--au-effective-sidebar-width))
       minmax(0, 1fr);
   }
 
   .aurelius-main.has-sidebar.has-right-panel .aurelius-right-panel {
     display: none;
   }
+
+  .aurelius-workspace {
+    grid-template-rows: 28px minmax(0, 1fr);
+  }
+
+  .aurelius-tabs {
+    height: 28px;
+    padding: 0 5px;
+  }
+
+  .aurelius-tab {
+    max-width: 170px;
+    height: 23px;
+    font-size: 10px;
+  }
+
+  .aurelius-tab__close {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 @media (max-width: 900px) {
   .aurelius-main {
-    --au-effective-bottom-panel-height: 190px;
+    --au-effective-bottom-panel-height: clamp(126px, 20vh, 176px);
   }
 
   .aurelius-workspace {
-    grid-template-rows: 32px minmax(0, 1fr);
+    grid-template-rows: 27px minmax(0, 1fr);
   }
 
   .aurelius-tabs {
-    height: 32px;
-    padding: 0 6px;
+    height: 27px;
+    gap: 3px;
   }
 
   .aurelius-tab {
-    max-width: 190px;
-    height: 26px;
-    font-size: 11px;
+    max-width: 150px;
+    height: 22px;
+    font-size: 9.6px;
   }
 }
 
@@ -410,7 +447,7 @@ body.is-resizing-layout * {
   }
 
   .aurelius-center-area {
-    grid-template-rows: minmax(0, 1fr) minmax(140px, var(--au-effective-bottom-panel-height));
+    grid-template-rows: minmax(0, 1fr) minmax(120px, var(--au-effective-bottom-panel-height));
   }
 
   .aurelius-main.is-bottom-panel-hidden .aurelius-center-area {
@@ -420,11 +457,48 @@ body.is-resizing-layout * {
 
 @media (max-width: 520px) {
   .aurelius-main {
-    --au-effective-bottom-panel-height: 170px;
+    --au-effective-bottom-panel-height: 150px;
   }
 
   .aurelius-tab {
-    max-width: 150px;
+    max-width: 132px;
+  }
+}
+
+@media (max-height: 760px) {
+  .aurelius-main {
+    --au-effective-bottom-panel-height: clamp(120px, 20vh, 178px);
+  }
+
+  .aurelius-workspace {
+    grid-template-rows: 27px minmax(0, 1fr);
+  }
+
+  .aurelius-tabs {
+    height: 27px;
+  }
+
+  .aurelius-tab {
+    height: 22px;
+  }
+}
+
+@media (max-height: 680px) {
+  .aurelius-main {
+    --au-effective-bottom-panel-height: clamp(112px, 19vh, 160px);
+  }
+
+  .aurelius-workspace {
+    grid-template-rows: 26px minmax(0, 1fr);
+  }
+
+  .aurelius-tabs {
+    height: 26px;
+  }
+
+  .aurelius-tab {
+    height: 21px;
+    font-size: 9.4px;
   }
 }
 

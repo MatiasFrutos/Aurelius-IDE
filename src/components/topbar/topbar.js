@@ -43,45 +43,49 @@ function renderMenuButton({ panel, label }) {
       class="au-topbar__menu-item ${isPanelActive(panel) ? "is-active" : ""}"
       type="button"
       data-activity-panel="${panel}"
+      title="${escapeHTML(label)}"
+      aria-label="${escapeHTML(label)}"
     >
-      ${label}
+      ${escapeHTML(label)}
     </button>
   `;
 }
 
 function renderTopbarSearch() {
   return `
-    <form
-      class="au-topbar__search"
-      id="topbar-search-form"
-      autocomplete="off"
-      role="search"
-      aria-label="${t("Buscar en el proyecto", "Search in project")}"
-    >
-      <span class="au-topbar__search-icon" aria-hidden="true">
-        <i data-lucide="search"></i>
-      </span>
-
-      <input
-        class="au-topbar__search-input"
-        id="topbar-search-input"
-        type="search"
-        name="query"
-        value="${getTopbarSearchValue()}"
-        placeholder="${t("Buscar archivos o contenido...", "Search files or content...")}"
-        aria-label="${t("Buscar archivos o contenido", "Search files or content")}"
-        spellcheck="false"
-      />
-
-      <button
-        class="au-topbar__search-submit"
-        type="submit"
-        title="${t("Buscar", "Search")}"
-        aria-label="${t("Buscar", "Search")}"
+    <div class="au-topbar__search-wrap">
+      <form
+        class="au-topbar__search"
+        id="topbar-search-form"
+        autocomplete="off"
+        role="search"
+        aria-label="${t("Buscar en el proyecto", "Search in project")}"
       >
-        <i data-lucide="search-check"></i>
-      </button>
-    </form>
+        <span class="au-topbar__search-icon" aria-hidden="true">
+          <i data-lucide="search"></i>
+        </span>
+
+        <input
+          class="au-topbar__search-input"
+          id="topbar-search-input"
+          type="search"
+          name="query"
+          value="${getTopbarSearchValue()}"
+          placeholder="${t("Buscar archivos o contenido...", "Search files or content...")}"
+          aria-label="${t("Buscar archivos o contenido", "Search files or content")}"
+          spellcheck="false"
+        />
+
+        <button
+          class="au-topbar__search-submit"
+          type="submit"
+          title="${t("Buscar", "Search")}"
+          aria-label="${t("Buscar", "Search")}"
+        >
+          <i data-lucide="search-check"></i>
+        </button>
+      </form>
+    </div>
   `;
 }
 
@@ -100,7 +104,13 @@ export function renderTopbar() {
       </div>
 
       <nav class="au-topbar__menu" aria-label="${t("Menú principal", "Main menu")}">
-        <button class="au-topbar__menu-item" type="button" id="open-project-btn">
+        <button
+          class="au-topbar__menu-item"
+          type="button"
+          id="open-project-btn"
+          title="${t("Abrir proyecto", "Open project")}"
+          aria-label="${t("Abrir proyecto", "Open project")}"
+        >
           ${t("Archivo", "File")}
         </button>
 

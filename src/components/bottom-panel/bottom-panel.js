@@ -1298,6 +1298,18 @@ function createTerminalView(record, container) {
   record.resizeObserver.observe(container);
 }
 
+function isTerminalViewAttached(record, container) {
+  if (!record || !container || !record.terminal || !record.mounted) {
+    return false;
+  }
+
+  if (record.terminal.element && container.contains(record.terminal.element)) {
+    return true;
+  }
+
+  return Boolean(container.querySelector(".xterm"));
+}
+
 async function mountActiveTerminal() {
   terminalMountScheduled = false;
 
@@ -1313,7 +1325,9 @@ async function mountActiveTerminal() {
     return;
   }
 
-  if (!record.terminal || !record.mounted) {
+  const terminalViewAttached = isTerminalViewAttached(record, container);
+
+  if (!terminalViewAttached) {
     createTerminalView(record, container);
   }
 

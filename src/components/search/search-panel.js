@@ -181,34 +181,51 @@ function renderEmptyState() {
   `;
 }
 
-function renderResultItem(result) {
+function renderResultItem(result, index = 0) {
   const lineLabel = getResultLineLabel(result);
   const matchIcon = getMatchIcon(result.match_kind);
   const matchKindLabel = getMatchKindLabel(result.match_kind);
   const path = String(result.path || "");
-  const lineText = String(result.line_text || result.path || result.name || "");
+  const fileName = result.name || getFileNameFromPath(path);
+  const lineText = String(result.line_text || "");
+  const hasLineText = Boolean(lineText.trim()) && lineText.trim() !== path && lineText.trim() !== fileName;
 
   return `
     <button
-      class="au-search__match"
+      class="au-search__result"
       type="button"
       data-search-file-path="${encodePath(path)}"
       ${Number(result.line_number) > 0 ? `data-search-line-number="${Number(result.line_number)}"` : ""}
       title="${escapeHTML(path)}"
+      style="--au-search-result-delay: ${Math.min(index * 12, 180)}ms"
     >
-      <span class="au-search__match-icon" aria-hidden="true">
+      <span class="au-search__result-icon" aria-hidden="true">
         <i data-lucide="${escapeHTML(matchIcon)}"></i>
       </span>
 
-      <span class="au-search__match-body">
-        <span class="au-search__match-top">
-          <em title="${escapeHTML(lineLabel)}">${escapeHTML(lineLabel)}</em>
-          <small title="${escapeHTML(matchKindLabel)}">${escapeHTML(matchKindLabel)}</small>
+      <span class="au-search__result-main">
+        <span class="au-search__result-name">
+          ${escapeHTML(fileName)}
         </span>
 
-        <span class="au-search__match-text" title="${escapeHTML(lineText)}">
-          ${escapeHTML(lineText)}
-        </span>
+        ${
+          hasLineText
+            ? `
+              <span class="au-search__result-preview">
+                ${escapeHTML(lineText)}
+              </span>
+            `
+            : `
+              <span class="au-search__result-path">
+                ${escapeHTML(path)}
+              </span>
+            `
+        }
+      </span>
+
+      <span class="au-search__result-meta">
+        <em>${escapeHTML(lineLabel)}</em>
+        <small>${escapeHTML(matchKindLabel)}</small>
       </span>
     </button>
   `;
@@ -221,34 +238,11 @@ function renderResults() {
     return renderEmptyState();
   }
 
-  const groups = groupResultsByPath(getSearchResults());
+  const results = getSearchResults();
 
   return `
     <div class="au-search__results">
-      ${groups
-        .map((group) => {
-          return `
-            <article class="au-search__group">
-              <header class="au-search__group-head">
-                <span>
-                  <i data-lucide="file-search"></i>
-                </span>
-
-                <div>
-                  <strong title="${escapeHTML(group.name)}">${escapeHTML(group.name)}</strong>
-                  <small title="${escapeHTML(group.path)}">${escapeHTML(group.path)}</small>
-                </div>
-
-                <b title="${escapeHTML(`${group.results.length}`)}">${group.results.length}</b>
-              </header>
-
-              <div class="au-search__matches">
-                ${group.results.map(renderResultItem).join("")}
-              </div>
-            </article>
-          `;
-        })
-        .join("")}
+      ${results.map(renderResultItem).join("")}
     </div>
   `;
 }

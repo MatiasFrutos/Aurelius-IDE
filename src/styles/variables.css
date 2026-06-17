@@ -3,13 +3,13 @@
 :root {
   --au-ui-scale: 1;
 
-  --au-topbar-height-base: 42px;
-  --au-statusbar-height-base: 28px;
-  --au-activity-width-base: 52px;
-  --au-sidebar-width-base: 286px;
+  --au-topbar-height-base: 36px;
+  --au-statusbar-height-base: 22px;
+  --au-activity-width-base: 42px;
+  --au-sidebar-width-base: 258px;
 
-  --au-radius-sm-base: 8px;
-  --au-radius-md-base: 12px;
+  --au-radius-sm-base: 7px;
+  --au-radius-md-base: 10px;
 
   --au-topbar-height: var(--au-topbar-height-base);
   --au-statusbar-height: var(--au-statusbar-height-base);
@@ -18,4 +18,38 @@
 
   --au-radius-sm: var(--au-radius-sm-base);
   --au-radius-md: var(--au-radius-md-base);
+}
+
+@media (max-width: 1366px) {
+  :root {
+    --au-topbar-height-base: 34px;
+    --au-statusbar-height-base: 21px;
+    --au-activity-width-base: 40px;
+    --au-sidebar-width-base: 244px;
+  }
+}
+
+@media (max-width: 1180px) {
+  :root {
+    --au-topbar-height-base: 33px;
+    --au-statusbar-height-base: 20px;
+    --au-activity-width-base: 38px;
+    --au-sidebar-width-base: 230px;
+  }
+}
+
+@media (max-height: 760px) {
+  :root {
+    --au-topbar-height-base: 32px;
+    --au-statusbar-height-base: 20px;
+    --au-activity-width-base: 38px;
+  }
+}
+
+@media (max-height: 680px) {
+  :root {
+    --au-topbar-height-base: 30px;
+    --au-statusbar-height-base: 19px;
+    --au-activity-width-base: 36px;
+  }
 }

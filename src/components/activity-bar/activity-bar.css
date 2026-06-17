@@ -29,16 +29,16 @@
   background: linear-gradient(
     180deg,
     transparent,
-    rgba(34, 197, 94, 0.16),
+    rgba(34, 197, 94, 0.14),
     transparent
   );
-  opacity: 0.72;
+  opacity: 0.68;
   pointer-events: none;
 }
 
 :root[data-theme="light"] .au-activity {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), transparent 42%),
     var(--au-bg-activity);
 }
 
@@ -49,24 +49,32 @@
 .au-activity__top,
 .au-activity__bottom {
   display: grid;
+  justify-items: center;
   align-content: start;
-  gap: 5px;
-  padding: 8px 7px;
+  gap: 6px;
+  padding: 8px 4px;
 }
 
 .au-activity__bottom {
   position: relative;
-  padding-top: 8px;
+  padding-top: 9px;
+  padding-bottom: 8px;
 }
 
 .au-activity__bottom::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 11px;
-  right: 11px;
+  left: 12px;
+  right: 12px;
   height: 1px;
-  background: var(--au-border);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--au-border),
+    transparent
+  );
+  opacity: 0.9;
 }
 
 /* ==========================================================================
@@ -75,45 +83,48 @@
 
 .au-activity__button {
   position: relative;
+  width: 31px;
+  height: 31px;
+  min-width: 31px;
+  min-height: 31px;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
   border: 1px solid transparent;
-  border-radius: 11px;
+  border-radius: 10px;
   background: transparent;
   color: var(--au-muted);
   cursor: pointer;
   outline: none;
   transform: none;
   isolation: isolate;
+  overflow: visible;
   transition:
     background var(--au-transition-fast),
     border-color var(--au-transition-fast),
     color var(--au-transition-fast),
-    box-shadow var(--au-transition-fast);
+    box-shadow var(--au-transition-fast),
+    transform var(--au-transition-fast);
 }
 
 .au-activity__button::before {
   content: "";
   position: absolute;
-  left: -7px;
-  top: 9px;
-  bottom: 9px;
+  left: -5px;
+  top: 8px;
+  bottom: 8px;
   width: 2px;
   border-radius: 999px;
   background: transparent;
   opacity: 0;
   transition:
     background var(--au-transition-fast),
-    opacity var(--au-transition-fast);
+    opacity var(--au-transition-fast),
+    transform var(--au-transition-fast);
 }
 
 .au-activity__button svg {
-  width: 18.5px;
-  height: 18.5px;
+  width: 16.5px;
+  height: 16.5px;
   stroke: currentColor;
   stroke-width: 2.05;
 }
@@ -123,10 +134,11 @@
    ========================================================================== */
 
 .au-activity__button:hover {
+  transform: translateY(-1px);
   border-color: var(--au-border);
   background: var(--au-button-bg-hover);
   color: var(--au-text);
-  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.045) inset;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.035) inset;
 }
 
 .au-activity__button:focus-visible {
@@ -135,18 +147,18 @@
   color: var(--au-primary-strong);
   box-shadow:
     0 0 0 1px rgba(34, 197, 94, 0.08) inset,
-    0 0 0 3px rgba(34, 197, 94, 0.07);
+    0 0 0 3px rgba(34, 197, 94, 0.065);
 }
 
 .au-activity__button.is-active {
   border-color: rgba(34, 197, 94, 0.24);
   background:
-    linear-gradient(180deg, rgba(34, 197, 94, 0.085), rgba(34, 197, 94, 0.045)),
+    linear-gradient(180deg, rgba(34, 197, 94, 0.095), rgba(34, 197, 94, 0.045)),
     var(--au-button-bg);
   color: var(--au-primary-strong);
   box-shadow:
-    0 0 0 1px rgba(34, 197, 94, 0.055) inset,
-    0 8px 18px rgba(0, 0, 0, 0.08);
+    0 0 0 1px rgba(34, 197, 94, 0.05) inset,
+    0 7px 15px rgba(0, 0, 0, 0.07);
 }
 
 .au-activity__button.is-active::before {
@@ -157,7 +169,7 @@
 .au-activity__button.is-active:hover {
   border-color: rgba(34, 197, 94, 0.3);
   background:
-    linear-gradient(180deg, rgba(34, 197, 94, 0.105), rgba(34, 197, 94, 0.055)),
+    linear-gradient(180deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.058)),
     var(--au-button-bg-hover);
   color: var(--au-primary-strong);
 }
@@ -179,7 +191,7 @@
 .au-activity__button[data-activity-panel="settings"].is-active {
   border-color: rgba(34, 197, 94, 0.24);
   background:
-    linear-gradient(180deg, rgba(34, 197, 94, 0.085), rgba(34, 197, 94, 0.045)),
+    linear-gradient(180deg, rgba(34, 197, 94, 0.095), rgba(34, 197, 94, 0.045)),
     var(--au-button-bg);
   color: var(--au-primary-strong);
 }
@@ -194,11 +206,11 @@
 
 :root[data-theme="light"] .au-activity__button.is-active {
   background:
-    linear-gradient(180deg, rgba(22, 163, 74, 0.095), rgba(22, 163, 74, 0.045)),
-    rgba(255, 255, 255, 0.72);
+    linear-gradient(180deg, rgba(22, 163, 74, 0.105), rgba(22, 163, 74, 0.05)),
+    rgba(255, 255, 255, 0.76);
   box-shadow:
-    0 0 0 1px rgba(22, 163, 74, 0.055) inset,
-    0 8px 18px rgba(15, 23, 42, 0.055);
+    0 0 0 1px rgba(22, 163, 74, 0.05) inset,
+    0 7px 15px rgba(15, 23, 42, 0.05);
 }
 
 /* ==========================================================================
@@ -208,55 +220,10 @@
 @media (max-height: 720px) {
   .au-activity__top,
   .au-activity__bottom {
-    gap: 4px;
-    padding: 7px 7px;
-  }
-
-  .au-activity__button {
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
-    min-height: 34px;
-    border-radius: 10px;
-  }
-
-  .au-activity__button svg {
-    width: 17.5px;
-    height: 17.5px;
-  }
-
-  .au-activity__button::before {
-    top: 8px;
-    bottom: 8px;
-  }
-}
-
-@media (max-height: 620px) {
-  .au-activity__top,
-  .au-activity__bottom {
-    gap: 3px;
-    padding: 6px 7px;
-  }
-
-  .au-activity__button {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
-    border-radius: 9px;
-  }
-
-  .au-activity__button svg {
-    width: 17px;
-    height: 17px;
-  }
-}
-
-@media (max-height: 540px) {
-  .au-activity__top,
-  .au-activity__bottom {
-    gap: 2px;
-    padding: 5px 7px;
+    gap: 5px;
+    padding-inline: 4px;
+    padding-top: 7px;
+    padding-bottom: 7px;
   }
 
   .au-activity__button {
@@ -271,11 +238,86 @@
     width: 16px;
     height: 16px;
   }
+
+  .au-activity__button::before {
+    top: 8px;
+    bottom: 8px;
+  }
+}
+
+@media (max-height: 620px) {
+  .au-activity__top,
+  .au-activity__bottom {
+    gap: 4px;
+    padding-inline: 4px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .au-activity__button {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 9px;
+  }
+
+  .au-activity__button svg {
+    width: 15.5px;
+    height: 15.5px;
+  }
+
+  .au-activity__button::before {
+    left: -5px;
+    top: 7px;
+    bottom: 7px;
+  }
+}
+
+@media (max-height: 540px) {
+  .au-activity__top,
+  .au-activity__bottom {
+    gap: 3px;
+    padding-inline: 4px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .au-activity__button {
+    width: 27px;
+    height: 27px;
+    min-width: 27px;
+    min-height: 27px;
+    border-radius: 8px;
+  }
+
+  .au-activity__button svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 720px) {
+  .au-activity__button {
+    width: 29px;
+    height: 29px;
+    min-width: 29px;
+    min-height: 29px;
+  }
+
+  .au-activity__button svg {
+    width: 15.5px;
+    height: 15.5px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .au-activity__button,
   .au-activity__button::before {
     transition: none;
+  }
+
+  .au-activity__button:hover {
+    transform: none;
   }
 }

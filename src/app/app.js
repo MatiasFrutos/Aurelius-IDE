@@ -5,13 +5,8 @@ import {
   setSearchQuery,
   setSearchResults,
   setSearchLoading,
-  setTopbarVisible,
-  toggleTopbarVisible,
   toggleSidebarVisible,
-  setRightPanelVisible,
-  toggleRightPanelVisible,
   setBottomPanelVisible,
-  toggleBottomPanelVisible,
   setSidebarWidth,
   setRightPanelWidth,
   setBottomPanelHeight,
@@ -27,6 +22,8 @@ import {
   restoreWorkspaceSession,
   flushLayoutPreferences
 } from "./app-session.js";
+
+import { createPanelActions } from "./app-panel-actions.js";
 
 import {
   loadSettings,
@@ -121,7 +118,6 @@ import {
 import { searchProject } from "../services/fs.service.js";
 
 import {
-  loadGitStatus,
   refreshGitStatus
 } from "../components/git/git-panel.js";
 
@@ -335,6 +331,33 @@ function renderSoftProjectMutation() {
   }
 }
 
+function renderLiveServerOnly() {
+  updateStatusbar();
+  refreshIcons();
+
+  document.dispatchEvent(
+    new CustomEvent("aurelius:live-server-status-change", {
+      detail: {
+        liveServer: appState.liveServer || null
+      }
+    })
+  );
+}
+
+const panelActions = createPanelActions({
+  renderApp
+});
+
+const {
+  handleActivityPanel,
+  handleOpenGitPanel,
+  handleToggleTopbar,
+  handleToggleSidebar,
+  handleToggleRightPanel,
+  handleToggleBottomPanel,
+  handleSetTopbarVisible
+} = panelActions;
+
 function handleOpenProject() {
   return openProjectAction({ renderApp });
 }
@@ -411,153 +434,26 @@ async function handleOpenProblemFile(event) {
 }
 
 function handleStartLiveServer() {
-  return startLiveServer({ renderApp });
+  return startLiveServer({ renderApp: renderLiveServerOnly });
 }
 
 function handleStopLiveServer() {
-  return stopLiveServer({ renderApp });
+  return stopLiveServer({ renderApp: renderLiveServerOnly });
 }
 
 function handleToggleLiveServer() {
-  return toggleLiveServer({ renderApp });
+  return toggleLiveServer({ renderApp: renderLiveServerOnly });
 }
 
 function handleOpenLiveServerBrowser() {
-  return openLiveServerBrowser({ renderApp });
+  return openLiveServerBrowser({ renderApp: renderLiveServerOnly });
 }
 
 function handleRefreshLiveServerStatus() {
   return refreshLiveServerStatus({
-    renderApp,
+    renderApp: renderLiveServerOnly,
     silent: false
   });
-}
-
-async function handleActivityPanel(panel) {
-  if (panel === "git") {
-    setActivityPanel("git");
-
-    if (!appState.layout.sidebarVisible) {
-      toggleSidebarVisible();
-    }
-
-    persistLayoutPreferences();
-    renderApp();
-
-    queueMicrotask(() => {
-      loadGitStatus();
-    });
-
-    return;
-  }
-
-  if (panel === "monitor") {
-    setActivityPanel("monitor");
-
-    if (!appState.layout.sidebarVisible) {
-      toggleSidebarVisible();
-    }
-
-    persistLayoutPreferences();
-    renderApp();
-
-    queueMicrotask(() => {
-      refreshMonitorSnapshot({
-        renderApp,
-        silent: true
-      });
-    });
-
-    return;
-  }
-
-  if (panel === "tasks") {
-    setActivityPanel("tasks");
-
-    if (!appState.layout.sidebarVisible) {
-      toggleSidebarVisible();
-    }
-
-    persistLayoutPreferences();
-    renderApp();
-
-    queueMicrotask(() => {
-      loadProjectTasks({
-        renderApp,
-        silent: true
-      });
-    });
-
-    return;
-  }
-
-  if (panel === "toolchain") {
-    setActivityPanel("toolchain");
-
-    if (!appState.layout.sidebarVisible) {
-      toggleSidebarVisible();
-    }
-
-    persistLayoutPreferences();
-    renderApp();
-
-    queueMicrotask(() => {
-      loadToolchainDoctor({
-        renderApp,
-        silent: true
-      });
-    });
-
-    return;
-  }
-
-  if (panel === "ai") {
-    setRightPanelVisible(true);
-    persistLayoutPreferences();
-    renderApp();
-
-    toastInfo(
-      t("Chat IA abierto en el panel derecho.", "AI chat opened in the right panel."),
-      "Aurelius AI"
-    );
-
-    return;
-  }
-
-  if (panel === "search") {
-    setActivityPanel("search");
-
-    if (!appState.layout.sidebarVisible) {
-      toggleSidebarVisible();
-    }
-
-    persistLayoutPreferences();
-    renderApp();
-    return;
-  }
-
-  if (panel === "explorer") {
-    setActivityPanel("explorer");
-
-    if (!appState.layout.sidebarVisible) {
-      toggleSidebarVisible();
-    }
-
-    persistLayoutPreferences();
-    renderApp();
-    return;
-  }
-
-  setActivityPanel(panel);
-  persistLayoutPreferences();
-  renderApp();
-
-  if (panel === "settings") {
-    toastInfo(
-      t("Página de ajustes abierta.", "Settings page opened."),
-      "Settings"
-    );
-  }
 }
 
 async function handleToggleTheme() {
@@ -608,45 +504,6 @@ async function handleToggleLanguage() {
       t("No se pudo cambiar el idioma", "Could not change language")
     );
   }
-}
-
-function handleToggleTopbar() {
-  toggleTopbarVisible();
-  persistLayoutPreferences();
-  renderApp();
-
-  toastSuccess(
-    appState.layout.topbarVisible
-      ? t("Topbar visible.", "Topbar visible.")
-      : t("Topbar oculto.", "Topbar hidden."),
-    t("Layout actualizado", "Layout updated")
-  );
-}
-
-function handleToggleSidebar() {
-  toggleSidebarVisible();
-
-  if (
-    appState.layout.sidebarVisible &&
-    !["explorer", "search", "git", "monitor", "tasks", "toolchain"].includes(appState.activityPanel)
-  ) {
-    setActivityPanel("explorer");
-  }
-
-  persistLayoutPreferences();
-  renderApp();
-}
-
-function handleToggleRightPanel() {
-  toggleRightPanelVisible();
-  persistLayoutPreferences();
-  renderApp();
-}
-
-function handleToggleBottomPanel() {
-  toggleBottomPanelVisible();
-  persistLayoutPreferences();
-  renderApp();
 }
 
 function ensureBottomPanelOpen() {
@@ -753,21 +610,6 @@ function handleRunDiagnostics() {
 
   queueMicrotask(() => {
     runDiagnosticsAndPopulate();
-  });
-}
-
-function handleOpenGitPanel() {
-  setActivityPanel("git");
-
-  if (!appState.layout.sidebarVisible) {
-    toggleSidebarVisible();
-  }
-
-  persistLayoutPreferences();
-  renderApp();
-
-  queueMicrotask(() => {
-    loadGitStatus();
   });
 }
 
@@ -1141,7 +983,7 @@ async function handleSettingsSave(event) {
 
     await saveSettings(nextSettings);
 
-    setTopbarVisible(nextTopbarVisible);
+    handleSetTopbarVisible(nextTopbarVisible);
     setSidebarWidth(nextSettings.sidebarWidth);
 
     persistLayoutPreferences();

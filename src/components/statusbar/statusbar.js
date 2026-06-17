@@ -1,6 +1,9 @@
 // src/components/statusbar/statusbar.js
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { appState } from "../../app/state.js";
 import { t } from "../../app/i18n.js";
+
+let statusbarEventsBound = false;
 
 function escapeHTML(value) {
   return String(value ?? "")
@@ -94,7 +97,7 @@ function getLiveServerTitle() {
   const liveServer = getLiveServerState();
 
   if (liveServer.running) {
-    return `${t("Live Server activo", "Live Server running")}: ${getLiveServerUrl()}`;
+    return `${t("Live Server activo", "Live Server running")}: ${getLiveServerUrl()}. ${t("Click para abrir en el navegador", "Click to open in browser")}.`;
   }
 
   return `${t("Live Server detenido", "Live Server stopped")}. ${t("URL configurada", "Configured URL")}: ${getLiveServerUrl()}`;
@@ -128,6 +131,102 @@ function getLiveServerClassName() {
   return "is-stopped";
 }
 
+function isValidHttpUrl(url) {
+  try {
+    const parsedUrl = new URL(url);
+
+    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+async function openExternalUrl(url) {
+  if (!isValidHttpUrl(url)) {
+    return false;
+  }
+
+  try {
+    await openUrl(url);
+    return true;
+  } catch (error) {
+    console.warn("No se pudo abrir la URL con @tauri-apps/plugin-opener:", error);
+  }
+
+  try {
+    const openedWindow = window.open(url, "_blank", "noopener,noreferrer");
+
+    if (openedWindow) {
+      openedWindow.opener = null;
+      return true;
+    }
+  } catch (error) {
+    console.warn("No se pudo abrir la URL con window.open:", error);
+  }
+
+  try {
+    await navigator.clipboard?.writeText?.(url);
+    console.warn("No se pudo abrir el navegador. La URL fue copiada al portapapeles:", url);
+  } catch {
+    return false;
+  }
+
+  return false;
+}
+
+async function openLiveServerUrl() {
+  const liveServer = getLiveServerState();
+
+  if (!liveServer.running || liveServer.isLoading) {
+    return;
+  }
+
+  const url = getLiveServerUrl();
+
+  await openExternalUrl(url);
+}
+
+function handleStatusbarClick(event) {
+  const liveServerButton = event.target.closest?.("#status-live-server");
+
+  if (!liveServerButton) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  openLiveServerUrl();
+}
+
+function handleStatusbarKeydown(event) {
+  const liveServerButton = event.target.closest?.("#status-live-server");
+
+  if (!liveServerButton) {
+    return;
+  }
+
+  if (event.key !== "Enter" && event.key !== " ") {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  openLiveServerUrl();
+}
+
+function bindStatusbarEvents() {
+  if (statusbarEventsBound) {
+    return;
+  }
+
+  statusbarEventsBound = true;
+
+  document.addEventListener("click", handleStatusbarClick);
+  document.addEventListener("keydown", handleStatusbarKeydown);
+}
+
 export function renderStatusbar() {
   const projectLabel = getProjectLabel();
   const relativePath = getRelativePath();
@@ -138,6 +237,11 @@ export function renderStatusbar() {
   const liveServerIcon = getLiveServerIcon();
   const liveServerClassName = getLiveServerClassName();
   const liveServerTitle = getLiveServerTitle();
+  const liveServer = getLiveServerState();
+  const liveServerTabIndex = liveServer.running && !liveServer.isLoading ? "0" : "-1";
+  const liveServerRole = liveServer.running && !liveServer.isLoading ? "button" : "status";
+
+  bindStatusbarEvents();
 
   return `
     <footer class="au-statusbar" id="statusbar">
@@ -193,6 +297,9 @@ export function renderStatusbar() {
           class="au-statusbar__item au-statusbar__live-server ${liveServerClassName}"
           id="status-live-server"
           title="${escapeHTML(liveServerTitle)}"
+          role="${liveServerRole}"
+          tabindex="${liveServerTabIndex}"
+          data-live-server-url="${escapeHTML(getLiveServerUrl())}"
         >
           <i data-lucide="${liveServerIcon}"></i>
           <span>${escapeHTML(liveServerLabel)}</span>
@@ -211,6 +318,8 @@ export function renderStatusbar() {
 }
 
 export function updateStatusbar() {
+  bindStatusbarEvents();
+
   const project = document.getElementById("status-project");
   const file = document.getElementById("status-file");
   const dirty = document.getElementById("status-dirty");
@@ -278,7 +387,9 @@ export function updateStatusbar() {
   if (liveServer) {
     const liveServerText = liveServer.querySelector("span");
     const liveServerIconElement = liveServer.querySelector("i");
+    const liveServerState = getLiveServerState();
     const liveServerClassName = getLiveServerClassName();
+    const liveServerIsClickable = liveServerState.running && !liveServerState.isLoading;
 
     if (liveServerText) {
       liveServerText.textContent = getLiveServerLabel();
@@ -289,6 +400,9 @@ export function updateStatusbar() {
     }
 
     liveServer.title = getLiveServerTitle();
+    liveServer.dataset.liveServerUrl = getLiveServerUrl();
+    liveServer.setAttribute("role", liveServerIsClickable ? "button" : "status");
+    liveServer.setAttribute("tabindex", liveServerIsClickable ? "0" : "-1");
 
     liveServer.classList.toggle("is-loading", liveServerClassName === "is-loading");
     liveServer.classList.toggle("is-running", liveServerClassName === "is-running");
