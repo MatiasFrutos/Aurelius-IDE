@@ -1013,3 +1013,73 @@
     transition: none;
   }
 }
+
+
+/* ==========================================================================
+   13. DRAG AND DROP
+   ========================================================================== */
+
+.au-tree__row[draggable="true"] {
+  cursor: grab;
+}
+
+.au-tree__row[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+body.is-explorer-dragging {
+  cursor: grabbing;
+}
+
+body.is-explorer-dragging .au-tree__row.is-file:not(.is-dragging-source) {
+  opacity: 0.58;
+}
+
+body.is-explorer-dragging .au-tree__row.is-folder {
+  cursor: copy;
+}
+
+.au-tree__row.is-dragging-source {
+  border-color: rgba(34, 197, 94, 0.28);
+  background:
+    linear-gradient(90deg, rgba(34, 197, 94, 0.11), rgba(34, 197, 94, 0.035)),
+    var(--au-bg-card-hover);
+  color: var(--au-text);
+  opacity: 0.62;
+  box-shadow:
+    inset 2px 0 0 var(--au-primary-strong),
+    0 0 0 1px rgba(34, 197, 94, 0.04) inset;
+}
+
+.au-tree__row.is-drop-target {
+  border-color: rgba(34, 197, 94, 0.52);
+  background:
+    linear-gradient(90deg, rgba(34, 197, 94, 0.18), rgba(34, 197, 94, 0.055)),
+    var(--au-primary-soft);
+  color: var(--au-text);
+  box-shadow:
+    inset 2px 0 0 var(--au-primary-strong),
+    0 0 0 3px rgba(34, 197, 94, 0.08);
+}
+
+.au-tree__row.is-drop-target .au-tree__icon {
+  transform: scale(1.06);
+}
+
+.au-tree__row.is-drop-invalid {
+  border-color: rgba(239, 68, 68, 0.42);
+  background: rgba(239, 68, 68, 0.075);
+  color: var(--au-danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.075);
+}
+
+.au-tree__row.is-drop-invalid .au-tree__icon,
+.au-tree__row.is-drop-invalid .au-tree__chevron {
+  color: var(--au-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-tree__row.is-drop-target .au-tree__icon {
+    transform: none;
+  }
+}

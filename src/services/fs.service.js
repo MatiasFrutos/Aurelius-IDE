@@ -150,6 +150,13 @@ export function deletePath(targetPath) {
   });
 }
 
+export function movePath(sourcePath, targetDirectoryPath) {
+  return invoke("move_path", {
+    sourcePath: assertPath(sourcePath, "La ruta origen"),
+    targetDirectoryPath: assertPath(targetDirectoryPath, "La carpeta destino")
+  });
+}
+
 export function readRecentProjects() {
   return invoke("read_recent_projects");
 }

@@ -108,6 +108,7 @@ import {
 
 import {
   decodePath,
+  encodePath,
   getErrorMessage,
   isTypingTarget,
   isModalOpen,
@@ -115,7 +116,10 @@ import {
   focusElementById
 } from "./app-utils.js";
 
-import { searchProject } from "../services/fs.service.js";
+import {
+  movePath,
+  searchProject
+} from "../services/fs.service.js";
 
 import {
   refreshGitStatus
@@ -150,6 +154,10 @@ let commandPaletteActiveIndex = 0;
 
 let commandHelpOpen = false;
 let commandHelpQuery = "";
+
+let explorerDraggedPath = "";
+let explorerDropTargetPath = "";
+let explorerDraggingActive = false;
 
 function getCommandHelpShortcuts() {
   return [
@@ -236,6 +244,60 @@ function getCommandHelpShortcuts() {
 
 function isEditorKeyboardTarget(target) {
   return Boolean(target?.closest?.(".cm-editor"));
+}
+
+function cssEscape(value = "") {
+  if (window.CSS?.escape) {
+    return window.CSS.escape(String(value));
+  }
+
+  return String(value)
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"')
+    .replaceAll("'", "\\'")
+    .replaceAll("\n", "\\A ")
+    .replaceAll("\r", "\\D ");
+}
+
+function captureExplorerScrollState() {
+  const tree = document.getElementById("explorer-tree");
+
+  return {
+    top: tree?.scrollTop || 0,
+    left: tree?.scrollLeft || 0
+  };
+}
+
+function restoreExplorerScrollState({ top = 0, left = 0, focusPath = "" } = {}) {
+  queueMicrotask(() => {
+    const tree = document.getElementById("explorer-tree");
+
+    if (!tree) {
+      return;
+    }
+
+    tree.scrollTop = top;
+    tree.scrollLeft = left;
+
+    if (!focusPath) {
+      return;
+    }
+
+    const encodedPath = encodePath(focusPath);
+    const targetRow = tree.querySelector(
+      `[data-drop-folder-path="${cssEscape(encodedPath)}"], [data-folder-path="${cssEscape(encodedPath)}"]`
+    );
+
+    if (!targetRow) {
+      return;
+    }
+
+    targetRow.classList.add("is-drop-target");
+
+    window.setTimeout(() => {
+      targetRow.classList.remove("is-drop-target");
+    }, 900);
+  });
 }
 
 function renderApp() {
@@ -329,6 +391,19 @@ function renderSoftProjectMutation() {
   if (!explorerUpdated) {
     refreshIcons();
   }
+}
+
+function renderSoftProjectMutationPreservingExplorer({
+  scrollState,
+  focusPath = ""
+} = {}) {
+  renderSoftProjectMutation();
+
+  restoreExplorerScrollState({
+    top: scrollState?.top || 0,
+    left: scrollState?.left || 0,
+    focusPath
+  });
 }
 
 function renderLiveServerOnly() {
@@ -454,6 +529,59 @@ function handleRefreshLiveServerStatus() {
     renderApp: renderLiveServerOnly,
     silent: false
   });
+}
+
+async function handleMovePath(sourcePath, targetDirectoryPath) {
+  const scrollState = captureExplorerScrollState();
+
+  try {
+    const safeSourcePath = String(sourcePath || "").trim();
+    const safeTargetDirectoryPath = String(targetDirectoryPath || "").trim();
+
+    if (!safeSourcePath || !safeTargetDirectoryPath) {
+      return;
+    }
+
+    if (safeSourcePath === safeTargetDirectoryPath) {
+      toastWarning(
+        t(
+          "No se puede mover un archivo dentro de sí mismo.",
+          "You cannot move a file into itself."
+        ),
+        "Explorer"
+      );
+
+      return;
+    }
+
+    await movePath(safeSourcePath, safeTargetDirectoryPath);
+
+    await refreshProjectAction({
+      renderApp: () => {
+        renderSoftProjectMutationPreservingExplorer({
+          scrollState,
+          focusPath: safeTargetDirectoryPath
+        });
+      }
+    });
+
+    toastSuccess(
+      t("Archivo movido correctamente.", "File moved successfully."),
+      "Explorer"
+    );
+  } catch (error) {
+    console.error(error);
+
+    toastError(
+      getErrorMessage(error),
+      t("No se pudo mover", "Could not move")
+    );
+
+    renderSoftProjectMutationPreservingExplorer({
+      scrollState,
+      focusPath: targetDirectoryPath
+    });
+  }
 }
 
 async function handleToggleTheme() {
@@ -1345,8 +1473,175 @@ function bindEditorEvents() {
   });
 }
 
+function clearExplorerDropVisualState() {
+  document.body.classList.remove("is-explorer-dragging");
+
+  document.querySelectorAll(".au-tree__row.is-dragging-source").forEach((row) => {
+    row.classList.remove("is-dragging-source");
+  });
+
+  document.querySelectorAll(".au-tree__row.is-drop-target").forEach((row) => {
+    row.classList.remove("is-drop-target");
+  });
+
+  document.querySelectorAll(".au-tree__row.is-drop-invalid").forEach((row) => {
+    row.classList.remove("is-drop-invalid");
+  });
+}
+
+function getExplorerDropFolderButton(target) {
+  return target?.closest?.("[data-drop-folder-path]");
+}
+
+function handleExplorerDragStart(event) {
+  const draggable = event.target?.closest?.("[data-draggable-path]");
+
+  if (!draggable || !draggable.closest(".au-explorer")) {
+    return;
+  }
+
+  if (event.target?.closest?.("[data-rename-path], [data-delete-path], .au-tree__actions")) {
+    event.preventDefault();
+    return;
+  }
+
+  explorerDraggedPath = decodePath(draggable.dataset.draggablePath);
+  explorerDropTargetPath = "";
+  explorerDraggingActive = Boolean(explorerDraggedPath);
+
+  if (!explorerDraggingActive) {
+    event.preventDefault();
+    return;
+  }
+
+  document.body.classList.add("is-explorer-dragging");
+  draggable.classList.add("is-dragging-source");
+
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.dropEffect = "move";
+    event.dataTransfer.setData("text/plain", explorerDraggedPath);
+    event.dataTransfer.setData("application/x-aurelius-path", explorerDraggedPath);
+  }
+}
+
+function handleExplorerDragOver(event) {
+  if (!explorerDraggingActive || !explorerDraggedPath) {
+    return;
+  }
+
+  const folderButton = getExplorerDropFolderButton(event.target);
+
+  if (!folderButton) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = "move";
+  }
+
+  const targetFolderPath = decodePath(folderButton.dataset.dropFolderPath);
+  const isInvalid = !targetFolderPath || targetFolderPath === explorerDraggedPath;
+
+  document.querySelectorAll(".au-tree__row.is-drop-target").forEach((row) => {
+    if (row !== folderButton) {
+      row.classList.remove("is-drop-target");
+    }
+  });
+
+  document.querySelectorAll(".au-tree__row.is-drop-invalid").forEach((row) => {
+    if (row !== folderButton) {
+      row.classList.remove("is-drop-invalid");
+    }
+  });
+
+  folderButton.classList.toggle("is-drop-target", !isInvalid);
+  folderButton.classList.toggle("is-drop-invalid", isInvalid);
+
+  explorerDropTargetPath = isInvalid ? "" : targetFolderPath;
+}
+
+function handleExplorerDragLeave(event) {
+  if (!explorerDraggingActive) {
+    return;
+  }
+
+  const folderButton = getExplorerDropFolderButton(event.target);
+
+  if (!folderButton) {
+    return;
+  }
+
+  const relatedTarget = event.relatedTarget;
+
+  if (relatedTarget instanceof Node && folderButton.contains(relatedTarget)) {
+    return;
+  }
+
+  folderButton.classList.remove("is-drop-target", "is-drop-invalid");
+
+  if (decodePath(folderButton.dataset.dropFolderPath) === explorerDropTargetPath) {
+    explorerDropTargetPath = "";
+  }
+}
+
+async function handleExplorerDrop(event) {
+  if (!explorerDraggingActive || !explorerDraggedPath) {
+    return;
+  }
+
+  const folderButton = getExplorerDropFolderButton(event.target);
+
+  if (!folderButton) {
+    clearExplorerDragState();
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const targetFolderPath = decodePath(folderButton.dataset.dropFolderPath);
+
+  const sourcePath =
+    explorerDraggedPath ||
+    event.dataTransfer?.getData("application/x-aurelius-path") ||
+    event.dataTransfer?.getData("text/plain") ||
+    "";
+
+  clearExplorerDragState();
+
+  if (!sourcePath || !targetFolderPath) {
+    return;
+  }
+
+  await handleMovePath(sourcePath, targetFolderPath);
+}
+
+function handleExplorerDragEnd() {
+  clearExplorerDragState();
+}
+
+function clearExplorerDragState() {
+  explorerDraggedPath = "";
+  explorerDropTargetPath = "";
+  explorerDraggingActive = false;
+  clearExplorerDropVisualState();
+}
+
+function bindExplorerDragAndDropEvents(explorerTree) {
+  explorerTree?.addEventListener("dragstart", handleExplorerDragStart);
+  explorerTree?.addEventListener("dragover", handleExplorerDragOver);
+  explorerTree?.addEventListener("dragleave", handleExplorerDragLeave);
+  explorerTree?.addEventListener("drop", handleExplorerDrop);
+  explorerTree?.addEventListener("dragend", handleExplorerDragEnd);
+}
+
 function bindExplorerEvents() {
   const explorerTree = document.getElementById("explorer-tree");
+
+  bindExplorerDragAndDropEvents(explorerTree);
 
   explorerTree?.addEventListener("click", (event) => {
     const renameButton = event.target.closest("[data-rename-path]");

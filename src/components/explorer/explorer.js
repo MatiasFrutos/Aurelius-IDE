@@ -108,411 +108,87 @@ function getFileIconMeta(fileName = "") {
   const extension = getFileExtension(name);
 
   const exactFileMap = {
-    ".env": {
-      icon: "lock",
-      kind: "env",
-      label: "ENV"
-    },
-    ".env.local": {
-      icon: "lock",
-      kind: "env",
-      label: "ENV"
-    },
-    ".env.development": {
-      icon: "lock",
-      kind: "env",
-      label: "ENV"
-    },
-    ".env.production": {
-      icon: "lock",
-      kind: "env",
-      label: "ENV"
-    },
-    ".env.example": {
-      icon: "lock",
-      kind: "env",
-      label: "ENV"
-    },
-    ".gitignore": {
-      icon: "git-branch",
-      kind: "git",
-      label: "Git"
-    },
-    ".gitattributes": {
-      icon: "git-branch",
-      kind: "git",
-      label: "Git"
-    },
-    ".gitmodules": {
-      icon: "git-branch",
-      kind: "git",
-      label: "Git"
-    },
-    ".dockerignore": {
-      icon: "server",
-      kind: "docker",
-      label: "Docker"
-    },
-    ".npmrc": {
-      icon: "package",
-      kind: "node",
-      label: "NPM"
-    },
-    ".yarnrc": {
-      icon: "package",
-      kind: "node",
-      label: "Yarn"
-    },
-    ".pnpmrc": {
-      icon: "package",
-      kind: "node",
-      label: "PNPM"
-    },
-    ".bunfig.toml": {
-      icon: "package",
-      kind: "node",
-      label: "Bun"
-    },
-    ".editorconfig": {
-      icon: "settings-2",
-      kind: "config",
-      label: "Editor"
-    },
-    ".prettierrc": {
-      icon: "settings-2",
-      kind: "prettier",
-      label: "Prettier"
-    },
-    ".prettierrc.json": {
-      icon: "settings-2",
-      kind: "prettier",
-      label: "Prettier"
-    },
-    ".prettierrc.yaml": {
-      icon: "settings-2",
-      kind: "prettier",
-      label: "Prettier"
-    },
-    ".prettierrc.yml": {
-      icon: "settings-2",
-      kind: "prettier",
-      label: "Prettier"
-    },
-    ".eslintrc": {
-      icon: "scan-search",
-      kind: "eslint",
-      label: "ESLint"
-    },
-    ".eslintrc.js": {
-      icon: "scan-search",
-      kind: "eslint",
-      label: "ESLint"
-    },
-    ".eslintrc.cjs": {
-      icon: "scan-search",
-      kind: "eslint",
-      label: "ESLint"
-    },
-    ".eslintrc.json": {
-      icon: "scan-search",
-      kind: "eslint",
-      label: "ESLint"
-    },
-    ".eslintignore": {
-      icon: "scan-search",
-      kind: "eslint",
-      label: "ESLint"
-    },
-    ".babelrc": {
-      icon: "braces",
-      kind: "javascript",
-      label: "Babel"
-    },
-    ".browserslistrc": {
-      icon: "globe-2",
-      kind: "web",
-      label: "Browsers"
-    },
-    "dockerfile": {
-      icon: "server",
-      kind: "docker",
-      label: "Docker"
-    },
-    "containerfile": {
-      icon: "server",
-      kind: "docker",
-      label: "Container"
-    },
-    "docker-compose.yml": {
-      icon: "server",
-      kind: "docker",
-      label: "Compose"
-    },
-    "docker-compose.yaml": {
-      icon: "server",
-      kind: "docker",
-      label: "Compose"
-    },
-    "compose.yml": {
-      icon: "server",
-      kind: "docker",
-      label: "Compose"
-    },
-    "compose.yaml": {
-      icon: "server",
-      kind: "docker",
-      label: "Compose"
-    },
-    "cargo.toml": {
-      icon: "flame-kindling",
-      kind: "rust",
-      label: "Cargo"
-    },
-    "cargo.lock": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "rustfmt.toml": {
-      icon: "flame-kindling",
-      kind: "rust",
-      label: "Rustfmt"
-    },
-    "package.json": {
-      icon: "package",
-      kind: "node",
-      label: "Package"
-    },
-    "package-lock.json": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "pnpm-lock.yaml": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "yarn.lock": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "bun.lockb": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "tauri.conf.json": {
-      icon: "cpu",
-      kind: "tauri",
-      label: "Tauri"
-    },
-    "vite.config.js": {
-      icon: "rocket",
-      kind: "vite",
-      label: "Vite"
-    },
-    "vite.config.ts": {
-      icon: "rocket",
-      kind: "vite",
-      label: "Vite"
-    },
-    "vitest.config.js": {
-      icon: "test-tube-2",
-      kind: "test",
-      label: "Vitest"
-    },
-    "vitest.config.ts": {
-      icon: "test-tube-2",
-      kind: "test",
-      label: "Vitest"
-    },
-    "jest.config.js": {
-      icon: "test-tube-2",
-      kind: "test",
-      label: "Jest"
-    },
-    "jest.config.ts": {
-      icon: "test-tube-2",
-      kind: "test",
-      label: "Jest"
-    },
-    "playwright.config.js": {
-      icon: "test-tube-2",
-      kind: "test",
-      label: "Playwright"
-    },
-    "playwright.config.ts": {
-      icon: "test-tube-2",
-      kind: "test",
-      label: "Playwright"
-    },
-    "tailwind.config.js": {
-      icon: "palette",
-      kind: "css",
-      label: "Tailwind"
-    },
-    "tailwind.config.ts": {
-      icon: "palette",
-      kind: "css",
-      label: "Tailwind"
-    },
-    "postcss.config.js": {
-      icon: "palette",
-      kind: "css",
-      label: "PostCSS"
-    },
-    "astro.config.mjs": {
-      icon: "rocket",
-      kind: "astro",
-      label: "Astro"
-    },
-    "next.config.js": {
-      icon: "rocket",
-      kind: "next",
-      label: "Next"
-    },
-    "next.config.mjs": {
-      icon: "rocket",
-      kind: "next",
-      label: "Next"
-    },
-    "nuxt.config.js": {
-      icon: "rocket",
-      kind: "nuxt",
-      label: "Nuxt"
-    },
-    "nuxt.config.ts": {
-      icon: "rocket",
-      kind: "nuxt",
-      label: "Nuxt"
-    },
-    "svelte.config.js": {
-      icon: "component",
-      kind: "svelte",
-      label: "Svelte"
-    },
-    "angular.json": {
-      icon: "component",
-      kind: "angular",
-      label: "Angular"
-    },
-    "vue.config.js": {
-      icon: "component",
-      kind: "vue",
-      label: "Vue"
-    },
-    "tsconfig.json": {
-      icon: "settings-2",
-      kind: "typescript",
-      label: "TS"
-    },
-    "jsconfig.json": {
-      icon: "settings-2",
-      kind: "javascript",
-      label: "JS"
-    },
-    "pyproject.toml": {
-      icon: "terminal",
-      kind: "python",
-      label: "Python"
-    },
-    "requirements.txt": {
-      icon: "terminal",
-      kind: "python",
-      label: "Python"
-    },
-    "pipfile": {
-      icon: "terminal",
-      kind: "python",
-      label: "Python"
-    },
-    "poetry.lock": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "go.mod": {
-      icon: "languages",
-      kind: "go",
-      label: "Go"
-    },
-    "go.sum": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "pom.xml": {
-      icon: "coffee",
-      kind: "java",
-      label: "Maven"
-    },
-    "build.gradle": {
-      icon: "coffee",
-      kind: "java",
-      label: "Gradle"
-    },
-    "build.gradle.kts": {
-      icon: "coffee",
-      kind: "kotlin",
-      label: "Gradle"
-    },
-    "composer.json": {
-      icon: "package",
-      kind: "php",
-      label: "Composer"
-    },
-    "composer.lock": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "gemfile": {
-      icon: "gem",
-      kind: "ruby",
-      label: "Gemfile"
-    },
-    "gemfile.lock": {
-      icon: "lock",
-      kind: "lock",
-      label: "Lock"
-    },
-    "readme": {
-      icon: "book-open",
-      kind: "markdown",
-      label: "README"
-    },
-    "readme.md": {
-      icon: "book-open",
-      kind: "markdown",
-      label: "README"
-    },
-    "license": {
-      icon: "badge-info",
-      kind: "text",
-      label: "License"
-    },
-    "license.md": {
-      icon: "badge-info",
-      kind: "text",
-      label: "License"
-    },
-    "changelog.md": {
-      icon: "history",
-      kind: "markdown",
-      label: "CHANGELOG"
-    },
-    "makefile": {
-      icon: "terminal",
-      kind: "makefile",
-      label: "Make"
-    },
-    "cmakelists.txt": {
-      icon: "cpu",
-      kind: "cpp",
-      label: "CMake"
-    }
+    ".env": { icon: "lock", kind: "env", label: "ENV" },
+    ".env.local": { icon: "lock", kind: "env", label: "ENV" },
+    ".env.development": { icon: "lock", kind: "env", label: "ENV" },
+    ".env.production": { icon: "lock", kind: "env", label: "ENV" },
+    ".env.example": { icon: "lock", kind: "env", label: "ENV" },
+    ".gitignore": { icon: "git-branch", kind: "git", label: "Git" },
+    ".gitattributes": { icon: "git-branch", kind: "git", label: "Git" },
+    ".gitmodules": { icon: "git-branch", kind: "git", label: "Git" },
+    ".dockerignore": { icon: "server", kind: "docker", label: "Docker" },
+    ".npmrc": { icon: "package", kind: "node", label: "NPM" },
+    ".yarnrc": { icon: "package", kind: "node", label: "Yarn" },
+    ".pnpmrc": { icon: "package", kind: "node", label: "PNPM" },
+    ".bunfig.toml": { icon: "package", kind: "node", label: "Bun" },
+    ".editorconfig": { icon: "settings-2", kind: "config", label: "Editor" },
+    ".prettierrc": { icon: "settings-2", kind: "prettier", label: "Prettier" },
+    ".prettierrc.json": { icon: "settings-2", kind: "prettier", label: "Prettier" },
+    ".prettierrc.yaml": { icon: "settings-2", kind: "prettier", label: "Prettier" },
+    ".prettierrc.yml": { icon: "settings-2", kind: "prettier", label: "Prettier" },
+    ".eslintrc": { icon: "scan-search", kind: "eslint", label: "ESLint" },
+    ".eslintrc.js": { icon: "scan-search", kind: "eslint", label: "ESLint" },
+    ".eslintrc.cjs": { icon: "scan-search", kind: "eslint", label: "ESLint" },
+    ".eslintrc.json": { icon: "scan-search", kind: "eslint", label: "ESLint" },
+    ".eslintignore": { icon: "scan-search", kind: "eslint", label: "ESLint" },
+    ".babelrc": { icon: "braces", kind: "javascript", label: "Babel" },
+    ".browserslistrc": { icon: "globe-2", kind: "web", label: "Browsers" },
+    "dockerfile": { icon: "server", kind: "docker", label: "Docker" },
+    "containerfile": { icon: "server", kind: "docker", label: "Container" },
+    "docker-compose.yml": { icon: "server", kind: "docker", label: "Compose" },
+    "docker-compose.yaml": { icon: "server", kind: "docker", label: "Compose" },
+    "compose.yml": { icon: "server", kind: "docker", label: "Compose" },
+    "compose.yaml": { icon: "server", kind: "docker", label: "Compose" },
+    "cargo.toml": { icon: "flame-kindling", kind: "rust", label: "Cargo" },
+    "cargo.lock": { icon: "lock", kind: "lock", label: "Lock" },
+    "rustfmt.toml": { icon: "flame-kindling", kind: "rust", label: "Rustfmt" },
+    "package.json": { icon: "package", kind: "node", label: "Package" },
+    "package-lock.json": { icon: "lock", kind: "lock", label: "Lock" },
+    "pnpm-lock.yaml": { icon: "lock", kind: "lock", label: "Lock" },
+    "yarn.lock": { icon: "lock", kind: "lock", label: "Lock" },
+    "bun.lockb": { icon: "lock", kind: "lock", label: "Lock" },
+    "tauri.conf.json": { icon: "cpu", kind: "tauri", label: "Tauri" },
+    "vite.config.js": { icon: "rocket", kind: "vite", label: "Vite" },
+    "vite.config.ts": { icon: "rocket", kind: "vite", label: "Vite" },
+    "vitest.config.js": { icon: "test-tube-2", kind: "test", label: "Vitest" },
+    "vitest.config.ts": { icon: "test-tube-2", kind: "test", label: "Vitest" },
+    "jest.config.js": { icon: "test-tube-2", kind: "test", label: "Jest" },
+    "jest.config.ts": { icon: "test-tube-2", kind: "test", label: "Jest" },
+    "playwright.config.js": { icon: "test-tube-2", kind: "test", label: "Playwright" },
+    "playwright.config.ts": { icon: "test-tube-2", kind: "test", label: "Playwright" },
+    "tailwind.config.js": { icon: "palette", kind: "css", label: "Tailwind" },
+    "tailwind.config.ts": { icon: "palette", kind: "css", label: "Tailwind" },
+    "postcss.config.js": { icon: "palette", kind: "css", label: "PostCSS" },
+    "astro.config.mjs": { icon: "rocket", kind: "astro", label: "Astro" },
+    "next.config.js": { icon: "rocket", kind: "next", label: "Next" },
+    "next.config.mjs": { icon: "rocket", kind: "next", label: "Next" },
+    "nuxt.config.js": { icon: "rocket", kind: "nuxt", label: "Nuxt" },
+    "nuxt.config.ts": { icon: "rocket", kind: "nuxt", label: "Nuxt" },
+    "svelte.config.js": { icon: "component", kind: "svelte", label: "Svelte" },
+    "angular.json": { icon: "component", kind: "angular", label: "Angular" },
+    "vue.config.js": { icon: "component", kind: "vue", label: "Vue" },
+    "tsconfig.json": { icon: "settings-2", kind: "typescript", label: "TS" },
+    "jsconfig.json": { icon: "settings-2", kind: "javascript", label: "JS" },
+    "pyproject.toml": { icon: "terminal", kind: "python", label: "Python" },
+    "requirements.txt": { icon: "terminal", kind: "python", label: "Python" },
+    "pipfile": { icon: "terminal", kind: "python", label: "Python" },
+    "poetry.lock": { icon: "lock", kind: "lock", label: "Lock" },
+    "go.mod": { icon: "languages", kind: "go", label: "Go" },
+    "go.sum": { icon: "lock", kind: "lock", label: "Lock" },
+    "pom.xml": { icon: "coffee", kind: "java", label: "Maven" },
+    "build.gradle": { icon: "coffee", kind: "java", label: "Gradle" },
+    "build.gradle.kts": { icon: "coffee", kind: "kotlin", label: "Gradle" },
+    "composer.json": { icon: "package", kind: "php", label: "Composer" },
+    "composer.lock": { icon: "lock", kind: "lock", label: "Lock" },
+    "gemfile": { icon: "gem", kind: "ruby", label: "Gemfile" },
+    "gemfile.lock": { icon: "lock", kind: "lock", label: "Lock" },
+    "readme": { icon: "book-open", kind: "markdown", label: "README" },
+    "readme.md": { icon: "book-open", kind: "markdown", label: "README" },
+    "license": { icon: "badge-info", kind: "text", label: "License" },
+    "license.md": { icon: "badge-info", kind: "text", label: "License" },
+    "changelog.md": { icon: "history", kind: "markdown", label: "CHANGELOG" },
+    "makefile": { icon: "terminal", kind: "makefile", label: "Make" },
+    "cmakelists.txt": { icon: "cpu", kind: "cpp", label: "CMake" }
   };
 
   if (exactFileMap[name]) {
@@ -524,29 +200,23 @@ function getFileIconMeta(fileName = "") {
     mjs: { icon: "braces", kind: "javascript", label: "MJS" },
     cjs: { icon: "braces", kind: "javascript", label: "CJS" },
     jsx: { icon: "component", kind: "react", label: "JSX" },
-
     ts: { icon: "code-2", kind: "typescript", label: "TS" },
     mts: { icon: "code-2", kind: "typescript", label: "MTS" },
     cts: { icon: "code-2", kind: "typescript", label: "CTS" },
     tsx: { icon: "component", kind: "react", label: "TSX" },
-
     html: { icon: "code", kind: "html", label: "HTML" },
     htm: { icon: "code", kind: "html", label: "HTML" },
     xhtml: { icon: "code", kind: "html", label: "XHTML" },
-
     css: { icon: "palette", kind: "css", label: "CSS" },
     scss: { icon: "palette", kind: "sass", label: "SCSS" },
     sass: { icon: "palette", kind: "sass", label: "Sass" },
     less: { icon: "palette", kind: "css", label: "Less" },
-
     json: { icon: "braces", kind: "json", label: "JSON" },
     jsonc: { icon: "braces", kind: "json", label: "JSONC" },
     json5: { icon: "braces", kind: "json", label: "JSON5" },
-
     md: { icon: "notebook-text", kind: "markdown", label: "MD" },
     markdown: { icon: "notebook-text", kind: "markdown", label: "MD" },
     mdx: { icon: "notebook-text", kind: "markdown", label: "MDX" },
-
     rs: { icon: "flame-kindling", kind: "rust", label: "Rust" },
     go: { icon: "languages", kind: "go", label: "Go" },
     py: { icon: "terminal", kind: "python", label: "Python" },
@@ -573,13 +243,11 @@ function getFileIconMeta(fileName = "") {
     hrl: { icon: "sparkles", kind: "erlang", label: "Erlang" },
     scala: { icon: "code-2", kind: "scala", label: "Scala" },
     r: { icon: "activity", kind: "r", label: "R" },
-
     sql: { icon: "database", kind: "sql", label: "SQL" },
     db: { icon: "database", kind: "database", label: "DB" },
     sqlite: { icon: "database", kind: "database", label: "SQLite" },
     sqlite3: { icon: "database", kind: "database", label: "SQLite" },
     prisma: { icon: "database", kind: "prisma", label: "Prisma" },
-
     xml: { icon: "code", kind: "xml", label: "XML" },
     yaml: { icon: "settings-2", kind: "yaml", label: "YAML" },
     yml: { icon: "settings-2", kind: "yaml", label: "YAML" },
@@ -589,7 +257,6 @@ function getFileIconMeta(fileName = "") {
     cfg: { icon: "settings-2", kind: "config", label: "CFG" },
     properties: { icon: "settings-2", kind: "config", label: "Config" },
     env: { icon: "lock", kind: "env", label: "ENV" },
-
     sh: { icon: "terminal", kind: "shell", label: "Shell" },
     bash: { icon: "terminal", kind: "shell", label: "Bash" },
     zsh: { icon: "terminal", kind: "shell", label: "Zsh" },
@@ -597,19 +264,15 @@ function getFileIconMeta(fileName = "") {
     ps1: { icon: "terminal", kind: "shell", label: "PS1" },
     bat: { icon: "terminal", kind: "shell", label: "BAT" },
     cmd: { icon: "terminal", kind: "shell", label: "CMD" },
-
     vue: { icon: "component", kind: "vue", label: "Vue" },
     svelte: { icon: "component", kind: "svelte", label: "Svelte" },
     astro: { icon: "rocket", kind: "astro", label: "Astro" },
     liquid: { icon: "code-2", kind: "liquid", label: "Liquid" },
-
     wat: { icon: "cpu", kind: "wasm", label: "WASM" },
     wast: { icon: "cpu", kind: "wasm", label: "WAST" },
     wasm: { icon: "box", kind: "wasm", label: "WASM" },
-
     graphql: { icon: "network", kind: "graphql", label: "GraphQL" },
     gql: { icon: "network", kind: "graphql", label: "GraphQL" },
-
     svg: { icon: "image", kind: "svg", label: "SVG" },
     png: { icon: "image", kind: "image", label: "PNG" },
     jpg: { icon: "image", kind: "image", label: "JPG" },
@@ -618,23 +281,19 @@ function getFileIconMeta(fileName = "") {
     webp: { icon: "image", kind: "image", label: "WEBP" },
     ico: { icon: "image", kind: "image", label: "ICO" },
     avif: { icon: "image", kind: "image", label: "AVIF" },
-
     mp3: { icon: "file-audio", kind: "audio", label: "MP3" },
     wav: { icon: "file-audio", kind: "audio", label: "WAV" },
     ogg: { icon: "file-audio", kind: "audio", label: "OGG" },
     flac: { icon: "file-audio", kind: "audio", label: "FLAC" },
-
     mp4: { icon: "file-video", kind: "video", label: "MP4" },
     webm: { icon: "file-video", kind: "video", label: "WEBM" },
     mov: { icon: "file-video", kind: "video", label: "MOV" },
     avi: { icon: "file-video", kind: "video", label: "AVI" },
-
     zip: { icon: "archive", kind: "archive", label: "ZIP" },
     tar: { icon: "archive", kind: "archive", label: "TAR" },
     gz: { icon: "archive", kind: "archive", label: "GZ" },
     rar: { icon: "archive", kind: "archive", label: "RAR" },
     "7z": { icon: "archive", kind: "archive", label: "7Z" },
-
     pdf: { icon: "file-text", kind: "pdf", label: "PDF" },
     txt: { icon: "file-text", kind: "text", label: "TXT" },
     log: { icon: "text-search", kind: "log", label: "LOG" },
@@ -642,7 +301,6 @@ function getFileIconMeta(fileName = "") {
     tsv: { icon: "table-2", kind: "table", label: "TSV" },
     xls: { icon: "table-2", kind: "table", label: "XLS" },
     xlsx: { icon: "table-2", kind: "table", label: "XLSX" },
-
     save: { icon: "file-text", kind: "backup", label: "SAVE" },
     lock: { icon: "lock", kind: "lock", label: "Lock" }
   };
@@ -665,14 +323,12 @@ function getFolderIconMeta(node) {
     frontend: { icon: "monitor", kind: "frontend", label: "frontend" },
     client: { icon: "monitor", kind: "frontend", label: "client" },
     web: { icon: "globe-2", kind: "web", label: "web" },
-
     src: { icon: "folder-code", kind: "source", label: "src" },
     source: { icon: "folder-code", kind: "source", label: "source" },
     app: { icon: "folder-code", kind: "source", label: "app" },
     apps: { icon: "folder-code", kind: "source", label: "apps" },
     core: { icon: "cpu", kind: "core", label: "core" },
     commands: { icon: "terminal", kind: "commands", label: "commands" },
-
     components: { icon: "component", kind: "components", label: "components" },
     component: { icon: "component", kind: "components", label: "component" },
     pages: { icon: "files", kind: "pages", label: "pages" },
@@ -684,7 +340,6 @@ function getFolderIconMeta(node) {
     utils: { icon: "wrench", kind: "utils", label: "utils" },
     helpers: { icon: "wrench", kind: "utils", label: "helpers" },
     hooks: { icon: "zap", kind: "hooks", label: "hooks" },
-
     assets: { icon: "image", kind: "assets", label: "assets" },
     public: { icon: "globe-2", kind: "public", label: "public" },
     static: { icon: "globe-2", kind: "public", label: "static" },
@@ -697,14 +352,12 @@ function getFolderIconMeta(node) {
     scripts: { icon: "terminal", kind: "scripts", label: "scripts" },
     bin: { icon: "terminal", kind: "scripts", label: "bin" },
     cli: { icon: "terminal", kind: "scripts", label: "cli" },
-
     images: { icon: "image", kind: "images", label: "images" },
     image: { icon: "image", kind: "images", label: "image" },
     img: { icon: "image", kind: "images", label: "img" },
     icons: { icon: "sparkles", kind: "images", label: "icons" },
     media: { icon: "image", kind: "media", label: "media" },
     fonts: { icon: "text-cursor-input", kind: "fonts", label: "fonts" },
-
     config: { icon: "settings-2", kind: "config", label: "config" },
     configs: { icon: "settings-2", kind: "config", label: "configs" },
     database: { icon: "database", kind: "database", label: "database" },
@@ -714,32 +367,26 @@ function getFolderIconMeta(node) {
     schema: { icon: "database", kind: "database", label: "schema" },
     models: { icon: "database", kind: "database", label: "models" },
     entities: { icon: "database", kind: "database", label: "entities" },
-
     node_modules: { icon: "package", kind: "dependency", label: "node" },
     vendor: { icon: "package", kind: "dependency", label: "vendor" },
     packages: { icon: "package", kind: "dependency", label: "packages" },
     modules: { icon: "package", kind: "dependency", label: "modules" },
-
     target: { icon: "hard-drive", kind: "build", label: "target" },
     dist: { icon: "hard-drive", kind: "build", label: "dist" },
     build: { icon: "hard-drive", kind: "build", label: "build" },
     out: { icon: "hard-drive", kind: "build", label: "out" },
     coverage: { icon: "scan-search", kind: "tests", label: "coverage" },
-
     ".git": { icon: "git-branch", kind: "git", label: "git" },
     ".github": { icon: "git-branch", kind: "git", label: "github" },
     ".gitlab": { icon: "git-branch", kind: "git", label: "gitlab" },
     ".vscode": { icon: "settings-2", kind: "config", label: "vscode" },
     ".idea": { icon: "settings-2", kind: "config", label: "idea" },
     ".config": { icon: "settings-2", kind: "config", label: "config" },
-
     "src-tauri": { icon: "flame-kindling", kind: "tauri", label: "tauri" },
-
     tests: { icon: "test-tube-2", kind: "tests", label: "tests" },
     test: { icon: "test-tube-2", kind: "tests", label: "test" },
     "__tests__": { icon: "test-tube-2", kind: "tests", label: "tests" },
     spec: { icon: "test-tube-2", kind: "tests", label: "spec" },
-
     docs: { icon: "book-open", kind: "docs", label: "docs" },
     documentation: { icon: "book-open", kind: "docs", label: "documentation" },
     logs: { icon: "text-search", kind: "log", label: "logs" },
@@ -1010,8 +657,8 @@ function renderNode(node, depth = 0) {
           type="button"
           ${
             isDirectory
-              ? `data-folder-path="${safePath}"`
-              : `data-file-path="${safePath}"`
+              ? `data-folder-path="${safePath}" data-drop-folder-path="${safePath}"`
+              : `data-file-path="${safePath}" data-draggable-path="${safePath}" draggable="true"`
           }
           ${isActive ? `data-active-file-row="true"` : ""}
           title="${escapeHTML(node.path)}"
