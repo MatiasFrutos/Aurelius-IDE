@@ -1,0 +1,26 @@
+[package]
+name = "aurelius-ide"
+version = "0.1.0"
+description = "Aurelius IDE - Linux-first lightweight IDE"
+authors = ["Matias"]
+edition = "2021"
+
+[lib]
+name = "aurelius_ide_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+rfd = "0.15"
+reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+portable-pty = "0.8"
+uuid = { version = "1", features = ["v4"] }
+tiny_http = "0.12"

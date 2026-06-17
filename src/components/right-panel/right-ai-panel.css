@@ -1,0 +1,771 @@
+/* src/components/right-panel/right-ai-panel.css */
+
+/* ==========================================================================
+   01. RIGHT PANEL SHELL
+   ========================================================================== */
+
+.aurelius-right-panel {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--au-border);
+  background: var(--au-bg-sidebar);
+}
+
+.au-right-ai {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 44px auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 120px),
+    var(--au-bg-sidebar);
+}
+
+:root[data-theme="light"] .au-right-ai {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.018), transparent 120px),
+    var(--au-bg-sidebar);
+}
+
+/* ==========================================================================
+   02. HEADER
+   ========================================================================== */
+
+.au-right-ai__header {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 8px 0 10px;
+  border-bottom: 1px solid var(--au-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.026), transparent),
+    rgba(255, 255, 255, 0.012);
+}
+
+.au-right-ai__header::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 8px;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(34, 197, 94, 0.3),
+    transparent 72%
+  );
+  opacity: 0.7;
+}
+
+.au-right-ai__header div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.au-right-ai__header span {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--au-primary-strong);
+  font-size: 8.6px;
+  font-weight: 920;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.au-right-ai__header span svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+}
+
+.au-right-ai__header strong {
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 11.6px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-right-ai__header button,
+.au-right-ai__actions button {
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--au-border);
+  border-radius: 8px;
+  background: var(--au-button-bg);
+  color: var(--au-muted-strong);
+  cursor: pointer;
+  transition:
+    border-color var(--au-transition-fast),
+    background var(--au-transition-fast),
+    color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-right-ai__header button {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+}
+
+.au-right-ai__header button:hover,
+.au-right-ai__actions button:hover {
+  border-color: rgba(34, 197, 94, 0.26);
+  background: var(--au-primary-soft);
+  color: var(--au-primary-strong);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.04) inset;
+}
+
+.au-right-ai__header button svg,
+.au-right-ai__actions button svg {
+  width: 12.5px;
+  height: 12.5px;
+  stroke: currentColor;
+}
+
+/* ==========================================================================
+   03. STATUS
+   ========================================================================== */
+
+.au-right-ai__status {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 7px;
+  border-bottom: 1px solid var(--au-border);
+}
+
+.au-right-ai__status article {
+  position: relative;
+  min-width: 0;
+  padding: 7px 7px 7px 8px;
+  border: 1px solid var(--au-border);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent),
+    var(--au-bg-card);
+  overflow: hidden;
+}
+
+:root[data-theme="light"] .au-right-ai__status article {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(248, 250, 252, 0.68)),
+    var(--au-bg-card);
+}
+
+.au-right-ai__status article::before {
+  content: "";
+  position: absolute;
+  inset: 7px auto 7px 0;
+  width: 2px;
+  border-radius: 0 999px 999px 0;
+  background: var(--au-primary-strong);
+  opacity: 0.68;
+}
+
+.au-right-ai__status span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--au-muted);
+  font-size: 8.4px;
+  font-weight: 920;
+  letter-spacing: 0.072em;
+  text-transform: uppercase;
+}
+
+.au-right-ai__status strong {
+  display: block;
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 11px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-right-ai__status small {
+  display: block;
+  min-width: 0;
+  margin-top: 2px;
+  color: var(--au-muted);
+  font-size: 9.4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   04. CONTEXT CARD
+   ========================================================================== */
+
+.au-right-ai__context {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  margin: 0 7px 7px;
+  padding: 6px 7px;
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.052);
+}
+
+.au-right-ai__context > svg {
+  width: 13.5px;
+  height: 13.5px;
+  place-self: center;
+  color: var(--au-primary-strong);
+  stroke: currentColor;
+}
+
+.au-right-ai__context div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.au-right-ai__context span {
+  color: var(--au-muted);
+  font-size: 8.4px;
+  font-weight: 920;
+  letter-spacing: 0.074em;
+  text-transform: uppercase;
+}
+
+.au-right-ai__context strong {
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 10.6px;
+  font-weight: 860;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   05. CONVERSATION
+   ========================================================================== */
+
+.au-right-ai__conversation {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.au-right-ai__empty {
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+  gap: 7px;
+  padding: 14px;
+}
+
+.au-right-ai__empty-orb {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  border-radius: 13px;
+  background: rgba(34, 197, 94, 0.08);
+  color: var(--au-primary-strong);
+}
+
+.au-right-ai__empty svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}
+
+.au-right-ai__empty small {
+  color: var(--au-primary-strong);
+  font-size: 8.6px;
+  font-weight: 920;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.au-right-ai__empty strong {
+  color: var(--au-text);
+  font-size: 12.4px;
+  font-weight: 920;
+}
+
+.au-right-ai__empty p {
+  max-width: 250px;
+  margin: 0;
+  color: var(--au-muted);
+  font-size: 10.6px;
+  line-height: 1.42;
+}
+
+.au-right-ai__quick-list {
+  width: min(250px, 100%);
+  display: grid;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.au-right-ai__quick-list button {
+  min-width: 0;
+  min-height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  padding: 0 8px;
+  border: 1px solid var(--au-border);
+  border-radius: 9px;
+  background: var(--au-button-bg);
+  color: var(--au-muted-strong);
+  font-size: 10.6px;
+  font-weight: 820;
+  cursor: pointer;
+  transition:
+    border-color var(--au-transition-fast),
+    background var(--au-transition-fast),
+    color var(--au-transition-fast);
+}
+
+.au-right-ai__quick-list button:hover {
+  border-color: rgba(34, 197, 94, 0.26);
+  background: var(--au-primary-soft);
+  color: var(--au-text);
+}
+
+.au-right-ai__quick-list button svg {
+  width: 12.5px;
+  height: 12.5px;
+  color: var(--au-primary-strong);
+  stroke: currentColor;
+}
+
+.au-right-ai__quick-list button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   06. MESSAGES
+   ========================================================================== */
+
+.au-right-ai__messages {
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  padding: 7px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 197, 94, 0.24) transparent;
+}
+
+.au-right-ai__messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.au-right-ai__messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.au-right-ai__messages::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.24);
+  background-clip: content-box;
+}
+
+.au-right-ai__message {
+  position: relative;
+  min-width: 0;
+  padding: 7px 7px 7px 8px;
+  border: 1px solid var(--au-border);
+  border-radius: 11px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent),
+    var(--au-bg-card);
+  overflow: hidden;
+}
+
+:root[data-theme="light"] .au-right-ai__message {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.68)),
+    var(--au-bg-card);
+}
+
+.au-right-ai__message::before {
+  content: "";
+  position: absolute;
+  inset: 7px auto 7px 0;
+  width: 2px;
+  border-radius: 0 999px 999px 0;
+  background: var(--au-primary-strong);
+  opacity: 0.64;
+}
+
+.au-right-ai__message.is-user {
+  border-color: rgba(34, 197, 94, 0.22);
+  background:
+    linear-gradient(180deg, rgba(34, 197, 94, 0.07), transparent),
+    var(--au-bg-card);
+}
+
+.au-right-ai__message.is-system::before {
+  background: var(--au-warning);
+}
+
+.au-right-ai__message header {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+
+.au-right-ai__message header span {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--au-primary-strong);
+}
+
+.au-right-ai__message header svg {
+  width: 11.5px;
+  height: 11.5px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+}
+
+.au-right-ai__message header strong {
+  min-width: 0;
+  color: inherit;
+  font-size: 10.6px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-right-ai__message header small {
+  flex: 0 0 auto;
+  color: var(--au-muted);
+  font-size: 9.1px;
+  font-weight: 720;
+}
+
+.au-right-ai__message pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--au-text);
+  font-size: 10.8px;
+  line-height: 1.46;
+  font-family: var(--au-editor-font-family, "JetBrains Mono"), ui-monospace, monospace;
+}
+
+.au-right-ai__message.is-loading {
+  min-height: 58px;
+}
+
+.au-right-ai__thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+}
+
+.au-right-ai__thinking span {
+  width: 5.5px;
+  height: 5.5px;
+  border-radius: 999px;
+  background: var(--au-primary-strong);
+  opacity: 0.42;
+  animation: auRightAiThinking 1.05s ease-in-out infinite;
+}
+
+.au-right-ai__thinking span:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.au-right-ai__thinking span:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+/* ==========================================================================
+   07. COMPOSER
+   ========================================================================== */
+
+.au-right-ai__composer {
+  min-width: 0;
+  padding: 7px;
+  border-top: 1px solid var(--au-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.026), transparent),
+    var(--au-bg-sidebar);
+  box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.07);
+}
+
+:root[data-theme="light"] .au-right-ai__composer {
+  box-shadow: 0 -8px 16px rgba(15, 23, 42, 0.045);
+}
+
+.au-right-ai__include {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  color: var(--au-muted);
+  font-size: 10.4px;
+  font-weight: 680;
+}
+
+.au-right-ai__include span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-right-ai__include input {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  accent-color: var(--au-primary);
+}
+
+.au-right-ai__textarea-shell {
+  position: relative;
+  min-width: 0;
+}
+
+.au-right-ai__composer textarea {
+  width: 100%;
+  min-height: 64px;
+  max-height: 150px;
+  resize: vertical;
+  border: 1px solid var(--au-border);
+  border-radius: 10px;
+  background: var(--au-bg-input);
+  color: var(--au-text);
+  padding: 7px;
+  outline: 0;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.42;
+  transition:
+    border-color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast),
+    background var(--au-transition-fast);
+}
+
+.au-right-ai__composer textarea:focus {
+  border-color: rgba(34, 197, 94, 0.38);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.07);
+}
+
+.au-right-ai__composer textarea::placeholder {
+  color: var(--au-muted);
+}
+
+.au-right-ai__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  margin-top: 7px;
+}
+
+.au-right-ai__actions button {
+  min-height: 28px;
+  padding: 0 8px;
+}
+
+.au-right-ai__actions button[type="submit"] {
+  min-width: 86px;
+  display: inline-flex;
+  gap: 6px;
+  border-color: rgba(34, 197, 94, 0.32);
+  background: var(--au-primary-soft);
+  color: var(--au-primary-strong);
+  font-size: 10.8px;
+  font-weight: 900;
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.04) inset;
+}
+
+.au-right-ai__actions button[type="submit"]:hover {
+  border-color: rgba(34, 197, 94, 0.42);
+  background: rgba(34, 197, 94, 0.14);
+  color: var(--au-primary-strong);
+}
+
+.au-right-ai__actions button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  box-shadow: none;
+}
+
+.au-right-ai__actions button:disabled svg {
+  animation: auRightAiSpin 0.85s linear infinite;
+}
+
+/* ==========================================================================
+   08. ANIMATIONS
+   ========================================================================== */
+
+@keyframes auRightAiThinking {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.36;
+  }
+
+  50% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+@keyframes auRightAiSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   09. RESPONSIVE / NARROW RIGHT PANEL
+   ========================================================================== */
+
+@media (max-width: 1180px) {
+  .au-right-ai {
+    grid-template-rows: 42px auto auto minmax(0, 1fr) auto;
+  }
+
+  .au-right-ai__status {
+    gap: 5px;
+    padding: 6px;
+  }
+
+  .au-right-ai__status article {
+    padding: 6px 6px 6px 7px;
+  }
+
+  .au-right-ai__composer textarea {
+    min-height: 58px;
+    max-height: 130px;
+  }
+}
+
+@media (max-width: 860px) {
+  .au-right-ai__status {
+    grid-template-columns: 1fr;
+  }
+
+  .au-right-ai__context {
+    margin: 0 6px 6px;
+  }
+
+  .au-right-ai__messages,
+  .au-right-ai__composer {
+    padding: 6px;
+  }
+}
+
+@media (max-width: 420px) {
+  .au-right-ai {
+    grid-template-rows: 40px auto auto minmax(0, 1fr) auto;
+  }
+
+  .au-right-ai__header {
+    padding: 0 7px;
+  }
+
+  .au-right-ai__header span {
+    font-size: 8px;
+  }
+
+  .au-right-ai__header strong {
+    font-size: 11px;
+  }
+
+  .au-right-ai__status,
+  .au-right-ai__messages,
+  .au-right-ai__composer {
+    padding: 6px;
+  }
+
+  .au-right-ai__context {
+    margin: 0 6px 6px;
+  }
+
+  .au-right-ai__actions button[type="submit"] {
+    min-width: 78px;
+  }
+
+  .au-right-ai__empty {
+    padding: 10px;
+  }
+
+  .au-right-ai__empty-orb {
+    width: 34px;
+    height: 34px;
+  }
+
+  .au-right-ai__empty p {
+    font-size: 10.2px;
+  }
+}
+
+@media (max-width: 320px) {
+  .au-right-ai__status {
+    gap: 5px;
+  }
+
+  .au-right-ai__actions button[type="submit"] span {
+    display: none;
+  }
+
+  .au-right-ai__actions button[type="submit"] {
+    min-width: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-right-ai__thinking span,
+  .au-right-ai__actions button:disabled svg {
+    animation: none;
+  }
+
+  .au-right-ai__header button,
+  .au-right-ai__actions button,
+  .au-right-ai__quick-list button,
+  .au-right-ai__composer textarea {
+    transition: none;
+  }
+}

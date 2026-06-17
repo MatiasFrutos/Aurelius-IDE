@@ -1,0 +1,281 @@
+/* src/components/activity-bar/activity-bar.css */
+
+/* ==========================================================================
+   01. ACTIVITY BAR SHELL
+   ========================================================================== */
+
+.au-activity {
+  position: relative;
+  min-width: var(--au-activity-width);
+  max-width: var(--au-activity-width);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-right: 1px solid var(--au-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 34%),
+    var(--au-bg-activity);
+}
+
+.au-activity::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: -1px;
+  bottom: 10px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(34, 197, 94, 0.16),
+    transparent
+  );
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+:root[data-theme="light"] .au-activity {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), transparent 42%),
+    var(--au-bg-activity);
+}
+
+/* ==========================================================================
+   02. GROUPS
+   ========================================================================== */
+
+.au-activity__top,
+.au-activity__bottom {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  padding: 8px 7px;
+}
+
+.au-activity__bottom {
+  position: relative;
+  padding-top: 8px;
+}
+
+.au-activity__bottom::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 11px;
+  right: 11px;
+  height: 1px;
+  background: var(--au-border);
+}
+
+/* ==========================================================================
+   03. BUTTON BASE
+   ========================================================================== */
+
+.au-activity__button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--au-muted);
+  cursor: pointer;
+  outline: none;
+  transform: none;
+  isolation: isolate;
+  transition:
+    background var(--au-transition-fast),
+    border-color var(--au-transition-fast),
+    color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-activity__button::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: 9px;
+  bottom: 9px;
+  width: 2px;
+  border-radius: 999px;
+  background: transparent;
+  opacity: 0;
+  transition:
+    background var(--au-transition-fast),
+    opacity var(--au-transition-fast);
+}
+
+.au-activity__button svg {
+  width: 18.5px;
+  height: 18.5px;
+  stroke: currentColor;
+  stroke-width: 2.05;
+}
+
+/* ==========================================================================
+   04. BUTTON STATES
+   ========================================================================== */
+
+.au-activity__button:hover {
+  border-color: var(--au-border);
+  background: var(--au-button-bg-hover);
+  color: var(--au-text);
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.045) inset;
+}
+
+.au-activity__button:focus-visible {
+  border-color: rgba(34, 197, 94, 0.34);
+  background: var(--au-button-bg-hover);
+  color: var(--au-primary-strong);
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.08) inset,
+    0 0 0 3px rgba(34, 197, 94, 0.07);
+}
+
+.au-activity__button.is-active {
+  border-color: rgba(34, 197, 94, 0.24);
+  background:
+    linear-gradient(180deg, rgba(34, 197, 94, 0.085), rgba(34, 197, 94, 0.045)),
+    var(--au-button-bg);
+  color: var(--au-primary-strong);
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.055) inset,
+    0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.au-activity__button.is-active::before {
+  background: var(--au-primary-strong);
+  opacity: 1;
+}
+
+.au-activity__button.is-active:hover {
+  border-color: rgba(34, 197, 94, 0.3);
+  background:
+    linear-gradient(180deg, rgba(34, 197, 94, 0.105), rgba(34, 197, 94, 0.055)),
+    var(--au-button-bg-hover);
+  color: var(--au-primary-strong);
+}
+
+/* ==========================================================================
+   05. SETTINGS BUTTON
+   ========================================================================== */
+
+.au-activity__button[data-activity-panel="settings"] {
+  color: var(--au-muted-strong);
+}
+
+.au-activity__button[data-activity-panel="settings"]:hover {
+  border-color: var(--au-border-strong);
+  background: var(--au-button-bg-hover);
+  color: var(--au-text);
+}
+
+.au-activity__button[data-activity-panel="settings"].is-active {
+  border-color: rgba(34, 197, 94, 0.24);
+  background:
+    linear-gradient(180deg, rgba(34, 197, 94, 0.085), rgba(34, 197, 94, 0.045)),
+    var(--au-button-bg);
+  color: var(--au-primary-strong);
+}
+
+/* ==========================================================================
+   06. LIGHT THEME REFINEMENT
+   ========================================================================== */
+
+:root[data-theme="light"] .au-activity__button:hover {
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.025) inset;
+}
+
+:root[data-theme="light"] .au-activity__button.is-active {
+  background:
+    linear-gradient(180deg, rgba(22, 163, 74, 0.095), rgba(22, 163, 74, 0.045)),
+    rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(22, 163, 74, 0.055) inset,
+    0 8px 18px rgba(15, 23, 42, 0.055);
+}
+
+/* ==========================================================================
+   07. RESPONSIVE
+   ========================================================================== */
+
+@media (max-height: 720px) {
+  .au-activity__top,
+  .au-activity__bottom {
+    gap: 4px;
+    padding: 7px 7px;
+  }
+
+  .au-activity__button {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    border-radius: 10px;
+  }
+
+  .au-activity__button svg {
+    width: 17.5px;
+    height: 17.5px;
+  }
+
+  .au-activity__button::before {
+    top: 8px;
+    bottom: 8px;
+  }
+}
+
+@media (max-height: 620px) {
+  .au-activity__top,
+  .au-activity__bottom {
+    gap: 3px;
+    padding: 6px 7px;
+  }
+
+  .au-activity__button {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 9px;
+  }
+
+  .au-activity__button svg {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+@media (max-height: 540px) {
+  .au-activity__top,
+  .au-activity__bottom {
+    gap: 2px;
+    padding: 5px 7px;
+  }
+
+  .au-activity__button {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: 9px;
+  }
+
+  .au-activity__button svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-activity__button,
+  .au-activity__button::before {
+    transition: none;
+  }
+}

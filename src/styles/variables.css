@@ -1,0 +1,21 @@
+/* src/styles/variables.css */
+
+:root {
+  --au-ui-scale: 1;
+
+  --au-topbar-height-base: 42px;
+  --au-statusbar-height-base: 28px;
+  --au-activity-width-base: 52px;
+  --au-sidebar-width-base: 286px;
+
+  --au-radius-sm-base: 8px;
+  --au-radius-md-base: 12px;
+
+  --au-topbar-height: var(--au-topbar-height-base);
+  --au-statusbar-height: var(--au-statusbar-height-base);
+  --au-activity-width: var(--au-activity-width-base);
+  --au-sidebar-width: var(--au-sidebar-width-base);
+
+  --au-radius-sm: var(--au-radius-sm-base);
+  --au-radius-md: var(--au-radius-md-base);
+}

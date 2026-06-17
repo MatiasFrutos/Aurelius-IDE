@@ -1,0 +1,585 @@
+/* src/components/ui/modal.css */
+
+/* ==========================================================================
+   01. MODAL ROOT / BACKDROP
+   ========================================================================== */
+
+.au-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+.au-modal-root *,
+.au-modal-root *::before,
+.au-modal-root *::after {
+  box-sizing: border-box;
+}
+
+.au-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(10px, 2.6vw, 18px);
+  background:
+    radial-gradient(circle at 50% 24%, rgba(34, 197, 94, 0.11), transparent 30%),
+    rgba(2, 6, 23, 0.64);
+  opacity: 0;
+  pointer-events: auto;
+  backdrop-filter: blur(18px) saturate(1.08);
+  transition: opacity 170ms ease;
+}
+
+:root[data-theme="light"] .au-modal-backdrop {
+  background:
+    radial-gradient(circle at 50% 24%, rgba(22, 163, 74, 0.1), transparent 30%),
+    rgba(15, 23, 42, 0.28);
+}
+
+.au-modal-backdrop.is-visible {
+  opacity: 1;
+}
+
+.au-modal-backdrop.is-leaving {
+  opacity: 0;
+}
+
+/* ==========================================================================
+   02. MODAL WINDOW
+   ========================================================================== */
+
+.au-modal {
+  --au-modal-accent: var(--au-primary-strong);
+
+  position: relative;
+  width: min(430px, calc(100vw - clamp(20px, 5vw, 36px)));
+  max-height: min(560px, calc(100vh - clamp(20px, 5vh, 36px)));
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, auto) auto;
+  overflow: hidden;
+  border: 1px solid var(--au-border);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--au-modal-accent) 5%, transparent), transparent 42%),
+    var(--au-bg-elevated);
+  color: var(--au-text);
+  box-shadow:
+    0 28px 84px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(255, 255, 255, 0.026) inset,
+    0 0 28px color-mix(in srgb, var(--au-modal-accent) 6%, transparent);
+  transform: translateY(8px) scale(0.982);
+  transition: transform 170ms ease;
+}
+
+.au-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--au-modal-accent) 48%, transparent),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+:root[data-theme="light"] .au-modal {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--au-modal-accent) 6%, transparent), transparent 42%),
+    rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 26px 72px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.72) inset,
+    0 0 26px color-mix(in srgb, var(--au-modal-accent) 5%, transparent);
+}
+
+.au-modal-backdrop.is-visible .au-modal {
+  transform: translateY(0) scale(1);
+}
+
+.au-modal-backdrop.is-leaving .au-modal {
+  transform: translateY(7px) scale(0.986);
+}
+
+.au-modal__glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--au-modal-accent) 9%, transparent), transparent 36%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.026), transparent);
+  pointer-events: none;
+}
+
+.au-modal__header,
+.au-modal__body,
+.au-modal__footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   03. HEADER
+   ========================================================================== */
+
+.au-modal__header {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 12px 10px;
+  border-bottom: 1px solid var(--au-border);
+  background: rgba(255, 255, 255, 0.012);
+}
+
+:root[data-theme="light"] .au-modal__header {
+  background: rgba(15, 23, 42, 0.012);
+}
+
+.au-modal__title-group {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+}
+
+.au-modal__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border: 1px solid color-mix(in srgb, var(--au-modal-accent) 24%, transparent);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--au-modal-accent) 9%, transparent);
+  color: var(--au-modal-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--au-modal-accent) 4%, transparent) inset;
+}
+
+.au-modal__icon svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+}
+
+.au-modal__copy {
+  min-width: 0;
+}
+
+.au-modal__header strong {
+  display: block;
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 13.4px;
+  font-weight: 920;
+  line-height: 1.25;
+  letter-spacing: -0.018em;
+  overflow-wrap: anywhere;
+}
+
+.au-modal__header p {
+  max-width: 360px;
+  margin: 5px 0 0;
+  color: var(--au-muted);
+  font-size: 11.2px;
+  line-height: 1.42;
+  overflow-wrap: anywhere;
+}
+
+.au-modal__close {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--au-muted);
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.au-modal__close:hover {
+  transform: translateY(-1px);
+  border-color: rgba(239, 68, 68, 0.24);
+  background: var(--au-danger-soft);
+  color: var(--au-danger);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.035) inset;
+}
+
+.au-modal__close svg {
+  width: 13.5px;
+  height: 13.5px;
+  stroke: currentColor;
+}
+
+/* ==========================================================================
+   04. BODY / FIELD
+   ========================================================================== */
+
+.au-modal__body {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 12px 0;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--au-modal-accent) 24%, transparent) transparent;
+}
+
+.au-modal__body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.au-modal__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.au-modal__body::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--au-modal-accent) 24%, transparent);
+  background-clip: content-box;
+}
+
+.au-modal__field {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.au-modal__field span {
+  min-width: 0;
+  color: var(--au-muted-strong);
+  font-size: 10.8px;
+  font-weight: 820;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-modal__input-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.au-modal__input-wrap > i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  color: var(--au-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.au-modal__input-wrap > i svg {
+  width: 13.5px;
+  height: 13.5px;
+  stroke: currentColor;
+}
+
+.au-modal__input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px 0 31px;
+  border: 1px solid var(--au-border);
+  border-radius: 10px;
+  outline: none;
+  background: var(--au-bg-input);
+  color: var(--au-text);
+  font-size: 11.8px;
+  font-weight: 720;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background 140ms ease;
+}
+
+.au-modal__input::placeholder {
+  color: var(--au-muted);
+}
+
+.au-modal__input:focus {
+  border-color: color-mix(in srgb, var(--au-modal-accent) 46%, transparent);
+  background: var(--au-bg-elevated);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--au-modal-accent) 11%, transparent);
+}
+
+/* ==========================================================================
+   05. FOOTER / BUTTONS
+   ========================================================================== */
+
+.au-modal__footer {
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  padding: 12px;
+}
+
+.au-modal__button {
+  min-width: 82px;
+  max-width: 100%;
+  height: 31px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 11px;
+  border: 1px solid var(--au-border);
+  border-radius: 9px;
+  background: var(--au-button-bg);
+  color: var(--au-muted-strong);
+  font-size: 11.2px;
+  font-weight: 840;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.au-modal__button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-modal__button:hover {
+  transform: translateY(-1px);
+  border-color: var(--au-border-strong);
+  background: var(--au-button-bg-hover);
+  color: var(--au-text);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.1);
+}
+
+.au-modal__button--primary {
+  border-color: color-mix(in srgb, var(--au-modal-accent) 38%, transparent);
+  background: color-mix(in srgb, var(--au-modal-accent) 88%, #000000 12%);
+  color: white;
+}
+
+.au-modal__button--primary:hover {
+  border-color: color-mix(in srgb, var(--au-modal-accent) 52%, transparent);
+  background: color-mix(in srgb, var(--au-modal-accent) 96%, #000000 4%);
+  color: white;
+}
+
+/* ==========================================================================
+   06. VARIANTS
+   ========================================================================== */
+
+.au-modal--default,
+.au-modal--input,
+.au-modal--file,
+.au-modal--folder,
+.au-modal--rename {
+  --au-modal-accent: var(--au-primary-strong);
+}
+
+.au-modal--success {
+  --au-modal-accent: #22c55e;
+}
+
+.au-modal--info {
+  --au-modal-accent: #3b82f6;
+}
+
+.au-modal--warning {
+  --au-modal-accent: #f59e0b;
+}
+
+.au-modal--danger,
+.au-modal--delete {
+  --au-modal-accent: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.au-modal__button--primary.is-danger {
+  border-color: rgba(239, 68, 68, 0.38);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.96), rgba(153, 27, 27, 0.96));
+}
+
+.au-modal__button--primary.is-danger:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 1), rgba(185, 28, 28, 1));
+}
+
+:root[data-theme="dark"] .au-modal--success {
+  --au-modal-accent: #4ade80;
+}
+
+:root[data-theme="dark"] .au-modal--info {
+  --au-modal-accent: #60a5fa;
+}
+
+:root[data-theme="dark"] .au-modal--warning {
+  --au-modal-accent: #fbbf24;
+}
+
+:root[data-theme="dark"] .au-modal--danger,
+:root[data-theme="dark"] .au-modal--delete {
+  --au-modal-accent: #f87171;
+}
+
+/* ==========================================================================
+   07. NOTEBOOK / ZOOM / RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 620px), (max-height: 620px) {
+  .au-modal-backdrop {
+    padding: 10px;
+    place-items: center;
+  }
+
+  .au-modal {
+    width: min(100%, calc(100vw - 20px));
+    max-height: calc(100vh - 20px);
+    border-radius: 15px;
+  }
+
+  .au-modal__header {
+    padding: 11px;
+    gap: 9px;
+  }
+
+  .au-modal__title-group {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .au-modal__icon {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: 10px;
+  }
+
+  .au-modal__icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .au-modal__header strong {
+    font-size: 13px;
+  }
+
+  .au-modal__header p {
+    font-size: 10.9px;
+  }
+
+  .au-modal__body {
+    padding: 11px 11px 0;
+  }
+
+  .au-modal__footer {
+    padding: 11px;
+  }
+}
+
+@media (max-width: 440px), (max-height: 520px) {
+  .au-modal-backdrop {
+    padding: 8px;
+  }
+
+  .au-modal {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    border-radius: 14px;
+  }
+
+  .au-modal__header {
+    padding: 10px;
+  }
+
+  .au-modal__title-group {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+
+  .au-modal__icon {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 9px;
+  }
+
+  .au-modal__close {
+    width: 27px;
+    height: 27px;
+  }
+
+  .au-modal__header strong {
+    font-size: 12.6px;
+  }
+
+  .au-modal__header p {
+    font-size: 10.7px;
+  }
+
+  .au-modal__input {
+    height: 35px;
+    font-size: 11.4px;
+  }
+
+  .au-modal__footer {
+    flex-direction: column-reverse;
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .au-modal__button {
+    width: 100%;
+    min-width: 0;
+    height: 31px;
+  }
+}
+
+@media (max-width: 320px) {
+  .au-modal__title-group {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .au-modal__icon {
+    display: none;
+  }
+
+  .au-modal__header {
+    gap: 7px;
+  }
+}
+
+/* ==========================================================================
+   08. MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .au-modal-backdrop,
+  .au-modal,
+  .au-modal__close,
+  .au-modal__input,
+  .au-modal__button {
+    transition: none;
+  }
+}

@@ -1,0 +1,851 @@
+/* src/components/project-tools/tasks-panel.css */
+
+/* ==========================================================================
+   01. SHELL
+   ========================================================================== */
+
+.au-tasks {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.016), transparent 130px),
+    var(--au-bg-sidebar);
+  color: var(--au-text);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 197, 94, 0.24) transparent;
+  container-type: inline-size;
+}
+
+.au-tasks *,
+.au-tasks *::before,
+.au-tasks *::after {
+  box-sizing: border-box;
+}
+
+.au-tasks::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.au-tasks::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.au-tasks::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.24);
+  background-clip: content-box;
+}
+
+.au-tasks::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 197, 94, 0.38);
+  background-clip: content-box;
+}
+
+:root[data-theme="light"] .au-tasks {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.012), transparent 130px),
+    var(--au-bg-sidebar);
+}
+
+/* ==========================================================================
+   02. HEADER
+   ========================================================================== */
+
+.au-tasks__header {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--au-border);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent),
+    var(--au-bg-card);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.07),
+    0 0 0 1px rgba(255, 255, 255, 0.014) inset;
+  overflow: hidden;
+}
+
+:root[data-theme="light"] .au-tasks__header {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.7)),
+    var(--au-bg-card);
+  box-shadow:
+    0 8px 18px rgba(15, 23, 42, 0.045),
+    0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+}
+
+.au-tasks__header > div {
+  min-width: 0;
+}
+
+.au-tasks__eyebrow {
+  width: fit-content;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+  padding: 3px 7px;
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.075);
+  color: var(--au-primary-strong);
+  font-size: 9px;
+  font-weight: 920;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.au-tasks__eyebrow span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.au-tasks__eyebrow svg {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+}
+
+.au-tasks__header h2 {
+  min-width: 0;
+  margin: 0;
+  color: var(--au-text);
+  font-size: 16px;
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+}
+
+.au-tasks__header p {
+  min-width: 0;
+  margin: 5px 0 0;
+  color: var(--au-muted);
+  font-size: 11px;
+  line-height: 1.42;
+  overflow-wrap: anywhere;
+}
+
+.au-tasks__refresh {
+  min-height: 29px;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--au-border);
+  border-radius: 10px;
+  background: var(--au-button-bg);
+  color: var(--au-muted-strong);
+  font-size: 11px;
+  font-weight: 880;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color var(--au-transition-fast),
+    background var(--au-transition-fast),
+    color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-tasks__refresh:hover {
+  border-color: rgba(34, 197, 94, 0.26);
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.035) inset;
+}
+
+.au-tasks__refresh:disabled {
+  opacity: 0.72;
+  cursor: wait;
+  box-shadow: none;
+}
+
+.au-tasks__refresh svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+}
+
+.au-tasks__refresh span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.au-tasks__refresh:disabled svg {
+  animation: auTasksSpin 0.9s linear infinite;
+}
+
+/* ==========================================================================
+   03. GROUPS
+   ========================================================================== */
+
+.au-tasks__groups {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.au-task-group {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--au-border);
+  border-radius: 13px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent),
+    var(--au-bg-card);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.012) inset;
+}
+
+:root[data-theme="light"] .au-task-group {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.68)),
+    var(--au-bg-card);
+  box-shadow:
+    0 8px 16px rgba(15, 23, 42, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.68) inset;
+}
+
+.au-live-server-card {
+  border-color: rgba(34, 197, 94, 0.18);
+}
+
+.au-task-group__header {
+  min-width: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 9px;
+  border-bottom: 1px solid var(--au-border);
+  background: rgba(255, 255, 255, 0.012);
+}
+
+:root[data-theme="light"] .au-task-group__header {
+  background: rgba(15, 23, 42, 0.012);
+}
+
+.au-task-group__header strong {
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 11.5px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-task-group__header span {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 19px;
+  padding: 0 6px;
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+  font-size: 9px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.au-task-group__header span:not(.is-ok) {
+  border-color: var(--au-border);
+  background: var(--au-bg-card);
+  color: var(--au-muted);
+}
+
+.au-task-group__list {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+}
+
+/* ==========================================================================
+   04. TASK ITEM
+   ========================================================================== */
+
+.au-task-item {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  color: var(--au-muted-strong);
+  overflow: hidden;
+  transition:
+    background var(--au-transition-fast),
+    border-color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-task-item:hover {
+  border-color: rgba(34, 197, 94, 0.18);
+  background: rgba(34, 197, 94, 0.055);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.03) inset;
+}
+
+.au-task-item__icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  border: 1px solid rgba(34, 197, 94, 0.16);
+  border-radius: 9px;
+  background: rgba(34, 197, 94, 0.07);
+  color: var(--au-primary-strong);
+}
+
+.au-task-item__icon svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+}
+
+.au-task-item__content {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.au-task-item__content strong,
+.au-task-item__content code,
+.au-task-item__content small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-task-item__content strong {
+  color: var(--au-text);
+  font-size: 11.4px;
+  font-weight: 880;
+}
+
+.au-task-item__content code {
+  color: var(--au-primary-strong);
+  font-family:
+    var(--au-editor-font-family, "JetBrains Mono"),
+    "Fira Code",
+    ui-monospace,
+    monospace;
+  font-size: 9.8px;
+}
+
+.au-task-item__content small {
+  color: var(--au-muted);
+  font-size: 9.8px;
+  line-height: 1.32;
+}
+
+.au-task-item__actions {
+  min-width: 0;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.au-task-item__action,
+.au-task-item__run {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 27px;
+  border: 1px solid var(--au-border);
+  border-radius: 9px;
+  background: var(--au-button-bg);
+  color: var(--au-muted-strong);
+  cursor: pointer;
+  transition:
+    border-color var(--au-transition-fast),
+    background var(--au-transition-fast),
+    color var(--au-transition-fast),
+    opacity var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-task-item__action {
+  width: 27px;
+  min-width: 27px;
+  padding: 0;
+}
+
+.au-task-item__run {
+  min-width: 62px;
+  max-width: 100%;
+  padding: 0 8px;
+  font-size: 10.5px;
+  font-weight: 880;
+  white-space: nowrap;
+}
+
+.au-task-item__run span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.au-task-item__action:hover,
+.au-task-item__run:hover {
+  border-color: rgba(34, 197, 94, 0.26);
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.035) inset;
+}
+
+.au-task-item__run.is-danger {
+  border-color: rgba(239, 68, 68, 0.24);
+  background: rgba(239, 68, 68, 0.085);
+  color: var(--au-danger);
+}
+
+.au-task-item__run.is-danger:hover {
+  border-color: rgba(239, 68, 68, 0.34);
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--au-danger);
+}
+
+.au-task-item__action:disabled,
+.au-task-item__run:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.au-task-item__action svg,
+.au-task-item__run svg {
+  width: 12.5px;
+  height: 12.5px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+}
+
+.au-task-item__run:disabled svg[data-lucide="loader-circle"] {
+  animation: auTasksSpin 0.9s linear infinite;
+}
+
+/* ==========================================================================
+   05. EMPTY
+   ========================================================================== */
+
+.au-tasks__empty {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+  padding: 18px;
+  border: 1px dashed var(--au-border-strong);
+  border-radius: 13px;
+  background: var(--au-bg-card);
+  color: var(--au-muted);
+  text-align: center;
+}
+
+.au-live-server-card .au-tasks__empty {
+  min-height: 110px;
+  margin: 0 6px 6px;
+}
+
+.au-tasks__empty svg {
+  width: 21px;
+  height: 21px;
+  color: var(--au-primary-strong);
+  stroke: currentColor;
+}
+
+.au-tasks__empty strong {
+  color: var(--au-text);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.au-tasks__empty p {
+  max-width: 300px;
+  margin: 0;
+  color: var(--au-muted);
+  font-size: 10.6px;
+  line-height: 1.42;
+}
+
+/* ==========================================================================
+   06. OUTPUT
+   ========================================================================== */
+
+.au-task-output {
+  min-width: 0;
+  margin-top: 8px;
+  overflow: hidden;
+  border: 1px solid var(--au-border);
+  border-radius: 13px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent),
+    var(--au-bg-card);
+}
+
+.au-task-output header {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 9px;
+  border-bottom: 1px solid var(--au-border);
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.au-task-output header div {
+  min-width: 0;
+}
+
+.au-task-output span {
+  display: block;
+  color: var(--au-muted);
+  font-size: 8.8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+}
+
+.au-task-output strong {
+  display: block;
+  min-width: 0;
+  margin-top: 2px;
+  color: var(--au-text);
+  font-size: 11.5px;
+  font-weight: 880;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-task-output b {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.au-task-output b.is-ok {
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+}
+
+.au-task-output b.is-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--au-danger);
+}
+
+.au-task-output pre {
+  max-height: 220px;
+  margin: 0;
+  padding: 9px;
+  overflow: auto;
+  color: var(--au-muted-strong);
+  font-family:
+    var(--au-editor-font-family, "JetBrains Mono"),
+    "Fira Code",
+    ui-monospace,
+    monospace;
+  font-size: 10.5px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 197, 94, 0.24) transparent;
+}
+
+.au-task-output pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.au-task-output pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.au-task-output pre::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.24);
+  background-clip: content-box;
+}
+
+.au-task-output p {
+  margin: 0;
+  padding: 9px;
+  color: var(--au-muted);
+  font-size: 10.8px;
+  line-height: 1.42;
+}
+
+/* ==========================================================================
+   07. CONTAINER RESPONSIVE
+   ========================================================================== */
+
+@container (max-width: 520px) {
+  .au-tasks {
+    padding: 7px;
+  }
+
+  .au-tasks__header {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 8px;
+    padding: 9px;
+  }
+
+  .au-tasks__refresh {
+    justify-self: start;
+    min-height: 28px;
+  }
+
+  .au-task-item {
+    grid-template-columns: 28px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .au-task-item__actions {
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    padding-left: 35px;
+  }
+
+  .au-task-item__run {
+    min-width: 76px;
+  }
+}
+
+@container (max-width: 360px) {
+  .au-tasks {
+    padding: 6px;
+  }
+
+  .au-tasks__header {
+    padding: 8px;
+    border-radius: 13px;
+  }
+
+  .au-tasks__eyebrow {
+    max-width: 100%;
+    font-size: 8.5px;
+  }
+
+  .au-tasks__header h2 {
+    font-size: 15px;
+  }
+
+  .au-tasks__header p {
+    font-size: 10.4px;
+  }
+
+  .au-task-group__header {
+    height: 32px;
+    padding: 0 8px;
+  }
+
+  .au-task-group__list {
+    padding: 5px;
+  }
+
+  .au-task-item {
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .au-task-item__icon {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    border-radius: 8px;
+  }
+
+  .au-task-item__icon svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .au-task-item__content strong {
+    font-size: 10.8px;
+  }
+
+  .au-task-item__content code,
+  .au-task-item__content small {
+    font-size: 9.2px;
+  }
+
+  .au-task-item__actions {
+    padding-left: 32px;
+  }
+
+  .au-task-item__action,
+  .au-task-item__run {
+    height: 26px;
+    border-radius: 8px;
+  }
+
+  .au-task-item__action {
+    width: 26px;
+    min-width: 26px;
+  }
+
+  .au-task-item__run {
+    min-width: 70px;
+    padding: 0 7px;
+    font-size: 10px;
+  }
+
+  .au-task-output header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@container (max-width: 285px) {
+  .au-tasks {
+    padding: 5px;
+  }
+
+  .au-tasks__header {
+    padding: 7px;
+  }
+
+  .au-tasks__eyebrow {
+    padding: 3px 6px;
+  }
+
+  .au-tasks__eyebrow span {
+    max-width: 155px;
+  }
+
+  .au-tasks__refresh {
+    width: 100%;
+  }
+
+  .au-task-group {
+    border-radius: 12px;
+  }
+
+  .au-task-item {
+    grid-template-columns: 1fr;
+  }
+
+  .au-task-item__icon {
+    display: none;
+  }
+
+  .au-task-item__actions {
+    grid-column: auto;
+    padding-left: 0;
+    justify-content: flex-start;
+  }
+
+  .au-task-item__run {
+    min-width: 86px;
+  }
+
+  .au-task-item__content strong,
+  .au-task-item__content code,
+  .au-task-item__content small {
+    white-space: nowrap;
+  }
+
+  .au-live-server-card .au-task-item__actions {
+    justify-content: flex-start;
+  }
+}
+
+/* ==========================================================================
+   08. VIEWPORT RESPONSIVE / MOTION
+   ========================================================================== */
+
+@keyframes auTasksSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 720px) {
+  .au-tasks {
+    padding: 7px;
+  }
+}
+
+@media (max-height: 720px) {
+  .au-tasks {
+    padding: 7px;
+  }
+
+  .au-tasks__header {
+    padding: 9px;
+    margin-bottom: 7px;
+  }
+
+  .au-tasks__groups {
+    gap: 7px;
+  }
+
+  .au-task-group__header {
+    height: 32px;
+  }
+
+  .au-task-item {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-tasks__refresh:disabled svg,
+  .au-task-item__run:disabled svg[data-lucide="loader-circle"] {
+    animation: none;
+  }
+
+  .au-tasks__refresh,
+  .au-task-item,
+  .au-task-item__action,
+  .au-task-item__run {
+    transition: none;
+  }
+}

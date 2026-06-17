@@ -1,0 +1,901 @@
+/* src/components/toolchain/toolchain-panel.css */
+
+/* ==========================================================================
+   01. SHELL
+   ========================================================================== */
+
+.au-toolchain {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.016), transparent 130px),
+    var(--au-bg-sidebar);
+  color: var(--au-text);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 197, 94, 0.24) transparent;
+  container-type: inline-size;
+}
+
+.au-toolchain *,
+.au-toolchain *::before,
+.au-toolchain *::after {
+  box-sizing: border-box;
+}
+
+.au-toolchain::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.au-toolchain::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.au-toolchain::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.24);
+  background-clip: content-box;
+}
+
+.au-toolchain::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 197, 94, 0.38);
+  background-clip: content-box;
+}
+
+:root[data-theme="light"] .au-toolchain {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.012), transparent 130px),
+    var(--au-bg-sidebar);
+}
+
+/* ==========================================================================
+   02. SHARED SURFACES
+   ========================================================================== */
+
+.au-toolchain__header,
+.au-toolchain__summary article,
+.au-toolchain__content,
+.au-toolchain-item,
+.au-toolchain__empty {
+  min-width: 0;
+  border: 1px solid var(--au-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent),
+    var(--au-bg-card);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.07),
+    0 0 0 1px rgba(255, 255, 255, 0.014) inset;
+}
+
+:root[data-theme="light"] .au-toolchain__header,
+:root[data-theme="light"] .au-toolchain__summary article,
+:root[data-theme="light"] .au-toolchain__content,
+:root[data-theme="light"] .au-toolchain-item,
+:root[data-theme="light"] .au-toolchain__empty {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.7)),
+    var(--au-bg-card);
+  box-shadow:
+    0 8px 18px rgba(15, 23, 42, 0.045),
+    0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+}
+
+/* ==========================================================================
+   03. HEADER
+   ========================================================================== */
+
+.au-toolchain__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "title health"
+    "refresh refresh";
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.au-toolchain__title {
+  grid-area: title;
+  min-width: 0;
+}
+
+.au-toolchain__eyebrow {
+  width: fit-content;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+  padding: 3px 7px;
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.075);
+  color: var(--au-primary-strong);
+  font-size: 9px;
+  font-weight: 920;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.au-toolchain__eyebrow span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.au-toolchain__eyebrow svg {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+}
+
+.au-toolchain__header h2 {
+  min-width: 0;
+  margin: 0;
+  color: var(--au-text);
+  font-size: 16px;
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+}
+
+.au-toolchain__header p {
+  min-width: 0;
+  margin: 5px 0 0;
+  color: var(--au-muted);
+  font-size: 11px;
+  line-height: 1.42;
+  overflow-wrap: anywhere;
+}
+
+.au-toolchain__refresh {
+  grid-area: refresh;
+  width: 100%;
+  min-height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--au-border);
+  border-radius: 10px;
+  background: var(--au-button-bg);
+  color: var(--au-muted-strong);
+  font-size: 11px;
+  font-weight: 880;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color var(--au-transition-fast),
+    background var(--au-transition-fast),
+    color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-toolchain__refresh:hover {
+  border-color: rgba(34, 197, 94, 0.26);
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.035) inset;
+}
+
+.au-toolchain__refresh:disabled {
+  opacity: 0.72;
+  cursor: wait;
+  box-shadow: none;
+}
+
+.au-toolchain__refresh svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+}
+
+.au-toolchain__refresh span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.au-toolchain__refresh:disabled svg {
+  animation: auToolchainSpin 0.9s linear infinite;
+}
+
+/* ==========================================================================
+   04. HEALTH SCORE
+   ========================================================================== */
+
+.au-toolchain__health {
+  grid-area: health;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid var(--au-border);
+  border-radius: 12px;
+  background: rgba(148, 163, 184, 0.035);
+}
+
+.au-toolchain__health-ring {
+  --toolchain-health-color: var(--au-primary-strong);
+
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background:
+    conic-gradient(
+      var(--toolchain-health-color) var(--toolchain-health),
+      rgba(148, 163, 184, 0.15) 0
+    );
+}
+
+.au-toolchain__health-ring::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: inherit;
+  background: var(--au-bg-card);
+  box-shadow: inset 0 0 0 1px var(--au-border);
+}
+
+:root[data-theme="light"] .au-toolchain__health-ring::before {
+  background: #ffffff;
+}
+
+.au-toolchain__health-ring strong {
+  position: relative;
+  z-index: 1;
+  color: var(--au-text);
+  font-size: 11.5px;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+}
+
+.au-toolchain__health > div:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.au-toolchain__health span {
+  display: block;
+  min-width: 0;
+  color: var(--au-muted);
+  font-size: 9px;
+  font-weight: 920;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.au-toolchain__health > div:last-child strong {
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 11.5px;
+  font-weight: 920;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-toolchain__health small {
+  min-width: 0;
+  color: var(--au-muted);
+  font-size: 9.8px;
+  line-height: 1.32;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-toolchain__health.is-warning .au-toolchain__health-ring {
+  --toolchain-health-color: var(--au-warning);
+}
+
+.au-toolchain__health.is-critical .au-toolchain__health-ring {
+  --toolchain-health-color: var(--au-danger);
+}
+
+.au-toolchain__health.is-pending .au-toolchain__health-ring {
+  --toolchain-health-color: rgba(148, 163, 184, 0.42);
+}
+
+/* ==========================================================================
+   05. SUMMARY
+   ========================================================================== */
+
+.au-toolchain__summary {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.au-toolchain__summary article {
+  position: relative;
+  padding: 7px 8px 7px 10px;
+  border-radius: 11px;
+  overflow: hidden;
+}
+
+.au-toolchain__summary article::before {
+  content: "";
+  position: absolute;
+  inset: 7px auto 7px 0;
+  width: 2px;
+  border-radius: 0 999px 999px 0;
+  background: rgba(148, 163, 184, 0.34);
+}
+
+.au-toolchain__summary article.is-ok::before {
+  background: var(--au-primary-strong);
+}
+
+.au-toolchain__summary article.is-error::before {
+  background: var(--au-danger);
+}
+
+.au-toolchain__summary span {
+  display: block;
+  min-width: 0;
+  color: var(--au-muted);
+  font-size: 8.6px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.au-toolchain__summary strong {
+  display: block;
+  min-width: 0;
+  margin-top: 4px;
+  color: var(--au-text);
+  font-size: 12px;
+  font-weight: 920;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-toolchain__summary small {
+  display: block;
+  min-width: 0;
+  margin-top: 3px;
+  color: var(--au-muted);
+  font-size: 9.4px;
+  line-height: 1.32;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   06. CONTENT HEADER
+   ========================================================================== */
+
+.au-toolchain__content {
+  border-radius: 13px;
+  overflow: hidden;
+}
+
+.au-toolchain__content-head {
+  min-width: 0;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 9px;
+  border-bottom: 1px solid var(--au-border);
+  background: rgba(255, 255, 255, 0.012);
+}
+
+:root[data-theme="light"] .au-toolchain__content-head {
+  background: rgba(15, 23, 42, 0.012);
+}
+
+.au-toolchain__content-head div {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.au-toolchain__content-head span {
+  color: var(--au-muted);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.au-toolchain__content-head strong {
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 11px;
+  font-weight: 860;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-toolchain__content-head small {
+  flex: 0 0 auto;
+  max-width: 92px;
+  color: var(--au-primary-strong);
+  font-size: 9.8px;
+  font-weight: 820;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   07. ITEMS
+   ========================================================================== */
+
+.au-toolchain__list {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  padding: 7px;
+}
+
+.au-toolchain-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 7px;
+  padding: 7px;
+  border-radius: 11px;
+  animation: auToolchainItemIn 110ms ease-out both;
+  overflow: hidden;
+}
+
+.au-toolchain-item::before {
+  content: "";
+  position: absolute;
+  inset: 7px auto 7px 0;
+  width: 2px;
+  border-radius: 0 999px 999px 0;
+  background: var(--au-border-strong);
+  opacity: 0.65;
+}
+
+.au-toolchain-item.is-ok::before {
+  background: var(--au-primary-strong);
+}
+
+.au-toolchain-item.is-error::before {
+  background: var(--au-danger);
+}
+
+.au-toolchain-item__icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+}
+
+.au-toolchain-item.is-ok .au-toolchain-item__icon {
+  border-color: rgba(34, 197, 94, 0.18);
+  background: rgba(34, 197, 94, 0.075);
+  color: var(--au-primary-strong);
+}
+
+.au-toolchain-item.is-error .au-toolchain-item__icon {
+  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--au-danger);
+}
+
+.au-toolchain-item__icon svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+}
+
+.au-toolchain-item__content {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.au-toolchain-item__content header {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 7px;
+}
+
+.au-toolchain-item__content header > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.au-toolchain-item__content strong {
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 11.4px;
+  font-weight: 880;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-toolchain-item__content span {
+  flex: 0 0 auto;
+  max-width: 74px;
+  height: 19px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--au-muted-strong);
+  font-size: 9px;
+  font-weight: 880;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-toolchain-item.is-ok .au-toolchain-item__content span {
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+}
+
+.au-toolchain-item.is-error .au-toolchain-item__content span {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--au-danger);
+}
+
+.au-toolchain-item__content code {
+  min-width: 0;
+  color: var(--au-primary-strong);
+  font-family:
+    var(--au-editor-font-family, "JetBrains Mono"),
+    "Fira Code",
+    ui-monospace,
+    monospace;
+  font-size: 9.8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-toolchain-item.is-error .au-toolchain-item__content code {
+  color: var(--au-danger);
+}
+
+.au-toolchain-item__content p {
+  min-width: 0;
+  margin: 0;
+  color: var(--au-muted);
+  font-size: 10.5px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================================
+   08. EMPTY
+   ========================================================================== */
+
+.au-toolchain__empty {
+  min-height: 170px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+  padding: 18px;
+  border: 0;
+  box-shadow: none;
+  color: var(--au-muted);
+  text-align: center;
+}
+
+.au-toolchain__empty-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  border-radius: 13px;
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+}
+
+.au-toolchain__empty svg {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+}
+
+.au-toolchain__empty strong {
+  color: var(--au-text);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.au-toolchain__empty p {
+  max-width: 230px;
+  margin: 0;
+  font-size: 10.8px;
+  line-height: 1.42;
+}
+
+/* ==========================================================================
+   09. CONTAINER RESPONSIVE
+   ========================================================================== */
+
+@container (max-width: 520px) {
+  .au-toolchain {
+    padding: 7px;
+  }
+
+  .au-toolchain__header {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "health"
+      "refresh";
+    align-items: stretch;
+    gap: 8px;
+    padding: 9px;
+  }
+
+  .au-toolchain__health {
+    width: 100%;
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .au-toolchain__refresh {
+    min-height: 28px;
+  }
+
+  .au-toolchain__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .au-toolchain__content-head {
+    align-items: flex-start;
+    flex-direction: column;
+    min-height: auto;
+    gap: 4px;
+  }
+
+  .au-toolchain__content-head small {
+    max-width: 100%;
+  }
+
+  .au-toolchain-item__content header {
+    grid-template-columns: 1fr;
+  }
+
+  .au-toolchain-item__content span {
+    width: fit-content;
+    max-width: 100%;
+  }
+}
+
+@container (max-width: 360px) {
+  .au-toolchain {
+    padding: 6px;
+  }
+
+  .au-toolchain__header {
+    padding: 8px;
+    border-radius: 13px;
+  }
+
+  .au-toolchain__eyebrow {
+    max-width: 100%;
+    font-size: 8.5px;
+  }
+
+  .au-toolchain__header h2 {
+    font-size: 15px;
+  }
+
+  .au-toolchain__header p {
+    font-size: 10.4px;
+  }
+
+  .au-toolchain__health {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .au-toolchain__health-ring {
+    width: 40px;
+    height: 40px;
+  }
+
+  .au-toolchain__health-ring strong {
+    font-size: 10.8px;
+  }
+
+  .au-toolchain__summary article {
+    padding: 7px 8px 7px 9px;
+  }
+
+  .au-toolchain__list {
+    gap: 5px;
+    padding: 6px;
+  }
+
+  .au-toolchain-item {
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 6px;
+    padding: 6px;
+    border-radius: 10px;
+  }
+
+  .au-toolchain-item__icon {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    border-radius: 8px;
+  }
+
+  .au-toolchain-item__icon svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .au-toolchain-item__content strong {
+    font-size: 10.8px;
+  }
+
+  .au-toolchain-item__content code {
+    font-size: 9.2px;
+  }
+
+  .au-toolchain-item__content p {
+    font-size: 10px;
+  }
+}
+
+@container (max-width: 285px) {
+  .au-toolchain {
+    padding: 5px;
+  }
+
+  .au-toolchain__header {
+    padding: 7px;
+  }
+
+  .au-toolchain__eyebrow {
+    padding: 3px 6px;
+  }
+
+  .au-toolchain__health {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .au-toolchain__refresh {
+    width: 100%;
+  }
+
+  .au-toolchain__summary {
+    gap: 5px;
+  }
+
+  .au-toolchain__content {
+    border-radius: 12px;
+  }
+
+  .au-toolchain__content-head {
+    padding: 7px 8px;
+  }
+
+  .au-toolchain-item {
+    grid-template-columns: 1fr;
+  }
+
+  .au-toolchain-item__icon {
+    display: none;
+  }
+
+  .au-toolchain-item__content span {
+    height: 18px;
+    font-size: 8.8px;
+  }
+
+  .au-toolchain__empty {
+    min-height: 150px;
+    padding: 16px;
+  }
+
+  .au-toolchain__empty-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ==========================================================================
+   10. VIEWPORT RESPONSIVE / ANIMATIONS
+   ========================================================================== */
+
+@keyframes auToolchainSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes auToolchainItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-height: 720px) {
+  .au-toolchain {
+    padding: 7px;
+  }
+
+  .au-toolchain__header {
+    padding: 9px;
+    margin-bottom: 7px;
+  }
+
+  .au-toolchain__summary {
+    margin-bottom: 7px;
+  }
+
+  .au-toolchain__list {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-toolchain__refresh:disabled svg,
+  .au-toolchain-item {
+    animation: none;
+  }
+
+  .au-toolchain__refresh,
+  .au-toolchain-item,
+  .au-toolchain-item__content span {
+    transition: none;
+  }
+}

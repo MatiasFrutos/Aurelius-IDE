@@ -1,0 +1,437 @@
+/* src/styles/layout.css */
+
+/* ==========================================================================
+   01. SHELL GENERAL
+   ========================================================================== */
+
+.aurelius-shell {
+  width: calc(100% / var(--au-ui-scale));
+  height: calc(100% / var(--au-ui-scale));
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: var(--au-topbar-height) minmax(0, 1fr) var(--au-statusbar-height);
+  overflow: hidden;
+  background: var(--au-bg);
+  zoom: var(--au-ui-scale);
+  transform-origin: top left;
+}
+
+.aurelius-shell.is-topbar-hidden {
+  grid-template-rows: minmax(0, 1fr) var(--au-statusbar-height);
+}
+
+/* ==========================================================================
+   02. MAIN LAYOUT
+   ========================================================================== */
+
+.aurelius-main {
+  --au-effective-sidebar-width: var(--au-sidebar-width);
+  --au-effective-right-panel-width: 360px;
+  --au-effective-bottom-panel-height: 220px;
+
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns:
+    var(--au-activity-width)
+    var(--au-effective-sidebar-width)
+    minmax(0, 1fr)
+    var(--au-effective-right-panel-width);
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+  border-top: 1px solid var(--au-border);
+  border-bottom: 1px solid var(--au-border);
+  background: var(--au-bg-workspace);
+}
+
+.aurelius-main.is-topbar-hidden {
+  border-top: 0;
+}
+
+/* ==========================================================================
+   03. COLUMNAS DINÁMICAS
+   ========================================================================== */
+
+.aurelius-main.is-sidebar-hidden {
+  grid-template-columns:
+    var(--au-activity-width)
+    minmax(0, 1fr)
+    var(--au-effective-right-panel-width);
+}
+
+.aurelius-main.is-right-panel-hidden {
+  grid-template-columns:
+    var(--au-activity-width)
+    var(--au-effective-sidebar-width)
+    minmax(0, 1fr);
+}
+
+.aurelius-main.is-sidebar-hidden.is-right-panel-hidden {
+  grid-template-columns:
+    var(--au-activity-width)
+    minmax(0, 1fr);
+}
+
+/* ==========================================================================
+   04. SIDE PANEL
+   ========================================================================== */
+
+.aurelius-side-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--au-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 150px),
+    var(--au-bg-sidebar);
+}
+
+:root[data-theme="light"] .aurelius-side-panel {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.01), transparent 150px),
+    var(--au-bg-sidebar);
+}
+
+/* ==========================================================================
+   05. CENTER AREA
+   ========================================================================== */
+
+.aurelius-center-area {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(120px, var(--au-effective-bottom-panel-height));
+  overflow: hidden;
+  background: var(--au-bg-workspace);
+}
+
+.aurelius-main.is-bottom-panel-hidden .aurelius-center-area {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.aurelius-center-area__workspace {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.aurelius-center-area__bottom {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--au-bg-panel);
+}
+
+/* ==========================================================================
+   06. RIGHT PANEL
+   ========================================================================== */
+
+.aurelius-right-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 280px;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--au-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 150px),
+    var(--au-bg-sidebar);
+}
+
+:root[data-theme="light"] .aurelius-right-panel {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.01), transparent 150px),
+    var(--au-bg-sidebar);
+}
+
+/* ==========================================================================
+   07. WORKSPACE
+   ========================================================================== */
+
+.aurelius-workspace {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 34px minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--au-bg-workspace);
+}
+
+.aurelius-workspace.is-page {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.aurelius-page-area {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--au-bg-workspace);
+}
+
+/* ==========================================================================
+   08. EDITOR TABS
+   ========================================================================== */
+
+.aurelius-tabs {
+  min-width: 0;
+  min-height: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--au-border);
+  background: rgba(255, 255, 255, 0.018);
+  scrollbar-width: none;
+}
+
+.aurelius-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+:root[data-theme="light"] .aurelius-tabs {
+  background: rgba(15, 23, 42, 0.018);
+}
+
+.aurelius-tab {
+  min-width: 0;
+  max-width: 240px;
+  height: 27px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 6px 0 10px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--au-muted-strong);
+  font-size: 11.5px;
+  white-space: nowrap;
+  transition:
+    background var(--au-transition-fast),
+    border-color var(--au-transition-fast),
+    color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.aurelius-tab:hover {
+  border-color: var(--au-border);
+  background: var(--au-button-bg-hover);
+  color: var(--au-text);
+}
+
+.aurelius-tab.is-active {
+  border-color: rgba(34, 197, 94, 0.24);
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-text);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.035) inset;
+}
+
+.aurelius-tab__button {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.aurelius-tab__button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aurelius-tab__dirty {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--au-warning);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
+}
+
+.aurelius-tab__close {
+  flex: 0 0 auto;
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--au-muted);
+  cursor: pointer;
+  transition:
+    background var(--au-transition-fast),
+    color var(--au-transition-fast);
+}
+
+.aurelius-tab__close:hover {
+  background: var(--au-button-bg-hover);
+  color: var(--au-text);
+}
+
+.aurelius-tab__close svg {
+  width: 12px;
+  height: 12px;
+}
+
+.aurelius-editor-area {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   09. RESIZERS
+   ========================================================================== */
+
+.aurelius-resizer {
+  position: absolute;
+  z-index: 40;
+  background: transparent;
+  transition: background var(--au-transition-fast);
+}
+
+.aurelius-resizer:hover,
+body.is-resizing-layout .aurelius-resizer {
+  background: rgba(34, 197, 94, 0.24);
+}
+
+.aurelius-resizer--sidebar {
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.aurelius-resizer--right {
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.aurelius-resizer--bottom {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  cursor: row-resize;
+}
+
+body.is-resizing-layout,
+body.is-resizing-layout * {
+  user-select: none !important;
+  cursor: inherit;
+}
+
+/* ==========================================================================
+   10. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1180px) {
+  .aurelius-main.has-sidebar.has-right-panel {
+    grid-template-columns:
+      var(--au-activity-width)
+      minmax(240px, var(--au-effective-sidebar-width))
+      minmax(0, 1fr);
+  }
+
+  .aurelius-main.has-sidebar.has-right-panel .aurelius-right-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .aurelius-main {
+    --au-effective-bottom-panel-height: 190px;
+  }
+
+  .aurelius-workspace {
+    grid-template-rows: 32px minmax(0, 1fr);
+  }
+
+  .aurelius-tabs {
+    height: 32px;
+    padding: 0 6px;
+  }
+
+  .aurelius-tab {
+    max-width: 190px;
+    height: 26px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 720px) {
+  .aurelius-main,
+  .aurelius-main.is-right-panel-hidden,
+  .aurelius-main.is-sidebar-hidden,
+  .aurelius-main.is-sidebar-hidden.is-right-panel-hidden {
+    grid-template-columns:
+      var(--au-activity-width)
+      minmax(0, 1fr);
+  }
+
+  .aurelius-side-panel,
+  .aurelius-right-panel {
+    display: none;
+  }
+
+  .aurelius-center-area {
+    grid-template-rows: minmax(0, 1fr) minmax(140px, var(--au-effective-bottom-panel-height));
+  }
+
+  .aurelius-main.is-bottom-panel-hidden .aurelius-center-area {
+    grid-template-rows: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .aurelius-main {
+    --au-effective-bottom-panel-height: 170px;
+  }
+
+  .aurelius-tab {
+    max-width: 150px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurelius-tab,
+  .aurelius-tab__close,
+  .aurelius-resizer {
+    transition: none;
+  }
+}

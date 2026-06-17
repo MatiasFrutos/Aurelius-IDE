@@ -1,0 +1,577 @@
+/* src/components/quick-open/quick-open.css */
+
+/* ==========================================================================
+   01. ROOT / BACKDROP
+   ========================================================================== */
+
+.au-quick-open-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: start center;
+  padding:
+    clamp(18px, 7vh, 64px)
+    clamp(8px, 2vw, 12px)
+    clamp(8px, 2vh, 12px);
+}
+
+.au-quick-open-root *,
+.au-quick-open-root *::before,
+.au-quick-open-root *::after {
+  box-sizing: border-box;
+}
+
+.au-quick-open-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.1), transparent 30%),
+    rgba(2, 6, 23, 0.58);
+  backdrop-filter: blur(14px) saturate(1.08);
+}
+
+:root[data-theme="light"] .au-quick-open-backdrop {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.1), transparent 30%),
+    rgba(15, 23, 42, 0.26);
+}
+
+/* ==========================================================================
+   02. WINDOW
+   ========================================================================== */
+
+.au-quick-open {
+  position: relative;
+  z-index: 1;
+  width: min(640px, calc(100vw - 24px));
+  max-height: min(560px, calc(100vh - clamp(36px, 12vh, 96px)));
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid var(--au-border);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent),
+    var(--au-bg-elevated);
+  color: var(--au-text);
+  box-shadow:
+    0 28px 86px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(255, 255, 255, 0.025) inset;
+  animation: auQuickOpenIn 120ms ease-out both;
+}
+
+:root[data-theme="light"] .au-quick-open {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.72)),
+    var(--au-bg-elevated);
+  box-shadow:
+    0 26px 72px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+}
+
+.au-quick-open::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(34, 197, 94, 0.42),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   03. HEADER
+   ========================================================================== */
+
+.au-quick-open__header {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 8px;
+  padding: 9px;
+  border-bottom: 1px solid var(--au-border);
+  background: rgba(255, 255, 255, 0.014);
+}
+
+:root[data-theme="light"] .au-quick-open__header {
+  background: rgba(15, 23, 42, 0.012);
+}
+
+.au-quick-open__icon,
+.au-quick-open__close {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+}
+
+.au-quick-open__icon {
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+}
+
+.au-quick-open__icon svg,
+.au-quick-open__close svg {
+  width: 13.5px;
+  height: 13.5px;
+  stroke: currentColor;
+}
+
+.au-quick-open__close {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--au-muted);
+  cursor: pointer;
+  transition:
+    border-color var(--au-transition-fast),
+    background var(--au-transition-fast),
+    color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-quick-open__close:hover {
+  border-color: rgba(239, 68, 68, 0.24);
+  background: var(--au-danger-soft);
+  color: var(--au-danger);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.035) inset;
+}
+
+/* ==========================================================================
+   04. INPUT
+   ========================================================================== */
+
+.au-quick-open__input-wrap {
+  min-width: 0;
+  height: 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 0 10px;
+  border: 1px solid var(--au-border);
+  border-radius: 10px;
+  background: var(--au-bg-input);
+  transition:
+    border-color var(--au-transition-fast),
+    background var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-quick-open__input-wrap:focus-within {
+  border-color: rgba(34, 197, 94, 0.36);
+  background: var(--au-bg-elevated);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.07);
+}
+
+.au-quick-open__input-wrap input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--au-text);
+  font-size: 12.2px;
+  font-weight: 740;
+}
+
+.au-quick-open__input-wrap input::placeholder {
+  color: var(--au-muted);
+  font-weight: 650;
+  opacity: 0.86;
+}
+
+.au-quick-open__hint {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid var(--au-border);
+  border-radius: 7px;
+  background: rgba(148, 163, 184, 0.075);
+  color: var(--au-muted);
+  font-size: 9.2px;
+  font-weight: 880;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   05. BODY / SCROLL
+   ========================================================================== */
+
+.au-quick-open__body {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 7px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 197, 94, 0.24) transparent;
+}
+
+.au-quick-open__body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.au-quick-open__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.au-quick-open__body::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.24);
+  background-clip: content-box;
+}
+
+.au-quick-open__body::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 197, 94, 0.38);
+  background-clip: content-box;
+}
+
+.au-quick-open__list {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   06. ITEMS
+   ========================================================================== */
+
+.au-quick-open__item {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 27px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 7px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--au-muted-strong);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    background var(--au-transition-fast),
+    border-color var(--au-transition-fast),
+    color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+.au-quick-open__item::before {
+  content: "";
+  position: absolute;
+  inset: 7px auto 7px 0;
+  width: 2px;
+  border-radius: 0 999px 999px 0;
+  background: var(--au-primary-strong);
+  opacity: 0;
+  transition: opacity var(--au-transition-fast);
+}
+
+.au-quick-open__item:hover,
+.au-quick-open__item.is-active {
+  border-color: rgba(34, 197, 94, 0.22);
+  background: rgba(34, 197, 94, 0.06);
+  color: var(--au-text);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.03) inset;
+}
+
+.au-quick-open__item:hover::before,
+.au-quick-open__item.is-active::before {
+  opacity: 1;
+}
+
+.au-quick-open__item-icon {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  min-width: 27px;
+  min-height: 27px;
+  border: 1px solid rgba(34, 197, 94, 0.16);
+  border-radius: 9px;
+  background: rgba(34, 197, 94, 0.07);
+  color: var(--au-primary-strong);
+}
+
+.au-quick-open__item-icon svg {
+  width: 12.8px;
+  height: 12.8px;
+  stroke: currentColor;
+}
+
+.au-quick-open__item-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.au-quick-open__item-copy strong {
+  min-width: 0;
+  color: var(--au-text);
+  font-size: 11.2px;
+  font-weight: 880;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-quick-open__item-copy small {
+  min-width: 0;
+  color: var(--au-muted);
+  font-family:
+    var(--au-editor-font-family, "JetBrains Mono"),
+    "Fira Code",
+    ui-monospace,
+    monospace;
+  font-size: 9.4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   07. EMPTY
+   ========================================================================== */
+
+.au-quick-open__empty {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+  padding: 20px;
+  color: var(--au-muted);
+  text-align: center;
+}
+
+.au-quick-open__empty span {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  border-radius: 13px;
+  background: rgba(34, 197, 94, 0.078);
+  color: var(--au-primary-strong);
+}
+
+.au-quick-open__empty svg {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+}
+
+.au-quick-open__empty strong {
+  color: var(--au-text);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.au-quick-open__empty p {
+  max-width: 320px;
+  margin: 0;
+  color: var(--au-muted);
+  font-size: 10.8px;
+  line-height: 1.42;
+}
+
+/* ==========================================================================
+   08. FOOTER
+   ========================================================================== */
+
+.au-quick-open__footer {
+  min-width: 0;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 10px;
+  border-top: 1px solid var(--au-border);
+  background: rgba(255, 255, 255, 0.012);
+  color: var(--au-muted);
+  font-size: 9.8px;
+}
+
+:root[data-theme="light"] .au-quick-open__footer {
+  background: rgba(15, 23, 42, 0.012);
+}
+
+.au-quick-open__footer span {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.au-quick-open__footer kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 19px;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--au-border);
+  border-bottom-color: var(--au-border-strong);
+  border-radius: 6px;
+  background: rgba(2, 6, 23, 0.3);
+  color: var(--au-text);
+  font-size: 9.2px;
+  font-weight: 820;
+  font-family: inherit;
+}
+
+:root[data-theme="light"] .au-quick-open__footer kbd {
+  background: rgba(15, 23, 42, 0.055);
+}
+
+/* ==========================================================================
+   09. RESPONSIVE / NOTEBOOK SCALE
+   ========================================================================== */
+
+@media (max-width: 720px), (max-height: 720px) {
+  .au-quick-open-root {
+    padding: 10px;
+    place-items: start center;
+  }
+
+  .au-quick-open {
+    width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
+    border-radius: 15px;
+  }
+
+  .au-quick-open__header {
+    grid-template-columns: 28px minmax(0, 1fr) 28px;
+    gap: 7px;
+    padding: 8px;
+  }
+
+  .au-quick-open__icon,
+  .au-quick-open__close {
+    width: 27px;
+    height: 27px;
+  }
+
+  .au-quick-open__input-wrap {
+    height: 31px;
+  }
+
+  .au-quick-open__hint {
+    display: none;
+  }
+
+  .au-quick-open__input-wrap {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .au-quick-open__footer {
+    display: none;
+  }
+}
+
+@media (max-width: 420px), (max-height: 560px) {
+  .au-quick-open-root {
+    padding: 8px;
+  }
+
+  .au-quick-open {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    border-radius: 14px;
+  }
+
+  .au-quick-open__body {
+    padding: 6px;
+  }
+
+  .au-quick-open__item {
+    grid-template-columns: 25px minmax(0, 1fr);
+    min-height: 38px;
+    gap: 7px;
+  }
+
+  .au-quick-open__item-icon {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    min-height: 25px;
+    border-radius: 8px;
+  }
+
+  .au-quick-open__item-icon svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .au-quick-open__item-copy strong {
+    font-size: 10.8px;
+  }
+
+  .au-quick-open__item-copy small {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 320px) {
+  .au-quick-open__header {
+    grid-template-columns: minmax(0, 1fr) 28px;
+  }
+
+  .au-quick-open__icon {
+    display: none;
+  }
+
+  .au-quick-open__item {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .au-quick-open__item-icon {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   10. ANIMATIONS
+   ========================================================================== */
+
+@keyframes auQuickOpenIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-quick-open {
+    animation: none;
+  }
+
+  .au-quick-open__close,
+  .au-quick-open__input-wrap,
+  .au-quick-open__item {
+    transition: none;
+  }
+}

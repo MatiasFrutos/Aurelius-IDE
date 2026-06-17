@@ -1,0 +1,458 @@
+/* src/components/statusbar/statusbar.css */
+
+/* ==========================================================================
+   01. STATUSBAR SHELL
+   ========================================================================== */
+
+.au-statusbar {
+  position: relative;
+  height: var(--au-statusbar-height);
+  min-height: var(--au-statusbar-height);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 0 8px;
+  overflow: hidden;
+  border-top: 1px solid var(--au-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent),
+    var(--au-bg-topbar);
+  color: var(--au-muted-strong);
+  font-size: 10.2px;
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.024) inset,
+    0 -8px 22px rgba(0, 0, 0, 0.07);
+  z-index: 70;
+}
+
+.au-statusbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(34, 197, 94, 0.055), transparent 38%, rgba(34, 197, 94, 0.035));
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.au-statusbar::after {
+  content: "";
+  position: absolute;
+  inset: 0 8px auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(34, 197, 94, 0.26),
+    transparent
+  );
+  pointer-events: none;
+}
+
+:root[data-theme="light"] .au-statusbar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(248, 250, 252, 0.72)),
+    var(--au-bg-topbar);
+  border-top-color: rgba(15, 23, 42, 0.08);
+  color: #475569;
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 -8px 18px rgba(15, 23, 42, 0.035);
+}
+
+:root[data-theme="light"] .au-statusbar::before {
+  background:
+    linear-gradient(90deg, rgba(22, 163, 74, 0.05), transparent 42%, rgba(22, 163, 74, 0.03));
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   02. LAYOUT
+   ========================================================================== */
+
+.au-statusbar__left,
+.au-statusbar__right {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.au-statusbar__left {
+  justify-content: flex-start;
+}
+
+.au-statusbar__right {
+  justify-content: flex-end;
+}
+
+/* ==========================================================================
+   03. ITEMS
+   ========================================================================== */
+
+.au-statusbar__item {
+  position: relative;
+  min-width: 0;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 7px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--au-muted-strong);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition:
+    background var(--au-transition-fast),
+    border-color var(--au-transition-fast),
+    color var(--au-transition-fast),
+    box-shadow var(--au-transition-fast);
+}
+
+:root[data-theme="light"] .au-statusbar__item {
+  color: #475569;
+}
+
+.au-statusbar__item svg {
+  width: 11.5px;
+  height: 11.5px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+  stroke-width: 2.15;
+  opacity: 0.92;
+}
+
+.au-statusbar__item span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.au-statusbar__item:hover {
+  border-color: var(--au-border);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--au-text);
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.035) inset;
+}
+
+:root[data-theme="light"] .au-statusbar__item:hover {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(15, 23, 42, 0.035);
+  color: #0f172a;
+}
+
+/* ==========================================================================
+   04. PROJECT / FILE
+   ========================================================================== */
+
+.au-statusbar__project {
+  max-width: 190px;
+  font-weight: 820;
+  color: var(--au-text);
+}
+
+.au-statusbar__project svg {
+  color: var(--au-primary-strong);
+}
+
+.au-statusbar__file {
+  max-width: min(480px, 40vw);
+  color: var(--au-muted);
+}
+
+.au-statusbar__file::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  width: 1px;
+  height: 12px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(148, 163, 184, 0.24),
+    transparent
+  );
+}
+
+.au-statusbar__file svg {
+  color: var(--au-muted-strong);
+}
+
+/* ==========================================================================
+   05. DIRTY / SAVED STATE
+   ========================================================================== */
+
+.au-statusbar__state {
+  font-weight: 820;
+}
+
+.au-statusbar__state.is-saved {
+  border-color: rgba(34, 197, 94, 0.18);
+  background: rgba(34, 197, 94, 0.075);
+  color: var(--au-primary-strong);
+}
+
+.au-statusbar__state.is-saved svg {
+  color: var(--au-primary-strong);
+}
+
+.au-statusbar__state.is-dirty {
+  border-color: rgba(245, 158, 11, 0.26);
+  background: rgba(245, 158, 11, 0.105);
+  color: var(--au-warning);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.035) inset;
+}
+
+.au-statusbar__state.is-dirty svg {
+  color: var(--au-warning);
+}
+
+/* ==========================================================================
+   06. CURSOR / LANGUAGE / VERSION
+   ========================================================================== */
+
+.au-statusbar__cursor,
+.au-statusbar__language,
+.au-statusbar__version {
+  color: var(--au-muted);
+}
+
+.au-statusbar__cursor svg,
+.au-statusbar__language svg,
+.au-statusbar__version svg {
+  color: var(--au-muted-strong);
+}
+
+.au-statusbar__version {
+  padding-right: 4px;
+  font-weight: 760;
+  letter-spacing: 0.005em;
+}
+
+.au-statusbar__version svg {
+  color: var(--au-primary-strong);
+}
+
+/* ==========================================================================
+   07. LIVE SERVER
+   ========================================================================== */
+
+.au-statusbar__live-server {
+  max-width: 200px;
+  font-weight: 820;
+  font-variant-numeric: tabular-nums;
+}
+
+.au-statusbar__live-server span {
+  max-width: 168px;
+}
+
+.au-statusbar__live-server.is-running {
+  border-color: rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.085);
+  color: var(--au-primary-strong);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.035) inset;
+}
+
+.au-statusbar__live-server.is-running svg {
+  color: var(--au-primary-strong);
+}
+
+.au-statusbar__live-server.is-stopped {
+  border-color: rgba(148, 163, 184, 0.11);
+  background: rgba(148, 163, 184, 0.055);
+  color: var(--au-muted);
+}
+
+.au-statusbar__live-server.is-stopped svg {
+  color: var(--au-muted);
+}
+
+.au-statusbar__live-server.is-loading {
+  border-color: rgba(59, 130, 246, 0.22);
+  background: rgba(59, 130, 246, 0.085);
+  color: #60a5fa;
+}
+
+.au-statusbar__live-server.is-loading svg {
+  color: #60a5fa;
+  animation: au-statusbar-spin 0.9s linear infinite;
+}
+
+:root[data-theme="light"] .au-statusbar__live-server.is-loading {
+  color: #2563eb;
+}
+
+:root[data-theme="light"] .au-statusbar__live-server.is-loading svg {
+  color: #2563eb;
+}
+
+/* ==========================================================================
+   08. ANIMATIONS
+   ========================================================================== */
+
+@keyframes au-statusbar-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   09. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1180px) {
+  .au-statusbar__live-server {
+    max-width: 180px;
+  }
+
+  .au-statusbar__live-server span {
+    max-width: 150px;
+  }
+
+  .au-statusbar__project {
+    max-width: 170px;
+  }
+
+  .au-statusbar__file {
+    max-width: min(360px, 36vw);
+  }
+}
+
+@media (max-width: 1080px) {
+  .au-statusbar {
+    gap: 6px;
+    padding: 0 7px;
+  }
+
+  .au-statusbar__left,
+  .au-statusbar__right {
+    gap: 4px;
+  }
+
+  .au-statusbar__item {
+    height: 19px;
+    gap: 4px;
+    padding: 0 6px;
+    font-size: 9.8px;
+  }
+
+  .au-statusbar__item svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .au-statusbar__project {
+    max-width: 150px;
+  }
+
+  .au-statusbar__file {
+    max-width: min(300px, 34vw);
+  }
+
+  .au-statusbar__live-server {
+    max-width: 160px;
+  }
+
+  .au-statusbar__live-server span {
+    max-width: 130px;
+  }
+}
+
+@media (max-width: 980px) {
+  .au-statusbar__live-server {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .au-statusbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .au-statusbar__file {
+    max-width: 250px;
+  }
+
+  .au-statusbar__version {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .au-statusbar__project {
+    max-width: 130px;
+  }
+
+  .au-statusbar__file {
+    max-width: 190px;
+  }
+
+  .au-statusbar__language {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .au-statusbar__cursor {
+    display: none;
+  }
+
+  .au-statusbar__file {
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 600px) {
+  .au-statusbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .au-statusbar__right {
+    display: none;
+  }
+
+  .au-statusbar__file {
+    max-width: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .au-statusbar__project {
+    display: none;
+  }
+
+  .au-statusbar__file::before {
+    display: none;
+  }
+}
+
+@media (max-height: 720px) {
+  .au-statusbar {
+    font-size: 9.8px;
+  }
+
+  .au-statusbar__item {
+    height: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-statusbar__item {
+    transition: none;
+  }
+
+  .au-statusbar__live-server.is-loading svg {
+    animation: none;
+  }
+}
