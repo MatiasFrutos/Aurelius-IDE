@@ -80,7 +80,12 @@ pub async fn terminal_spawn(
 
     command.env("TERM", "xterm-256color");
     command.env("COLORTERM", "truecolor");
+    command.env("TERM_PROGRAM", "aurelius");
     command.env("AURELIUS_IDE", "1");
+
+    if std::env::var("LANG").map(|value| value.trim().is_empty()).unwrap_or(true) {
+        command.env("LANG", "en_US.UTF-8");
+    }
 
     let child = pair
         .slave
@@ -116,11 +121,15 @@ pub async fn terminal_spawn(
     let reader_id = id.clone();
 
     thread::spawn(move || {
-        let mut buffer = [0_u8; 4096];
+        let mut buffer = [0_u8; 8192];
+        // Bytes de un carácter UTF-8 que quedó cortado entre dos lecturas.
+        let mut pending: Vec<u8> = Vec::new();
 
         loop {
             match reader.read(&mut buffer) {
                 Ok(0) => {
+                    flush_pending(&app_reader, &reader_id, &mut pending);
+
                     let _ = app_reader.emit(
                         "terminal:exit",
                         TerminalExitPayload {
@@ -132,7 +141,17 @@ pub async fn terminal_spawn(
                     break;
                 }
                 Ok(size) => {
-                    let data = String::from_utf8_lossy(&buffer[..size]).to_string();
+                    pending.extend_from_slice(&buffer[..size]);
+
+                    let valid_up_to = utf8_complete_prefix_len(&pending);
+
+                    if valid_up_to == 0 {
+                        continue;
+                    }
+
+                    let rest = pending.split_off(valid_up_to);
+                    let chunk = std::mem::replace(&mut pending, rest);
+                    let data = String::from_utf8_lossy(&chunk).to_string();
 
                     let _ = app_reader.emit(
                         "terminal:output",
@@ -143,6 +162,8 @@ pub async fn terminal_spawn(
                     );
                 }
                 Err(error) => {
+                    flush_pending(&app_reader, &reader_id, &mut pending);
+
                     let _ = app_reader.emit(
                         "terminal:exit",
                         TerminalExitPayload {
@@ -260,12 +281,47 @@ pub async fn terminal_kill(
             .lock()
             .map_err(|_| "No se pudo bloquear proceso de terminal.".to_string())?;
 
-        child
-            .kill()
-            .map_err(|error| format!("No se pudo cerrar terminal: {error}"))?;
+        // Si el shell ya terminó, kill() puede fallar: no es un error para el usuario.
+        let _ = child.kill();
+        // Recoge el proceso para no dejar zombis.
+        let _ = child.wait();
     }
 
     Ok(())
+}
+
+/// Longitud del prefijo de `bytes` que no termina en medio de un carácter UTF-8.
+/// Evita que `from_utf8_lossy` convierta en "�" los caracteres partidos entre lecturas del PTY.
+fn utf8_complete_prefix_len(bytes: &[u8]) -> usize {
+    match std::str::from_utf8(bytes) {
+        Ok(_) => bytes.len(),
+        Err(error) => {
+            // `error_len() == None` significa "secuencia incompleta al final": esperamos más bytes.
+            // Si hay bytes inválidos en medio (`Some`), los dejamos pasar para que lossy los reemplace.
+            if error.error_len().is_none() {
+                error.valid_up_to()
+            } else {
+                bytes.len()
+            }
+        }
+    }
+}
+
+fn flush_pending(app: &AppHandle, id: &str, pending: &mut Vec<u8>) {
+    if pending.is_empty() {
+        return;
+    }
+
+    let data = String::from_utf8_lossy(pending).to_string();
+    pending.clear();
+
+    let _ = app.emit(
+        "terminal:output",
+        TerminalOutputPayload {
+            id: id.to_string(),
+            data,
+        },
+    );
 }
 
 fn resolve_shell() -> String {

@@ -241,10 +241,10 @@
 }
 
 .aurelius-tab.is-active {
-  border-color: rgba(34, 197, 94, 0.22);
-  background: rgba(34, 197, 94, 0.072);
+  border-color: rgba(var(--au-accent-rgb), 0.22);
+  background: rgba(var(--au-accent-rgb), 0.072);
   color: var(--au-text);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.032) inset;
+  box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.032) inset;
 }
 
 .aurelius-tab__button {
@@ -322,7 +322,7 @@
 
 .aurelius-resizer:hover,
 body.is-resizing-layout .aurelius-resizer {
-  background: rgba(34, 197, 94, 0.24);
+  background: rgba(var(--au-accent-rgb), 0.24);
 }
 
 .aurelius-resizer--sidebar {

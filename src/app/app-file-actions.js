@@ -1,4 +1,5 @@
 // src/app/app-file-actions.js
+import { recordSnapshot } from "../components/features/features.js";
 import {
   appState,
   setActiveFile,
@@ -727,6 +728,7 @@ export async function handleSaveFile({ renderApp }) {
     const content = getEditorContent();
 
     await writeFile(appState.activeFilePath, content);
+    recordSnapshot(appState.activeFilePath, content);
 
     markActiveTabSaved(content);
 

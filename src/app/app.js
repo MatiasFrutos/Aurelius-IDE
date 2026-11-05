@@ -87,6 +87,7 @@ import {
 
 import { refreshMonitorSnapshot } from "./app-monitor.js";
 import { refreshIcons } from "./app-icons.js";
+import { initFeatures, applyAppearance, openAppearancePanel } from "../components/features/features.js";
 import { createCommandActions } from "./app-command-actions.js";
 import { handleAppContextMenu } from "./app-context-menu.js";
 
@@ -1737,6 +1738,12 @@ function bindEvents() {
 }
 
 function bindGlobalEvents() {
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("#settings-open-appearance")) {
+      openAppearancePanel();
+    }
+  });
+
   document.addEventListener(
     "click",
     (event) => {
@@ -1906,7 +1913,9 @@ function bindGlobalEvents() {
 }
 
 export async function initAureliusApp() {
+  initFeatures();
   await loadSettings();
+  applyAppearance();
 
   const savedSession = await applyLayoutPreferences();
 

@@ -29,7 +29,7 @@
   background: linear-gradient(
     180deg,
     transparent,
-    rgba(34, 197, 94, 0.14),
+    rgba(var(--au-accent-rgb), 0.14),
     transparent
   );
   opacity: 0.68;
@@ -142,22 +142,22 @@
 }
 
 .au-activity__button:focus-visible {
-  border-color: rgba(34, 197, 94, 0.34);
+  border-color: rgba(var(--au-accent-rgb), 0.34);
   background: var(--au-button-bg-hover);
   color: var(--au-primary-strong);
   box-shadow:
-    0 0 0 1px rgba(34, 197, 94, 0.08) inset,
-    0 0 0 3px rgba(34, 197, 94, 0.065);
+    0 0 0 1px rgba(var(--au-accent-rgb), 0.08) inset,
+    0 0 0 3px rgba(var(--au-accent-rgb), 0.065);
 }
 
 .au-activity__button.is-active {
-  border-color: rgba(34, 197, 94, 0.24);
+  border-color: rgba(var(--au-accent-rgb), 0.24);
   background:
-    linear-gradient(180deg, rgba(34, 197, 94, 0.095), rgba(34, 197, 94, 0.045)),
+    linear-gradient(180deg, rgba(var(--au-accent-rgb), 0.095), rgba(var(--au-accent-rgb), 0.045)),
     var(--au-button-bg);
   color: var(--au-primary-strong);
   box-shadow:
-    0 0 0 1px rgba(34, 197, 94, 0.05) inset,
+    0 0 0 1px rgba(var(--au-accent-rgb), 0.05) inset,
     0 7px 15px rgba(0, 0, 0, 0.07);
 }
 
@@ -167,9 +167,9 @@
 }
 
 .au-activity__button.is-active:hover {
-  border-color: rgba(34, 197, 94, 0.3);
+  border-color: rgba(var(--au-accent-rgb), 0.3);
   background:
-    linear-gradient(180deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.058)),
+    linear-gradient(180deg, rgba(var(--au-accent-rgb), 0.12), rgba(var(--au-accent-rgb), 0.058)),
     var(--au-button-bg-hover);
   color: var(--au-primary-strong);
 }
@@ -189,9 +189,9 @@
 }
 
 .au-activity__button[data-activity-panel="settings"].is-active {
-  border-color: rgba(34, 197, 94, 0.24);
+  border-color: rgba(var(--au-accent-rgb), 0.24);
   background:
-    linear-gradient(180deg, rgba(34, 197, 94, 0.095), rgba(34, 197, 94, 0.045)),
+    linear-gradient(180deg, rgba(var(--au-accent-rgb), 0.095), rgba(var(--au-accent-rgb), 0.045)),
     var(--au-button-bg);
   color: var(--au-primary-strong);
 }
@@ -206,10 +206,10 @@
 
 :root[data-theme="light"] .au-activity__button.is-active {
   background:
-    linear-gradient(180deg, rgba(22, 163, 74, 0.105), rgba(22, 163, 74, 0.05)),
+    linear-gradient(180deg, rgba(var(--au-accent-rgb), 0.105), rgba(var(--au-accent-rgb), 0.05)),
     rgba(255, 255, 255, 0.76);
   box-shadow:
-    0 0 0 1px rgba(22, 163, 74, 0.05) inset,
+    0 0 0 1px rgba(var(--au-accent-rgb), 0.05) inset,
     0 7px 15px rgba(15, 23, 42, 0.05);
 }
 

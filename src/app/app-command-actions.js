@@ -1,6 +1,8 @@
 // src/app/app-command-actions.js
 import { appState } from "./state.js";
 import { t } from "./i18n.js";
+import { createFeatureCommands } from "../components/features/features.js";
+import { createEditorToolCommands } from "./editor-tools.js";
 
 export function createCommandActions({
   handleOpenProject,
@@ -345,6 +347,8 @@ export function createCommandActions({
       icon: "git-branch",
       keywords: ["git", "branch", "status", "estado"],
       run: handleOpenGitPanel
-    }
+    },
+    ...createFeatureCommands(),
+    ...createEditorToolCommands()
   ];
 }

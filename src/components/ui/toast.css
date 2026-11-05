@@ -237,8 +237,8 @@
    ========================================================================== */
 
 .au-toast--success {
-  --au-toast-color: #22c55e;
-  --au-toast-border: rgba(34, 197, 94, 0.3);
+  --au-toast-color: var(--au-success-strong);
+  --au-toast-border: rgba(var(--au-success-rgb), 0.3);
 }
 
 .au-toast--error {
@@ -257,7 +257,7 @@
 }
 
 :root[data-theme="dark"] .au-toast--success {
-  --au-toast-color: #4ade80;
+  --au-toast-color: var(--au-success-strong);
 }
 
 :root[data-theme="dark"] .au-toast--error {
