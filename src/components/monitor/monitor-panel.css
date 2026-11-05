@@ -16,7 +16,7 @@
     var(--au-bg-sidebar);
   color: var(--au-text);
   scrollbar-width: thin;
-  scrollbar-color: rgba(34, 197, 94, 0.24) transparent;
+  scrollbar-color: rgba(var(--au-accent-rgb), 0.24) transparent;
   container-type: inline-size;
 }
 
@@ -38,7 +38,7 @@
 .au-monitor::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.24);
+  background: rgba(var(--au-accent-rgb), 0.24);
   background-clip: content-box;
 }
 
@@ -107,9 +107,9 @@
   gap: 6px;
   margin-bottom: 7px;
   padding: 3px 7px;
-  border: 1px solid rgba(34, 197, 94, 0.22);
+  border: 1px solid rgba(var(--au-accent-rgb), 0.22);
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.075);
+  background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
   font-size: 9px;
   font-weight: 920;
@@ -268,10 +268,10 @@
 }
 
 .au-monitor__refresh:hover {
-  border-color: rgba(34, 197, 94, 0.28);
+  border-color: rgba(var(--au-accent-rgb), 0.28);
   background: var(--au-primary-soft);
   color: var(--au-primary-strong);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.045) inset;
+  box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.045) inset;
 }
 
 .au-monitor__refresh:disabled {
@@ -349,9 +349,9 @@
   height: 26px;
   min-width: 26px;
   min-height: 26px;
-  border: 1px solid rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(var(--au-accent-rgb), 0.18);
   border-radius: 9px;
-  background: rgba(34, 197, 94, 0.075);
+  background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
 }
 
@@ -390,7 +390,7 @@
   min-width: 34px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.09);
+  background: rgba(var(--au-accent-rgb), 0.09);
   color: var(--au-primary-strong);
   font-size: 9.5px;
   font-weight: 920;

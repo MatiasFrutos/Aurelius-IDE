@@ -1,6 +1,8 @@
 // src/components/bottom-panel/bottom-panel.js
 import { Terminal as XtermTerminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { WebLinksAddon } from "@xterm/addon-web-links";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 import { appState } from "../../app/state.js";
 import { getLanguage, t } from "../../app/i18n.js";
@@ -486,30 +488,92 @@ function getProjectDiagnosticKind() {
   return "unknown";
 }
 
+function readCssVar(name, fallback) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  return value || fallback;
+}
+
 function getTerminalTheme() {
+  const isLight = document.documentElement.dataset.theme === "light";
+  const accentRgb = readCssVar("--au-accent-rgb", "56, 189, 248");
+  const accent = `rgb(${accentRgb})`;
+  const background = readCssVar("--au-bg-panel", isLight ? "#ffffff" : "#0f1117");
+
+  if (isLight) {
+    return {
+      background,
+      foreground: readCssVar("--au-text", "#0f1424"),
+      cursor: accent,
+      cursorAccent: background,
+      selectionBackground: `rgba(${accentRgb}, 0.28)`,
+      black: "#0f1424",
+      red: "#dc2626",
+      green: "#047857",
+      yellow: "#a16207",
+      blue: "#1d4ed8",
+      magenta: "#7c3aed",
+      cyan: "#0e7490",
+      white: "#667085",
+      brightBlack: "#7a8194",
+      brightRed: "#ef4444",
+      brightGreen: "#059669",
+      brightYellow: "#ca8a04",
+      brightBlue: "#2563eb",
+      brightMagenta: "#8b5cf6",
+      brightCyan: "#0891b2",
+      brightWhite: "#0f1424"
+    };
+  }
+
   return {
-    background: "#07100c",
-    foreground: "#d7e2dc",
-    cursor: "#22c55e",
-    cursorAccent: "#07100c",
-    selectionBackground: "#14532d",
-    black: "#020617",
-    red: "#ef4444",
-    green: "#22c55e",
-    yellow: "#f59e0b",
-    blue: "#38bdf8",
-    magenta: "#a78bfa",
-    cyan: "#2dd4bf",
-    white: "#e5e7eb",
-    brightBlack: "#64748b",
-    brightRed: "#f87171",
-    brightGreen: "#4ade80",
-    brightYellow: "#fbbf24",
-    brightBlue: "#60a5fa",
-    brightMagenta: "#c084fc",
-    brightCyan: "#67e8f9",
+    background,
+    foreground: readCssVar("--au-text", "#e9ecf4"),
+    cursor: accent,
+    cursorAccent: background,
+    selectionBackground: `rgba(${accentRgb}, 0.32)`,
+    black: "#1a1d26",
+    red: "#f87171",
+    green: "#6ee7b7",
+    yellow: "#fbbf24",
+    blue: "#7cb7ff",
+    magenta: "#c4a7ff",
+    cyan: "#5eead4",
+    white: "#c3c9d8",
+    brightBlack: "#5f6678",
+    brightRed: "#fca5a5",
+    brightGreen: "#a7f3d0",
+    brightYellow: "#fde68a",
+    brightBlue: "#a5cbff",
+    brightMagenta: "#ddd0ff",
+    brightCyan: "#99f6e4",
     brightWhite: "#f8fafc"
   };
+}
+
+let terminalThemeObserver = null;
+
+function watchTerminalTheme() {
+  if (terminalThemeObserver || typeof MutationObserver === "undefined") {
+    return;
+  }
+
+  terminalThemeObserver = new MutationObserver(() => {
+    requestAnimationFrame(() => {
+      const theme = getTerminalTheme();
+
+      for (const record of terminalRegistry.values()) {
+        if (record.terminal) {
+          record.terminal.options.theme = theme;
+        }
+      }
+    });
+  });
+
+  terminalThemeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme", "data-accent", "data-surface", "style"]
+  });
 }
 
 function getTerminalFontFamily() {
@@ -1079,27 +1143,73 @@ function disposeAllTerminalViews(options = {}) {
   }
 }
 
+const earlyTerminalOutput = new Map();
+const EARLY_OUTPUT_LIMIT = 200000;
+
+function writeToTerminalView(record, data) {
+  const terminal = record?.terminal;
+
+  if (!terminal) {
+    return;
+  }
+
+  let wasAtBottom = true;
+
+  try {
+    const buffer = terminal.buffer.active;
+    wasAtBottom = buffer.viewportY >= buffer.baseY;
+  } catch {
+    // xterm puede no estar listo todavía.
+  }
+
+  terminal.write(data, () => {
+    if (!wasAtBottom) {
+      return;
+    }
+
+    try {
+      terminal.scrollToBottom();
+    } catch {
+      // xterm puede no estar listo todavía.
+    }
+  });
+}
+
+function handleTerminalOutputForRecord(record, data) {
+  appendTerminalBuffer(record, data);
+  scanTerminalProblems(record, data);
+  writeToTerminalView(record, data);
+}
+
+function flushEarlyTerminalOutput(record) {
+  const early = earlyTerminalOutput.get(record.sessionId);
+
+  if (!early) {
+    return;
+  }
+
+  earlyTerminalOutput.delete(record.sessionId);
+
+  if (early.data) {
+    handleTerminalOutputForRecord(record, early.data);
+  }
+}
+
 async function ensureTerminalListeners() {
   if (!outputUnlisten) {
     outputUnlisten = await onTerminalOutput((payload) => {
       const record = getTerminalList().find((terminalItem) => terminalItem.sessionId === payload.id);
 
       if (!record) {
+        // La salida puede llegar antes de que spawnTerminal() devuelva el id: la guardamos.
+        const early = earlyTerminalOutput.get(payload.id) || { data: "" };
+
+        early.data = (early.data + payload.data).slice(-EARLY_OUTPUT_LIMIT);
+        earlyTerminalOutput.set(payload.id, early);
         return;
       }
 
-      appendTerminalBuffer(record, payload.data);
-      scanTerminalProblems(record, payload.data);
-
-      if (record.terminal) {
-        record.terminal.write(payload.data, () => {
-          try {
-            record.terminal?.scrollToBottom?.();
-          } catch {
-            // xterm puede no estar listo todavía.
-          }
-        });
-      }
+      handleTerminalOutputForRecord(record, payload.data);
     });
   }
 
@@ -1170,6 +1280,8 @@ async function startTerminalSession(record) {
     record.connected = true;
 
     writeBanner(record, `${record.title} ${t("conectada.", "connected.")}`);
+    flushEarlyTerminalOutput(record);
+
 
     addOutput(
       "success",
@@ -1242,16 +1354,47 @@ function createTerminalView(record, container) {
     fontSize: Number(appState.settings.editorFontSize || 13),
     lineHeight: 1.18,
     letterSpacing: 0,
-    scrollback: 5000,
-    convertEol: true,
+    scrollback: 10000,
+    smoothScrollDuration: 90,
+    allowProposedApi: true,
+    macOptionIsMeta: true,
+    convertEol: false,
     allowTransparency: false,
     theme: getTerminalTheme(),
     customKeyEventHandler: (event) => {
+      if (event.type !== "keydown") {
+        return true;
+      }
+
       const key = String(event.key || "").toLowerCase();
       const hasCtrl = event.ctrlKey || event.metaKey;
 
-      if (hasCtrl && event.shiftKey && key === "c" && event.type === "keydown") {
+      if (hasCtrl && event.shiftKey && key === "c") {
         copyTerminalSelection();
+        return false;
+      }
+
+      // Ctrl+C copia solo si hay texto seleccionado; si no, envía SIGINT al shell.
+      if (hasCtrl && !event.shiftKey && key === "c" && record.terminal?.hasSelection()) {
+        copyTerminalSelection();
+        record.terminal.clearSelection();
+        return false;
+      }
+
+      if (hasCtrl && key === "v") {
+        navigator.clipboard
+          ?.readText()
+          .then((text) => {
+            if (text) {
+              record.terminal?.paste(text);
+            }
+          })
+          .catch(() => {});
+        return false;
+      }
+
+      if (hasCtrl && event.shiftKey && key === "k") {
+        record.terminal?.clear();
         return false;
       }
 
@@ -1262,6 +1405,14 @@ function createTerminalView(record, container) {
   record.fitAddon = new FitAddon();
 
   record.terminal.loadAddon(record.fitAddon);
+  record.terminal.loadAddon(
+    new WebLinksAddon((event, uri) => {
+      if (event.ctrlKey || event.metaKey) {
+        openUrl(uri).catch((error) => console.error(error));
+      }
+    })
+  );
+  watchTerminalTheme();
   record.terminal.open(container);
   record.mounted = true;
 

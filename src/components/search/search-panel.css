@@ -61,7 +61,7 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    rgba(34, 197, 94, 0.22),
+    rgba(var(--au-accent-rgb), 0.22),
     transparent 72%
   );
   opacity: 0.64;
@@ -120,9 +120,9 @@
   min-width: 22px;
   height: 20px;
   padding: 0 6px;
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(var(--au-accent-rgb), 0.2);
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.07);
+  background: rgba(var(--au-accent-rgb), 0.07);
   color: var(--au-primary-strong);
   font-size: 9px;
   font-weight: 920;
@@ -171,9 +171,9 @@
 }
 
 .au-search__control:focus-within {
-  border-color: rgba(34, 197, 94, 0.32);
+  border-color: rgba(var(--au-accent-rgb), 0.32);
   background: var(--au-bg-elevated);
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.055);
+  box-shadow: 0 0 0 2px rgba(var(--au-accent-rgb), 0.055);
 }
 
 .au-search__control > svg {
@@ -225,14 +225,14 @@
   justify-content: center;
   gap: 6px;
   margin-top: 7px;
-  border: 1px solid rgba(34, 197, 94, 0.26);
+  border: 1px solid rgba(var(--au-accent-rgb), 0.26);
   border-radius: 9px;
-  background: rgba(34, 197, 94, 0.085);
+  background: rgba(var(--au-accent-rgb), 0.085);
   color: var(--au-primary-strong);
   font-size: 10.4px;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.03) inset;
+  box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.03) inset;
   transition:
     border-color var(--au-transition-fast),
     background var(--au-transition-fast),
@@ -241,8 +241,8 @@
 }
 
 .au-search__submit:hover {
-  border-color: rgba(34, 197, 94, 0.38);
-  background: rgba(34, 197, 94, 0.125);
+  border-color: rgba(var(--au-accent-rgb), 0.38);
+  background: rgba(var(--au-accent-rgb), 0.125);
   color: var(--au-primary-strong);
 }
 
@@ -390,9 +390,9 @@
   height: 18px;
   max-width: 58px;
   padding: 0 6px;
-  border: 1px solid rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(var(--au-accent-rgb), 0.16);
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.055);
+  background: rgba(var(--au-accent-rgb), 0.055);
   color: var(--au-primary-strong);
   font-size: 8px;
   font-weight: 850;
@@ -422,9 +422,9 @@
   width: 36px;
   height: 36px;
   margin-bottom: 2px;
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(var(--au-accent-rgb), 0.2);
   border-radius: 12px;
-  background: rgba(34, 197, 94, 0.07);
+  background: rgba(var(--au-accent-rgb), 0.07);
   color: var(--au-primary-strong);
 }
 
@@ -465,7 +465,7 @@
   gap: 6px;
   padding: 8px 8px 12px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(34, 197, 94, 0.22) transparent;
+  scrollbar-color: rgba(var(--au-accent-rgb), 0.22) transparent;
 }
 
 .au-search__results::-webkit-scrollbar {
@@ -480,12 +480,12 @@
 .au-search__results::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.22);
+  background: rgba(var(--au-accent-rgb), 0.22);
   background-clip: content-box;
 }
 
 .au-search__results::-webkit-scrollbar-thumb:hover {
-  background: rgba(34, 197, 94, 0.36);
+  background: rgba(var(--au-accent-rgb), 0.36);
   background-clip: content-box;
 }
 
@@ -536,12 +536,12 @@
 
 .au-search__result:hover {
   transform: translateY(-1px);
-  border-color: rgba(34, 197, 94, 0.22);
+  border-color: rgba(var(--au-accent-rgb), 0.22);
   background:
-    linear-gradient(180deg, rgba(34, 197, 94, 0.055), transparent),
+    linear-gradient(180deg, rgba(var(--au-accent-rgb), 0.055), transparent),
     var(--au-bg-card-hover);
   box-shadow:
-    0 0 0 1px rgba(34, 197, 94, 0.03) inset,
+    0 0 0 1px rgba(var(--au-accent-rgb), 0.03) inset,
     0 8px 18px rgba(15, 23, 42, 0.055);
 }
 
@@ -557,9 +557,9 @@
   height: 25px;
   min-width: 25px;
   min-height: 25px;
-  border: 1px solid rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(var(--au-accent-rgb), 0.16);
   border-radius: 9px;
-  background: rgba(34, 197, 94, 0.07);
+  background: rgba(var(--au-accent-rgb), 0.07);
   color: var(--au-primary-strong);
 }
 
@@ -635,7 +635,7 @@
 
 .au-search__result-meta small {
   color: var(--au-primary-strong);
-  background: rgba(34, 197, 94, 0.075);
+  background: rgba(var(--au-accent-rgb), 0.075);
 }
 
 /* ==========================================================================

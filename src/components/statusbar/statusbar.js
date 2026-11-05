@@ -2,6 +2,7 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { appState } from "../../app/state.js";
 import { t } from "../../app/i18n.js";
+import { getFlowClass, getFlowLabel } from "../features/features.js";
 
 let statusbarEventsBound = false;
 
@@ -266,6 +267,17 @@ export function renderStatusbar() {
       </div>
 
       <div class="au-statusbar__right">
+        <span
+          class="au-statusbar__item au-statusbar__flow ${getFlowClass()}"
+          id="status-flow"
+          role="button"
+          tabindex="0"
+          title="${t("Flow timer · clic: iniciar/pausar · clic derecho: reiniciar · Alt+T", "Flow timer · click: start/pause · right-click: reset · Alt+T")}"
+        >
+          <i data-lucide="timer"></i>
+          <span>${escapeHTML(getFlowLabel())}</span>
+        </span>
+
         <span
           class="au-statusbar__item au-statusbar__state ${dirtyClassName}"
           id="status-dirty"

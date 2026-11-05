@@ -94,7 +94,10 @@ export function renderTopbar() {
     <header class="au-topbar">
       <div class="au-topbar__brand">
         <span class="au-topbar__logo" aria-hidden="true">
-          <i data-lucide="code-2"></i>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.7 3.6h2.6L19.6 20.4h-2.7L12 7.7 7.1 20.4H4.4L10.7 3.6Z" fill="currentColor" stroke="none"/>
+            <path d="M8.9 14.2h6.2l.8 2.2H8.1l.8-2.2Z" fill="rgb(var(--au-accent-rgb))" stroke="none"/>
+          </svg>
         </span>
 
         <span class="au-topbar__brand-copy">

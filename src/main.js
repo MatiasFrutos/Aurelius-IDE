@@ -26,6 +26,8 @@ import "./components/editor/editor.css";
 import "./components/statusbar/statusbar.css";
 import "./components/ui/toast.css";
 import "./components/ui/modal.css";
+import "./styles/modern.css";
+import "./components/features/features.css";
 
 import { initAureliusApp } from "./app/app.js";
 

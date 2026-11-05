@@ -1,0 +1,188 @@
+/* src/styles/modern.css — capa visual v2: plano, rápido, sin glow, con movimiento sutil */
+
+:root {
+  --au-radius-sm-base: 6px;
+  --au-radius-md-base: 9px;
+  --au-font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+}
+
+/* ---------- Sin glow: nada de sombras de color ni halos radiales ---------- */
+.au-modal__glow { display: none !important; }
+.au-toast::before { box-shadow: none !important; }
+.au-modal,
+.au-toast,
+.au-palette,
+.au-quick-open {
+  backdrop-filter: none;
+}
+
+/* ---------- Movimiento global (rápido: <= 200ms) ---------- */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+.aurelius-tab,
+.explorer-row,
+.activity-bar__button {
+  transition:
+    background-color var(--au-dur-fast) var(--au-ease),
+    border-color var(--au-dur-fast) var(--au-ease),
+    color var(--au-dur-fast) var(--au-ease),
+    transform var(--au-dur-fast) var(--au-ease),
+    opacity var(--au-dur-fast) var(--au-ease);
+}
+
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+@keyframes au-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes au-pop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes au-slide-x {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes au-sweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+.aurelius-side-panel > *,
+.aurelius-right-panel > * {
+  animation: au-slide-x var(--au-dur) var(--au-ease) both;
+}
+
+.aurelius-workspace > *,
+.aurelius-page-area > * {
+  animation: au-rise var(--au-dur-slow) var(--au-ease) both;
+}
+
+.aurelius-editor-area .cm-editor {
+  animation: au-rise var(--au-dur) var(--au-ease) both;
+}
+
+.aurelius-tab {
+  animation: au-pop var(--au-dur) var(--au-ease) both;
+}
+
+.aurelius-tab.is-active {
+  position: relative;
+}
+
+.aurelius-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--au-primary);
+  animation: au-rise var(--au-dur) var(--au-ease) both;
+}
+
+/* Cursor de actividad: indicador deslizante plano (sin brillo) */
+.au-activity__button.is-active::before,
+.au-activity__x::before {
+  border-radius: 0 3px 3px 0;
+  box-shadow: none;
+}
+
+/* ---------- Superficies planas, bordes finos ---------- */
+.aurelius-side-panel,
+.aurelius-right-panel,
+.aurelius-center-area__bottom {
+  background-image: none !important;
+}
+
+.aurelius-resizer {
+  transition: background-color var(--au-dur) var(--au-ease);
+}
+
+.aurelius-resizer:hover,
+.aurelius-resizer.is-dragging {
+  background: rgba(var(--au-accent-rgb), 0.5);
+}
+
+/* ---------- Barra de progreso fina de "trabajando" ---------- */
+.au-busy-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity var(--au-dur) var(--au-ease);
+}
+
+.au-busy-bar.is-on { opacity: 1; }
+
+.au-busy-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: var(--au-primary);
+  animation: au-sweep 1s var(--au-ease) infinite;
+}
+
+/* ---------- Scrollbars finas ---------- */
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+  background-clip: content-box;
+}
+
+/* ---------- Modo Zen ---------- */
+:root[data-zen="on"] .au-activity,
+:root[data-zen="on"] .au-topbar,
+:root[data-zen="on"] .aurelius-side-panel,
+:root[data-zen="on"] .aurelius-right-panel,
+:root[data-zen="on"] .aurelius-center-area__bottom,
+:root[data-zen="on"] .aurelius-resizer,
+:root[data-zen="on"] .au-statusbar,
+:root[data-zen="on"] .au-activity__x {
+  display: none !important;
+}
+
+:root[data-zen="on"] .aurelius-main,
+:root[data-zen="on"] .aurelius-shell {
+  grid-template-columns: 1fr !important;
+  grid-template-rows: 1fr !important;
+}
+
+:root[data-zen="on"] .aurelius-editor-area .cm-content {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* ---------- Animaciones desactivables ---------- */
+:root[data-motion="off"] *,
+:root[data-motion="off"] *::before,
+:root[data-motion="off"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0s !important;
+  transition-duration: 0.001ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

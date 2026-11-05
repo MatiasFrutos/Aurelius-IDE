@@ -93,7 +93,14 @@ import {
   TriangleAlert,
   Wrench,
   X,
-  Zap
+  Zap,
+  Timer,
+  Maximize2,
+  Wand2,
+  NotebookPen,
+  Eye,
+  Hash,
+  Undo2
 } from "lucide";
 
 const icons = {
@@ -189,7 +196,14 @@ const icons = {
   TriangleAlert,
   Wrench,
   X,
-  Zap
+  Zap,
+  Timer,
+  Maximize2,
+  Wand2,
+  NotebookPen,
+  Eye,
+  Hash,
+  Undo2
 };
 
 export function refreshIcons() {

@@ -951,3 +951,27 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:052e16,50:16a34a,100:052e16&height=110&section=footer" />
 </p>
+
+---
+
+## Aurelius v2 — rediseño visual y nuevas funciones
+
+**Diseño:** nueva paleta *Obsidian* (plana, sin glow), tokens de acento configurables (`--au-accent-rgb`), superficies *Midnight* (AMOLED) y *Graphite*, animaciones cortas (≤ 200 ms) desactivables, nuevo icono y logo vectorial.
+
+**Atajos nuevos**
+
+| Atajo | Acción |
+| --- | --- |
+| `Alt+Z` | Modo Zen (solo editor; `Esc` para salir) |
+| `Alt+A` | Apariencia: tema, superficie, acento, minimapa, animaciones |
+| `Alt+H` | Historial local del archivo (se guarda una versión en cada `Ctrl+S`; diff + restaurar) |
+| `Alt+J` | Scratchpad flotante con autoguardado |
+| `Alt+T` | Flow timer (Pomodoro 25/5) en la barra de estado; clic derecho = reiniciar |
+| `Ctrl+rueda` | Zoom de fuente en el editor |
+| `Ctrl+Shift+K` (terminal) | Limpiar terminal |
+
+**Editor:** minimapa con arrastre, muestras de color inline (clic en `#rrggbb` abre el selector nativo), `TODO/FIXME/HACK/NOTE` resaltados, paréntesis arcoíris.
+
+**Herramientas de texto (paleta de comandos):** JSON formatear/minificar, camel/Pascal/snake/kebab, ordenar y deduplicar líneas, Base64/URL, insertar UUID / fecha ISO / timestamp, copiar ruta.
+
+**Terminal — correcciones:** la salida inicial del shell ya no se pierde (carrera entre `spawn` y el listener); caracteres UTF-8 multibyte ya no se corrompen entre lecturas del PTY; el auto-scroll respeta si el usuario subió en el historial; `Ctrl+C` copia solo con selección (si no, SIGINT); `Ctrl+V` pega; enlaces clicables con `Ctrl+clic`; el tema sigue al tema/acento de la app; se recogen los procesos hijos al cerrar.

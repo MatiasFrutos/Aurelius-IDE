@@ -1,4 +1,6 @@
 // src/editor/codemirror.js
+import { createEditorExtras } from "./extras.js";
+
 import {
   EditorState,
   RangeSetBuilder,
@@ -1447,7 +1449,7 @@ function createAureliusHighlightStyle() {
         syntaxTags.function(syntaxTags.propertyName),
         syntaxTags.labelName
       ],
-      color: "var(--au-syntax-function, #22c55e)",
+      color: "var(--au-syntax-function)",
       fontWeight: "720"
     },
     {
@@ -1525,7 +1527,7 @@ function createAureliusHighlightStyle() {
     },
     {
       tag: syntaxTags.heading,
-      color: "var(--au-syntax-heading, #22c55e)",
+      color: "var(--au-syntax-heading)",
       fontWeight: "850"
     },
     {
@@ -1542,7 +1544,7 @@ function createAureliusHighlightStyle() {
         syntaxTags.string,
         syntaxTags.inserted
       ],
-      color: "var(--au-syntax-string, #86efac)"
+      color: "var(--au-syntax-string)"
     },
     {
       tag: syntaxTags.invalid,
@@ -1610,20 +1612,20 @@ function createAureliusTheme() {
       },
 
       ".cm-activeLine": {
-        backgroundColor: "rgba(34, 197, 94, 0.065)"
+        backgroundColor: "rgba(var(--au-accent-rgb), 0.065)"
       },
 
       ".cm-activeLineGutter": {
-        backgroundColor: "rgba(34, 197, 94, 0.11)",
+        backgroundColor: "rgba(var(--au-accent-rgb), 0.11)",
         color: "var(--au-primary-strong)"
       },
 
       ".cm-selectionBackground": {
-        backgroundColor: "rgba(34, 197, 94, 0.22) !important"
+        backgroundColor: "rgba(var(--au-accent-rgb), 0.22) !important"
       },
 
       ".cm-content ::selection": {
-        backgroundColor: "rgba(34, 197, 94, 0.22)"
+        backgroundColor: "rgba(var(--au-accent-rgb), 0.22)"
       },
 
       ".cm-cursor": {
@@ -1632,9 +1634,9 @@ function createAureliusTheme() {
       },
 
       ".cm-matchingBracket": {
-        outline: "1px solid rgba(34, 197, 94, 0.4)",
+        outline: "1px solid rgba(var(--au-accent-rgb), 0.4)",
         borderRadius: "4px",
-        backgroundColor: "rgba(34, 197, 94, 0.11)"
+        backgroundColor: "rgba(var(--au-accent-rgb), 0.11)"
       },
 
       ".cm-nonmatchingBracket": {
@@ -1862,6 +1864,7 @@ function getBaseExtensions({
     createAureliusDiagnosticLineField(filePath, diagnostics),
     createAureliusDiagnosticsRefreshPlugin(filePath, diagnostics),
     EditorView.lineWrapping,
+    ...createEditorExtras(),
     EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         onChange?.(update.state.doc.toString());

@@ -307,6 +307,20 @@ export function renderSettingsPanel() {
                 </select>
               </label>
 
+              <div class="au-settings__field au-settings__field--inline">
+                <span>
+                  <strong>${text("Apariencia avanzada", "Advanced appearance")}</strong>
+                  <small>${text(
+                    "Color de acento, superficie AMOLED/Grafito, minimapa y animaciones. Atajo: Alt+A.",
+                    "Accent color, AMOLED/Graphite surface, minimap and animations. Shortcut: Alt+A."
+                  )}</small>
+                </span>
+
+                <button type="button" id="settings-open-appearance" class="au-settings__button">
+                  ${text("Personalizar…", "Customize…")}
+                </button>
+              </div>
+
               <label class="au-settings__field au-settings__field--inline">
                 <span>
                   <strong>${text("Idioma", "Language")}</strong>
