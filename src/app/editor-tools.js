@@ -1,4 +1,15 @@
 // src/app/editor-tools.js — herramientas de texto sobre la selección (o el documento completo)
+import {
+  copyLineDown,
+  deleteLine,
+  moveLineDown,
+  moveLineUp,
+  selectLine,
+  toggleBlockComment,
+  toggleComment
+} from "@codemirror/commands";
+import { foldAll, unfoldAll } from "@codemirror/language";
+import { gotoLine, selectSelectionMatches } from "@codemirror/search";
 import { appState } from "./state.js";
 import { toastError, toastInfo, toastSuccess } from "../components/ui/toast.js";
 import { t } from "./i18n.js";
@@ -82,6 +93,18 @@ function uuid() {
   });
 }
 
+function runEditorCommand(command) {
+  const view = getView();
+
+  if (!view) {
+    toastInfo(t("Abrí un archivo primero.", "Open a file first."), t("Sin editor", "No editor"));
+    return;
+  }
+
+  view.focus();
+  command(view);
+}
+
 export function createEditorToolCommands() {
   const group = t("Herramientas de texto", "Text tools");
 
@@ -98,7 +121,24 @@ export function createEditorToolCommands() {
     run
   });
 
+  const edit = (id, es, en, icon, command, shortcut = "", keywords = []) => ({
+    ...mk(id, es, en, icon, () => runEditorCommand(command), keywords),
+    group: t("Editor", "Editor"),
+    shortcut
+  });
+
   return [
+    edit("goto-line", "Ir a línea…", "Go to line…", "text-cursor-input", gotoLine, "Ctrl+Alt+G", ["line", "linea", "goto"]),
+    edit("dup-line", "Duplicar línea", "Duplicate line", "copy", copyLineDown, "Shift+Alt+↓", ["duplicate", "duplicar"]),
+    edit("del-line", "Eliminar línea", "Delete line", "trash-2", deleteLine, "Ctrl+Shift+K", ["delete", "borrar"]),
+    edit("move-up", "Mover línea arriba", "Move line up", "arrow-right", moveLineUp, "Alt+↑"),
+    edit("move-down", "Mover línea abajo", "Move line down", "arrow-right", moveLineDown, "Alt+↓"),
+    edit("sel-line", "Seleccionar línea", "Select line", "text-cursor-input", selectLine, "Ctrl+L"),
+    edit("comment", "Comentar / descomentar línea", "Toggle line comment", "code", toggleComment, "Ctrl+/"),
+    edit("block-comment", "Comentar / descomentar bloque", "Toggle block comment", "code", toggleBlockComment, "Shift+Alt+A"),
+    edit("sel-matches", "Seleccionar todas las coincidencias", "Select all matches", "search", selectSelectionMatches, "Ctrl+Shift+L"),
+    edit("fold-all", "Plegar todo", "Fold all", "chevron-right", foldAll, "Ctrl+Alt+[", ["fold", "plegar"]),
+    edit("unfold-all", "Desplegar todo", "Unfold all", "chevron-down", unfoldAll, "Ctrl+Alt+]", ["unfold", "desplegar"]),
     mk("json-format", "JSON: formatear", "JSON: format", "braces", () => applyTransform("jsonFormat"), ["json", "pretty"]),
     mk("json-min", "JSON: minificar", "JSON: minify", "braces", () => applyTransform("jsonMinify"), ["json", "minify"]),
     mk("upper", "MAYÚSCULAS", "UPPERCASE", "wand-2", () => applyTransform("upper")),
