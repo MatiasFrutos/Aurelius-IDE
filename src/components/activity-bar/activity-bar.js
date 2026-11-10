@@ -59,6 +59,12 @@ export function renderActivityBar() {
         })}
 
         ${activityButton({
+          panel: "toolbox",
+          icon: "wrench",
+          title: "Toolbox"
+        })}
+
+        ${activityButton({
           panel: "ai",
           icon: "bot",
           title: t("IA", "AI")

@@ -210,6 +210,7 @@ const ALLOWED_ACTIVITY_PANELS = [
   "monitor",
   "tasks",
   "toolchain",
+  "toolbox",
   "ai",
   "settings"
 ];
@@ -923,7 +924,21 @@ export function setRecentProjects(projects) {
     : [];
 }
 
+const PAGE_ACTIVITY_PANELS = ["monitor", "tasks", "toolchain", "toolbox", "settings"];
+
+export function isPageActivityPanel(panel = appState.activityPanel) {
+  return PAGE_ACTIVITY_PANELS.includes(panel);
+}
+
+// Al abrir un archivo desde cualquier lugar, volvemos del modo página al editor.
+function leavePageMode() {
+  if (isPageActivityPanel()) {
+    appState.activityPanel = "explorer";
+  }
+}
+
 export function setActiveFile({ path, content }) {
+  leavePageMode();
   const normalizedPath = normalizePath(path);
 
   if (!normalizedPath) {
@@ -948,6 +963,7 @@ export function setActiveFile({ path, content }) {
 }
 
 export function setActiveTab(path) {
+  leavePageMode();
   const normalizedPath = normalizePath(path);
   const tab = appState.openTabs.find((item) => item.path === normalizedPath);
 

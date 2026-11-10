@@ -359,6 +359,18 @@ export function createCommandActions({
       keywords: ["git", "branch", "status", "estado"],
       run: handleOpenGitPanel
     },
+    {
+      id: "open-toolbox",
+      title: t("Abrir Toolbox", "Open Toolbox"),
+      description: t(
+        "JSON, Regex, Base64, Hash, JWT, tiempo, color, diff y generadores a pantalla completa.",
+        "JSON, Regex, Base64, Hash, JWT, time, color, diff and generators, full screen."
+      ),
+      group: t("Herramientas", "Tools"),
+      icon: "wrench",
+      keywords: ["toolbox", "json", "regex", "base64", "hash", "jwt", "uuid", "herramientas", "tools"],
+      run: () => handleActivityPanel("toolbox")
+    },
     ...deferAfterRender([...createFeatureCommands(), ...createEditorToolCommands()], renderApp)
   ];
 }

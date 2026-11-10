@@ -515,7 +515,7 @@ function lineDiff(a, b) {
   return out;
 }
 
-function renderDiff(snapshot, current) {
+export function renderDiff(snapshot, current) {
   const diff = lineDiff(snapshot, current);
 
   if (!diff) {

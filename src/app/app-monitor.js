@@ -11,11 +11,14 @@ import { toastSuccess, toastError } from "../components/ui/toast.js";
 
 export async function refreshMonitorSnapshot({
   renderApp,
-  silent = false
+  silent = false,
+  background = false
 } = {}) {
   try {
-    setMonitorLoading(true);
-    renderApp();
+    if (!background) {
+      setMonitorLoading(true);
+      renderApp();
+    }
 
     const snapshot = await readMonitorSnapshot();
 

@@ -982,3 +982,9 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - Interfaz sin degradados, halos ni orbes: superficies sólidas y líneas finas.
 - Nuevos atajos: `Ctrl+Shift+O` ir a símbolo (funciones, clases, títulos, TODOs), `Alt+B` marcador (`Alt+.` / `Alt+,` navegar; clic en el margen), `Alt+W` ajuste de línea, `Alt+D` diff de cambios sin guardar.
 - Paleta de comandos: ir a línea, duplicar/mover/eliminar línea, comentar, plegar/desplegar todo, seleccionar coincidencias.
+
+### v2.2
+
+- **Páginas a ancho completo:** Monitor, Tasks, Doctor, Ajustes y la nueva **Toolbox** ocupan todo el ancho (el sidebar se oculta en esas páginas; al abrir un archivo se vuelve al editor).
+- **Toolbox (nueva página):** JSON, Regex, Codificar (Base64/URL/HTML/Hex/Unicode), Hash (SHA), JWT, Tiempo, Color (+contraste), Diff, Generadores (UUID/contraseñas/lorem) y Texto. Todo local.
+- **Más herramientas en los paneles existentes:** Explorer (colapsar/expandir/revelar/terminal aquí/copiar ruta), Búsqueda (mayúsculas/palabra/regex/filtro por extensión/copiar), Git (fetch/pull/push/stash/log/diff/ramas/amend), Monitor (gráficas de historial, auto-actualización, copiar snapshot), Tasks (ejecutor de comandos con historial), Doctor (reporte Markdown, comandos de instalación), Ajustes (exportar/importar, atajos), IA (6 acciones rápidas nuevas) y barra de estado (selección, cursores, codificación).

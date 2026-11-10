@@ -1,6 +1,7 @@
 // src/app/app-panel-actions.js
 import {
   appState,
+  isPageActivityPanel,
   setActivityPanel,
   setTopbarVisible,
   toggleTopbarVisible,
@@ -24,14 +25,7 @@ import {
   toastInfo
 } from "../components/ui/toast.js";
 
-const SIDEBAR_ACTIVITY_PANELS = [
-  "explorer",
-  "search",
-  "git",
-  "monitor",
-  "tasks",
-  "toolchain"
-];
+const SIDEBAR_ACTIVITY_PANELS = ["explorer", "search", "git"];
 
 function isSidebarActivityPanel(panel) {
   return SIDEBAR_ACTIVITY_PANELS.includes(panel);
@@ -110,6 +104,20 @@ export function createPanelActions({ renderApp }) {
       return;
     }
 
+    if (isPageActivityPanel(panel)) {
+      const wasOpen = appState.activityPanel === panel;
+
+      setActivityPanel(wasOpen ? "explorer" : panel);
+      persistLayoutPreferences();
+      renderApp();
+
+      if (!wasOpen) {
+        runSidebarPanelEffect(panel, { renderApp });
+      }
+
+      return;
+    }
+
     if (shouldCloseSidebarPanel(panel)) {
       closeSidebarPanel();
       renderApp();
@@ -140,20 +148,6 @@ export function createPanelActions({ renderApp }) {
       return;
     }
 
-    if (panel === "settings") {
-      const isAlreadySettings = appState.activityPanel === "settings";
-
-      setActivityPanel(isAlreadySettings ? "explorer" : "settings");
-      persistLayoutPreferences();
-      renderApp();
-
-      if (!isAlreadySettings) {
-        toastInfo(
-          t("Página de ajustes abierta.", "Settings page opened."),
-          "Settings"
-        );
-      }
-    }
   }
 
   function handleOpenGitPanel() {

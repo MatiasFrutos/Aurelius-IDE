@@ -6,6 +6,28 @@ import { getFlowClass, getFlowLabel } from "../features/features.js";
 
 let statusbarEventsBound = false;
 
+if (typeof window !== "undefined") {
+  window.addEventListener("au:editor-info", (event) => {
+    const el = document.getElementById("status-selection");
+
+    if (!el) {
+      return;
+    }
+
+    const { selected, lines, cursors } = event.detail || {};
+    const label = el.querySelector("span");
+
+    el.hidden = !selected && cursors < 2;
+
+    if (!el.hidden && label) {
+      label.textContent =
+        cursors > 1
+          ? `${cursors} ${t("cursores", "cursors")}${selected ? ` · ${selected} ${t("sel.", "sel.")}` : ""}`
+          : `${selected} ${t("sel.", "sel.")} · ${lines} ${t("líneas", "lines")}`;
+    }
+  });
+}
+
 function escapeHTML(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -287,6 +309,11 @@ export function renderStatusbar() {
           <span>${escapeHTML(dirtyLabel)}</span>
         </span>
 
+        <span class="au-statusbar__item au-statusbar__selection" id="status-selection" hidden>
+          <i data-lucide="text-cursor-input"></i>
+          <span></span>
+        </span>
+
         <span
           class="au-statusbar__item au-statusbar__cursor"
           id="status-cursor"
@@ -294,6 +321,11 @@ export function renderStatusbar() {
         >
           <i data-lucide="crosshair"></i>
           <span>${escapeHTML(getCursorLabel())}</span>
+        </span>
+
+        <span class="au-statusbar__item" id="status-encoding" title="${t("Codificación · indentación", "Encoding · indentation")}">
+          <i data-lucide="file-code"></i>
+          <span>UTF-8 · ${t("Espacios", "Spaces")}: 2</span>
         </span>
 
         <span
