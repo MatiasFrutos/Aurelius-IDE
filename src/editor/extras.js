@@ -1,8 +1,8 @@
 // src/editor/extras.js — extensiones premium de CodeMirror:
 // minimapa, muestras de color con selector nativo, TODO/FIXME resaltados,
 // paréntesis arcoíris y zoom con Ctrl+rueda.
-import { RangeSetBuilder } from "@codemirror/state";
-import { Decoration, EditorView, ViewPlugin, WidgetType } from "@codemirror/view";
+import { RangeSet, RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
+import { Decoration, EditorView, GutterMarker, ViewPlugin, WidgetType, gutter } from "@codemirror/view";
 import { syntaxTree } from "@codemirror/language";
 import { appState, updateSetting } from "../app/state.js";
 
@@ -377,6 +377,147 @@ const wheelZoom = EditorView.domEventHandlers({
   }
 });
 
-export function createEditorExtras() {
-  return [colorSwatches, todoHighlight, rainbowBrackets, minimap, wheelZoom];
+/* ------------------------------------------------------------------ */
+/* Marcadores (bookmarks) — sobreviven al cambio de pestaña            */
+/* ------------------------------------------------------------------ */
+
+const bookmarkStore = new Map(); // filePath -> number[] (posiciones)
+
+class BookmarkMarker extends GutterMarker {
+  toDOM() {
+    const el = document.createElement("span");
+    el.className = "au-bookmark";
+    return el;
+  }
+}
+
+const bookmarkMarker = new BookmarkMarker();
+const toggleBookmarkEffect = StateEffect.define();
+
+function createBookmarkField(filePath) {
+  const saved = (bookmarkStore.get(filePath) || []).slice();
+
+  return StateField.define({
+    create(state) {
+      const marks = saved
+        .filter((pos) => pos <= state.doc.length)
+        .map((pos) => state.doc.lineAt(pos).from)
+        .filter((pos, index, list) => list.indexOf(pos) === index)
+        .sort((a, b) => a - b)
+        .map((pos) => bookmarkMarker.range(pos));
+
+      return RangeSet.of(marks, true);
+    },
+
+    update(value, transaction) {
+      let next = value.map(transaction.changes);
+
+      for (const effect of transaction.effects) {
+        if (!effect.is(toggleBookmarkEffect)) continue;
+
+        const lineStart = transaction.state.doc.lineAt(effect.value).from;
+        let exists = false;
+
+        next.between(lineStart, lineStart, () => {
+          exists = true;
+        });
+
+        next = exists
+          ? next.update({ filter: (from) => from !== lineStart })
+          : next.update({ add: [bookmarkMarker.range(lineStart)] });
+      }
+
+      return next;
+    }
+  });
+}
+
+function bookmarkPositions(state, field) {
+  const positions = [];
+  state.field(field).between(0, state.doc.length, (from) => {
+    positions.push(from);
+  });
+  return positions;
+}
+
+const bookmarkFields = new WeakMap(); // EditorState-independent lookup por vista
+
+function createBookmarkExtensions(filePath) {
+  const field = createBookmarkField(filePath);
+
+  const persist = ViewPlugin.fromClass(
+    class {
+      constructor(view) {
+        bookmarkFields.set(view.dom, { field, filePath });
+      }
+
+      update(update) {
+        if (update.docChanged || update.transactions.some((tr) => tr.effects.some((e) => e.is(toggleBookmarkEffect)))) {
+          bookmarkStore.set(filePath, bookmarkPositions(update.state, field));
+        }
+      }
+    }
+  );
+
+  return [
+    field,
+    persist,
+    gutter({
+      class: "au-bookmark-gutter",
+      markers: (view) => view.state.field(field),
+      initialSpacer: () => bookmarkMarker,
+      domEventHandlers: {
+        mousedown(view, line) {
+          view.dispatch({ effects: toggleBookmarkEffect.of(line.from) });
+          return true;
+        }
+      }
+    })
+  ];
+}
+
+export function toggleBookmarkAtCursor(view) {
+  if (!view) return false;
+  view.dispatch({ effects: toggleBookmarkEffect.of(view.state.selection.main.head) });
+  return true;
+}
+
+export function jumpToBookmark(view, direction = 1) {
+  const info = view && bookmarkFields.get(view.dom);
+  if (!info) return false;
+
+  const positions = bookmarkPositions(view.state, info.field);
+  if (!positions.length) return false;
+
+  const head = view.state.selection.main.head;
+  const lineStart = view.state.doc.lineAt(head).from;
+  const target =
+    direction > 0
+      ? positions.find((pos) => pos > lineStart) ?? positions[0]
+      : [...positions].reverse().find((pos) => pos < lineStart) ?? positions[positions.length - 1];
+
+  view.dispatch({ selection: { anchor: target }, effects: EditorView.scrollIntoView(target, { y: "center" }) });
+  view.focus();
+  return true;
+}
+
+export function listBookmarks(view) {
+  const info = view && bookmarkFields.get(view.dom);
+  if (!info) return [];
+
+  return bookmarkPositions(view.state, info.field).map((pos) => {
+    const line = view.state.doc.lineAt(pos);
+    return { pos, line: line.number, text: line.text.trim().slice(0, 80) };
+  });
+}
+
+export function createEditorExtras(filePath = "") {
+  return [
+    colorSwatches,
+    todoHighlight,
+    rainbowBrackets,
+    minimap,
+    wheelZoom,
+    ...createBookmarkExtensions(filePath || "__untitled__")
+  ];
 }

@@ -26,7 +26,6 @@
 
 :root[data-theme="dark"] .au-bottom-panel {
   background:
-    radial-gradient(circle at 92% 100%, rgba(var(--au-accent-rgb), 0.08), transparent 34%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 120px),
     var(--au-bg-panel);
   box-shadow:
@@ -501,14 +500,12 @@
   overflow: hidden;
   border-right: 1px solid rgba(15, 23, 42, 0.08);
   background:
-    radial-gradient(circle at top left, rgba(var(--au-accent-rgb), 0.055), transparent 38%),
     #f8fafc;
 }
 
 :root[data-theme="dark"] .au-terminal-sidebar {
   border-right-color: var(--au-border);
   background:
-    radial-gradient(circle at top left, rgba(var(--au-accent-rgb), 0.075), transparent 38%),
     rgba(2, 6, 23, 0.18);
 }
 

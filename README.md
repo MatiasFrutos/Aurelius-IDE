@@ -975,3 +975,10 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 **Herramientas de texto (paleta de comandos):** JSON formatear/minificar, camel/Pascal/snake/kebab, ordenar y deduplicar líneas, Base64/URL, insertar UUID / fecha ISO / timestamp, copiar ruta.
 
 **Terminal — correcciones:** la salida inicial del shell ya no se pierde (carrera entre `spawn` y el listener); caracteres UTF-8 multibyte ya no se corrompen entre lecturas del PTY; el auto-scroll respeta si el usuario subió en el historial; `Ctrl+C` copia solo con selección (si no, SIGINT); `Ctrl+V` pega; enlaces clicables con `Ctrl+clic`; el tema sigue al tema/acento de la app; se recogen los procesos hijos al cerrar.
+
+### v2.1
+
+- Ventana sin barra de título nativa: controles propios (minimizar/maximizar/cerrar) en el topbar, que además arrastra la ventana.
+- Interfaz sin degradados, halos ni orbes: superficies sólidas y líneas finas.
+- Nuevos atajos: `Ctrl+Shift+O` ir a símbolo (funciones, clases, títulos, TODOs), `Alt+B` marcador (`Alt+.` / `Alt+,` navegar; clic en el margen), `Alt+W` ajuste de línea, `Alt+D` diff de cambios sin guardar.
+- Paleta de comandos: ir a línea, duplicar/mover/eliminar línea, comentar, plegar/desplegar todo, seleccionar coincidencias.

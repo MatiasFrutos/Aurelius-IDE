@@ -186,3 +186,143 @@ button:not(:disabled):active {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ==========================================================================
+   v2.1 — Minimalismo: ventana sin marco nativo, superficies planas, líneas finas
+   ========================================================================== */
+
+/* ---------- Topbar plana + controles de ventana ---------- */
+.au-topbar {
+  grid-template-columns: auto minmax(0, max-content) minmax(160px, 1fr) auto auto;
+  background: var(--au-bg-topbar) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+  padding-right: 0;
+  user-select: none;
+}
+
+.au-topbar::after,
+.au-topbar__brand::after,
+.au-topbar__menu::after,
+.au-topbar__search-wrap::after {
+  display: none;
+}
+
+.au-topbar__brand strong { letter-spacing: 0.01em; }
+
+.au-topbar__menu-item {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 6px;
+}
+
+.au-topbar__menu-item:hover { background: var(--au-button-bg) !important; }
+
+.au-topbar__menu-item.is-active {
+  background: transparent !important;
+  color: var(--au-text) !important;
+}
+
+.au-topbar__menu-item.is-active::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--au-primary);
+}
+
+.au-topbar__action,
+.au-topbar__action.is-active {
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background: transparent !important;
+}
+
+.au-topbar__action:hover { background: var(--au-button-bg) !important; }
+.au-topbar__action.is-active { color: var(--au-primary-strong); }
+
+.au-window-controls {
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  margin-left: 8px;
+}
+
+.au-window-controls__btn {
+  width: 40px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--au-muted);
+  box-shadow: none;
+}
+
+.au-window-controls__btn svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.au-window-controls__btn:hover { background: var(--au-button-bg-hover); color: var(--au-text); }
+.au-window-controls__btn.is-close:hover { background: #e5484d; color: #ffffff; }
+.au-window-controls__btn:active { transform: none; }
+
+/* ---------- Marco fino de la ventana sin decoraciones ---------- */
+.aurelius-shell { box-shadow: inset 0 0 0 1px var(--au-border); }
+
+/* ---------- Superficies planas ---------- */
+.aurelius-main { border-top: 0; border-bottom: 1px solid var(--au-border); }
+.au-activity { background: var(--au-bg-activity) !important; background-image: none !important; }
+
+.au-statusbar { background: var(--au-bg-activity) !important; background-image: none !important; box-shadow: none !important; }
+
+/* Tarjetas y píldoras: sin degradados ni sombras interiores */
+[class*="__card"],
+[class*="-card"],
+[class*="__pill"],
+[class*="__chip"],
+[class*="__panel-card"] {
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* Botones primarios sólidos y discretos */
+button[class*="primary"],
+[class*="__primary"] {
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* Sin orbes, rejillas ni halos decorativos */
+.aurelius-welcome__orb,
+.aurelius-welcome__grid-bg,
+[class*="__orb"],
+[class*="__glow"],
+[class*="__halo"] {
+  display: none !important;
+}
+
+.aurelius-welcome__hero,
+.aurelius-welcome__shell > section,
+.aurelius-welcome__shell > div {
+  background-image: none !important;
+}
+
+/* Minimalismo total: ningún degradado decorativo en la interfaz (superficies sólidas) */
+.aurelius-shell *,
+.aurelius-shell *::before,
+.aurelius-shell *::after,
+.au-modal-backdrop,
+.au-quick-open-backdrop {
+  background-image: none !important;
+}

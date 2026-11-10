@@ -4,6 +4,8 @@ import { appState, updateSetting } from "../../app/state.js";
 import { t } from "../../app/i18n.js";
 import { toastError, toastInfo, toastSuccess } from "../ui/toast.js";
 import { refreshIcons } from "../../app/app-icons.js";
+import { EditorView } from "@codemirror/view";
+import { jumpToBookmark, listBookmarks, toggleBookmarkAtCursor } from "../../editor/extras.js";
 
 /* ====================================================================== */
 /* Utilidades                                                              */
@@ -59,6 +61,7 @@ const appearance = {
   minimap: true,
   swatches: true,
   rainbow: true,
+  wrap: true,
   ...load(APPEARANCE_KEY, {})
 };
 
@@ -83,6 +86,7 @@ export function applyAppearance() {
   root.dataset.minimap = appearance.minimap ? "on" : "off";
   root.dataset.swatches = appearance.swatches ? "on" : "off";
   root.dataset.rainbow = appearance.rainbow ? "on" : "off";
+  root.dataset.wrap = appearance.wrap ? "on" : "off";
 }
 
 export function setAppearance(patch) {
@@ -173,7 +177,8 @@ export function openAppearancePanel() {
     ["motion", t("Animaciones", "Animations")],
     ["minimap", t("Minimapa", "Minimap")],
     ["swatches", t("Muestras de color en código", "Inline color swatches")],
-    ["rainbow", t("Paréntesis arcoíris", "Rainbow brackets")]
+    ["rainbow", t("Paréntesis arcoíris", "Rainbow brackets")],
+    ["wrap", t("Ajuste de línea", "Word wrap")]
   ];
 
   const render = () => `
@@ -611,6 +616,224 @@ export function openLocalHistory() {
   });
 }
 
+
+/* ====================================================================== */
+/* Diff de cambios sin guardar                                             */
+/* ====================================================================== */
+
+export function openUnsavedDiff() {
+  const tab = appState.openTabs.find((item) => item.path === appState.activeFilePath);
+  const view = appState.editorView;
+
+  if (!tab || !view) {
+    toastInfo(t("Abrí un archivo primero.", "Open a file first."), t("Cambios sin guardar", "Unsaved changes"));
+    return;
+  }
+
+  const current = view.state.doc.toString();
+
+  openOverlay({
+    title: `${t("Cambios sin guardar", "Unsaved changes")} · ${appState.activeFileName || ""}`,
+    icon: "git-compare",
+    width: 820,
+    body: `<div class="au-hist__view" style="max-height:62vh">${renderDiff(tab.savedContent ?? "", current)}</div>`
+  });
+}
+
+/* ====================================================================== */
+/* Ir a símbolo (Ctrl+Shift+O)                                             */
+/* ====================================================================== */
+
+const SYMBOL_PATTERNS = {
+  js: [
+    ["fn", /^\s*(?:export\s+)?(?:default\s+)?(?:async\s+)?function\*?\s+([\w$]+)/],
+    ["fn", /^\s*(?:export\s+)?(?:const|let|var)\s+([\w$]+)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[\w$]+)\s*=>/],
+    ["class", /^\s*(?:export\s+)?(?:default\s+)?(?:abstract\s+)?class\s+([\w$]+)/],
+    ["type", /^\s*(?:export\s+)?(?:interface|type|enum)\s+([\w$]+)/]
+  ],
+  py: [
+    ["fn", /^\s*(?:async\s+)?def\s+(\w+)/],
+    ["class", /^\s*class\s+(\w+)/]
+  ],
+  rs: [
+    ["fn", /^\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:unsafe\s+)?fn\s+(\w+)/],
+    ["type", /^\s*(?:pub(?:\([^)]*\))?\s+)?(?:struct|enum|trait|mod|type)\s+(\w+)/],
+    ["class", /^\s*impl(?:<[^>]*>)?\s+([\w:<>, ]+?)\s*(?:for\s+[\w:<>, ]+)?\s*\{/]
+  ],
+  go: [
+    ["fn", /^func\s+(?:\([^)]*\)\s*)?(\w+)/],
+    ["type", /^type\s+(\w+)\s+(?:struct|interface)/]
+  ],
+  md: [["head", /^(#{1,6})\s+(.+)$/]],
+  c: [
+    ["fn", /^[\w:<>*&\s]+?\s+\*?([\w:~]+)\s*\([^;{)]*\)\s*(?:const\s*)?\{?\s*$/],
+    ["class", /^\s*(?:public\s+|private\s+|abstract\s+|final\s+|static\s+)*(?:class|struct|interface|enum)\s+(\w+)/]
+  ],
+  css: [["type", /^\s*((?:[.#]?[\w-]+|@media[^{]*)[^{;]*)\{/]]
+};
+
+function symbolKey(path = "") {
+  const ext = String(path).split(".").pop().toLowerCase();
+
+  if (["js", "jsx", "mjs", "cjs", "ts", "tsx", "mts", "cts", "vue", "svelte"].includes(ext)) return "js";
+  if (ext === "py") return "py";
+  if (ext === "rs") return "rs";
+  if (ext === "go") return "go";
+  if (["md", "markdown"].includes(ext)) return "md";
+  if (["java", "c", "h", "cpp", "hpp", "cc", "cs", "kt", "php", "swift"].includes(ext)) return "c";
+  if (["css", "scss", "less"].includes(ext)) return "css";
+  return "";
+}
+
+const C_KEYWORDS = new Set(["if", "for", "while", "switch", "catch", "return", "else", "do", "sizeof"]);
+
+export function collectSymbols(path, text) {
+  const patterns = SYMBOL_PATTERNS[symbolKey(path)] || [];
+  const out = [];
+  const lines = text.split("\n");
+
+  lines.forEach((line, index) => {
+    if (line.length > 400) return;
+
+    for (const [kind, regex] of patterns) {
+      const match = line.match(regex);
+
+      if (!match) continue;
+
+      const name = kind === "head" ? `${match[1]} ${match[2]}` : match[1];
+
+      if (symbolKey(path) === "c" && kind === "fn" && C_KEYWORDS.has(name)) continue;
+
+      out.push({ kind, name: name.trim(), line: index + 1 });
+      break;
+    }
+
+    const tag = line.match(/(?:\/\/|#|\/\*|<!--|--)\s*(TODO|FIXME|HACK|BUG|XXX)\b[:\s]*(.*)$/);
+
+    if (tag) out.push({ kind: "todo", name: `${tag[1]} ${tag[2]}`.trim().slice(0, 90), line: index + 1 });
+  });
+
+  return out;
+}
+
+function jumpToLine(lineNumber) {
+  const view = appState.editorView;
+  if (!view) return;
+
+  const line = view.state.doc.line(Math.min(Math.max(1, lineNumber), view.state.doc.lines));
+
+  view.dispatch({
+    selection: { anchor: line.from },
+    effects: EditorView.scrollIntoView(line.from, { y: "center" })
+  });
+  view.focus();
+}
+
+export function openSymbolPicker(mode = "symbols") {
+  const view = appState.editorView;
+
+  if (!view) {
+    toastInfo(t("Abrí un archivo primero.", "Open a file first."), t("Ir a símbolo", "Go to symbol"));
+    return;
+  }
+
+  const symbols =
+    mode === "bookmarks"
+      ? listBookmarks(view).map((item) => ({ kind: "mark", name: item.text || t("(línea vacía)", "(empty line)"), line: item.line }))
+      : collectSymbols(appState.activeFilePath, view.state.doc.toString());
+
+  if (!symbols.length) {
+    toastInfo(
+      mode === "bookmarks"
+        ? t("No hay marcadores. Alt+B marca la línea actual.", "No bookmarks. Alt+B marks the current line.")
+        : t("No se encontraron símbolos en este archivo.", "No symbols found in this file."),
+      mode === "bookmarks" ? t("Marcadores", "Bookmarks") : t("Ir a símbolo", "Go to symbol")
+    );
+    return;
+  }
+
+  openOverlay({
+    title: mode === "bookmarks" ? t("Marcadores", "Bookmarks") : t("Ir a símbolo", "Go to symbol"),
+    icon: mode === "bookmarks" ? "hash" : "braces",
+    width: 600,
+    body: `<input class="au-sym__input" placeholder="${t("Filtrar…", "Filter…")}" /><ul class="au-sym__list"></ul>`,
+    onMount: (el) => {
+      const input = el.querySelector("input");
+      const list = el.querySelector("ul");
+      let filtered = symbols;
+      let active = 0;
+
+      const paint = () => {
+        list.innerHTML = filtered
+          .map(
+            (item, index) => `<li><button type="button" data-i="${index}" class="${index === active ? "is-on" : ""}">
+              <span class="au-sym__kind">${escapeHTML(item.kind)}</span>
+              <span class="au-sym__name">${escapeHTML(item.name)}</span>
+              <span class="au-sym__line">:${item.line}</span></button></li>`
+          )
+          .join("");
+
+        list.querySelector(".is-on")?.scrollIntoView({ block: "nearest" });
+      };
+
+      const go = (index) => {
+        const item = filtered[index];
+        if (!item) return;
+        closeOverlay();
+        jumpToLine(item.line);
+      };
+
+      input.addEventListener("input", () => {
+        const q = input.value.trim().toLowerCase();
+        filtered = symbols.filter((item) => !q || `${item.kind} ${item.name}`.toLowerCase().includes(q));
+        active = 0;
+        paint();
+      });
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          active = Math.min(filtered.length - 1, active + 1);
+          paint();
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          active = Math.max(0, active - 1);
+          paint();
+        } else if (event.key === "Enter") {
+          event.preventDefault();
+          go(active);
+        }
+      });
+
+      list.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-i]");
+        if (button) go(Number(button.dataset.i));
+      });
+
+      paint();
+      input.focus();
+      setTimeout(() => input.focus(), 30);
+    }
+  });
+}
+
+export function toggleBookmark() {
+  if (!toggleBookmarkAtCursor(appState.editorView)) {
+    toastInfo(t("Abrí un archivo primero.", "Open a file first."), t("Marcadores", "Bookmarks"));
+  }
+}
+
+export function nextBookmark(direction = 1) {
+  if (!jumpToBookmark(appState.editorView, direction)) {
+    toastInfo(t("No hay marcadores en este archivo.", "No bookmarks in this file."), t("Marcadores", "Bookmarks"));
+  }
+}
+
+export function toggleWrap() {
+  setAppearance({ wrap: !appearance.wrap });
+  toastInfo(appearance.wrap ? t("Activado", "On") : t("Desactivado", "Off"), t("Ajuste de línea", "Word wrap"));
+}
+
 /* ====================================================================== */
 /* Arranque                                                                */
 /* ====================================================================== */
@@ -654,6 +877,13 @@ export function initFeatures() {
         }
       }
 
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && !event.altKey && event.key.toLowerCase() === "o") {
+        event.preventDefault();
+        event.stopPropagation();
+        openSymbolPicker();
+        return;
+      }
+
       if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
 
       const key = event.key.toLowerCase();
@@ -662,11 +892,17 @@ export function initFeatures() {
         a: openAppearancePanel,
         j: toggleScratchpad,
         h: openLocalHistory,
-        t: toggleFlow
+        t: toggleFlow,
+        b: toggleBookmark,
+        ".": () => nextBookmark(1),
+        ",": () => nextBookmark(-1),
+        w: toggleWrap,
+        d: openUnsavedDiff
       };
 
       if (map[key]) {
         event.preventDefault();
+        event.stopPropagation();
         map[key]();
       }
     },
@@ -729,6 +965,65 @@ export function createFeatureCommands() {
       shortcut: "Alt+J",
       keywords: ["notes", "notas", "scratch", "pad"],
       run: toggleScratchpad
+    },
+    {
+      id: "fx-symbols",
+      title: t("Ir a símbolo…", "Go to symbol…"),
+      description: t("Funciones, clases, títulos y TODOs del archivo.", "Functions, classes, headings and TODOs in this file."),
+      group,
+      icon: "braces",
+      shortcut: "Ctrl+Shift+O",
+      keywords: ["symbol", "simbolo", "outline", "function", "funcion", "goto", "todo"],
+      run: () => openSymbolPicker()
+    },
+    {
+      id: "fx-bookmark",
+      title: t("Marcador: alternar en la línea actual", "Bookmark: toggle on current line"),
+      description: t("También con clic en el margen izquierdo.", "Also by clicking the left gutter."),
+      group,
+      icon: "hash",
+      shortcut: "Alt+B",
+      keywords: ["bookmark", "marcador", "marca"],
+      run: toggleBookmark
+    },
+    {
+      id: "fx-bookmark-next",
+      title: t("Marcador: siguiente", "Bookmark: next"),
+      description: t("Salta al siguiente marcador (Alt+, para el anterior).", "Jump to next bookmark (Alt+, for previous)."),
+      group,
+      icon: "hash",
+      shortcut: "Alt+.",
+      keywords: ["bookmark", "marcador", "next"],
+      run: () => nextBookmark(1)
+    },
+    {
+      id: "fx-bookmark-list",
+      title: t("Marcadores: ver todos", "Bookmarks: list all"),
+      description: t("Lista de marcadores del archivo activo.", "List bookmarks of the active file."),
+      group,
+      icon: "hash",
+      keywords: ["bookmark", "marcador", "lista"],
+      run: () => openSymbolPicker("bookmarks")
+    },
+    {
+      id: "fx-wrap",
+      title: t("Alternar ajuste de línea", "Toggle word wrap"),
+      description: t("Activa o desactiva el salto de línea automático.", "Turn automatic line wrapping on or off."),
+      group,
+      icon: "text-cursor-input",
+      shortcut: "Alt+W",
+      keywords: ["wrap", "ajuste", "linea", "word"],
+      run: toggleWrap
+    },
+    {
+      id: "fx-unsaved-diff",
+      title: t("Ver cambios sin guardar", "Show unsaved changes"),
+      description: t("Diff entre el editor y la última versión guardada.", "Diff between the editor and the last saved version."),
+      group,
+      icon: "git-compare",
+      shortcut: "Alt+D",
+      keywords: ["diff", "cambios", "changes", "unsaved", "compare"],
+      run: openUnsavedDiff
     },
     {
       id: "fx-flow",
