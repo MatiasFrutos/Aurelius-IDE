@@ -353,7 +353,6 @@
 .au-settings__section--featured {
   border-color: rgba(var(--au-accent-rgb), 0.18);
   background:
-    radial-gradient(circle at top right, rgba(var(--au-accent-rgb), 0.08), transparent 34%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent),
     var(--au-bg-card);
 }

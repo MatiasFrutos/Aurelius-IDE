@@ -1864,7 +1864,7 @@ function getBaseExtensions({
     createAureliusDiagnosticLineField(filePath, diagnostics),
     createAureliusDiagnosticsRefreshPlugin(filePath, diagnostics),
     EditorView.lineWrapping,
-    ...createEditorExtras(),
+    ...createEditorExtras(filePath),
     EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         onChange?.(update.state.doc.toString());

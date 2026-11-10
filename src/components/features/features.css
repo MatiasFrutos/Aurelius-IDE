@@ -285,3 +285,49 @@
 }
 
 .au-settings__button:hover { background: var(--au-button-bg-hover); border-color: rgba(var(--au-accent-rgb), 0.5); }
+
+/* ---------- Marcadores ---------- */
+.au-bookmark-gutter { width: 14px; cursor: pointer; }
+.au-bookmark-gutter .cm-gutterElement { display: grid; place-items: center; }
+.au-bookmark { display: block; width: 8px; height: 10px; background: var(--au-primary); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%); }
+
+/* ---------- Ajuste de línea desactivable ---------- */
+:root[data-wrap="off"] .cm-content.cm-lineWrapping {
+  white-space: pre !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  flex-shrink: 0 !important;
+}
+
+/* ---------- Ir a símbolo ---------- */
+.au-sym__input {
+  width: 100%;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--au-border-strong);
+  border-radius: 8px;
+  background: var(--au-bg-input);
+  color: var(--au-text);
+  outline: 0;
+  font-size: 13px;
+}
+.au-sym__input:focus { border-color: rgba(var(--au-accent-rgb), 0.6); }
+.au-sym__list { list-style: none; margin: 0; padding: 0; max-height: 50vh; overflow: auto; }
+.au-sym__list li button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--au-text);
+  font-size: 12.5px;
+}
+.au-sym__list li button.is-on { background: var(--au-primary-soft); }
+.au-sym__kind { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--au-primary-strong); font-weight: 650; }
+.au-sym__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--au-font-mono); }
+.au-sym__line { color: var(--au-muted); font-size: 11px; }

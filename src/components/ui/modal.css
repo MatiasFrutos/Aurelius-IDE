@@ -24,7 +24,6 @@
   place-items: center;
   padding: clamp(10px, 2.6vw, 18px);
   background:
-    radial-gradient(circle at 50% 24%, rgba(var(--au-accent-rgb), 0.11), transparent 30%),
     rgba(2, 6, 23, 0.64);
   opacity: 0;
   pointer-events: auto;
@@ -34,7 +33,6 @@
 
 :root[data-theme="light"] .au-modal-backdrop {
   background:
-    radial-gradient(circle at 50% 24%, rgba(var(--au-accent-rgb), 0.1), transparent 30%),
     rgba(15, 23, 42, 0.28);
 }
 
@@ -111,7 +109,6 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--au-modal-accent) 9%, transparent), transparent 36%),
     linear-gradient(90deg, rgba(255, 255, 255, 0.026), transparent);
   pointer-events: none;
 }

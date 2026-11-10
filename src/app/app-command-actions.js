@@ -4,6 +4,17 @@ import { t } from "./i18n.js";
 import { createFeatureCommands } from "../components/features/features.js";
 import { createEditorToolCommands } from "./editor-tools.js";
 
+// Cierra la paleta (re-render) y ejecuta el comando cuando el editor ya está montado.
+function deferAfterRender(commands, renderApp) {
+  return commands.map((command) => ({
+    ...command,
+    run: () => {
+      renderApp();
+      setTimeout(() => command.run(), 60);
+    }
+  }));
+}
+
 export function createCommandActions({
   handleOpenProject,
   handleCreateFile,
@@ -348,7 +359,6 @@ export function createCommandActions({
       keywords: ["git", "branch", "status", "estado"],
       run: handleOpenGitPanel
     },
-    ...createFeatureCommands(),
-    ...createEditorToolCommands()
+    ...deferAfterRender([...createFeatureCommands(), ...createEditorToolCommands()], renderApp)
   ];
 }
