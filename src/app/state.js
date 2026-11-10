@@ -519,6 +519,10 @@ function syncStateFromTab(tab) {
     return;
   }
 
+  if (typeof window !== "undefined" && appState.activeFilePath !== tab.path) {
+    window.dispatchEvent(new CustomEvent("au:file-active", { detail: { path: tab.path } }));
+  }
+
   appState.activeFilePath = tab.path;
   appState.activeFileName = tab.name;
   appState.activeFileContent = tab.content;

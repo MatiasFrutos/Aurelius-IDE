@@ -3,6 +3,7 @@ import { appState } from "./state.js";
 import { t } from "./i18n.js";
 import { createFeatureCommands } from "../components/features/features.js";
 import { createEditorToolCommands } from "./editor-tools.js";
+import { createLabs2Commands } from "../components/features/labs2.js";
 
 // Cierra la paleta (re-render) y ejecuta el comando cuando el editor ya está montado.
 function deferAfterRender(commands, renderApp) {
@@ -371,6 +372,6 @@ export function createCommandActions({
       keywords: ["toolbox", "json", "regex", "base64", "hash", "jwt", "uuid", "herramientas", "tools"],
       run: () => handleActivityPanel("toolbox")
     },
-    ...deferAfterRender([...createFeatureCommands(), ...createEditorToolCommands()], renderApp)
+    ...deferAfterRender([...createFeatureCommands(), ...createLabs2Commands(), ...createEditorToolCommands()], renderApp)
   ];
 }

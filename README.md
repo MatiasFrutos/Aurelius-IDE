@@ -994,3 +994,10 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - **Rendimiento:** al cambiar de panel/ajustes ya no se recrean el editor (CodeMirror) ni la terminal: se reutilizan sus vistas. Se quitaron `backdrop-filter` y animaciones que se repetían en cada render (costosas en WebKitGTK); los paréntesis arcoíris se desactivan en archivos muy grandes y el minimapa se espacia.
 - **IA / Claude:** corregida la URL de Claude (`/v1/v1/messages` → 404), modelo por defecto actualizado, mensajes normalizados (Anthropic exige empezar con `user`), timeouts, mensajes de error legibles (401/404/429), OpenRouter con `error` dentro de un 200, y el prompt ya no se envía duplicado.
 - **Ajustes → IA:** botón **Probar conexión**, sugerencias de modelos y migración automática de valores antiguos de Claude.
+
+### v2.4
+
+- **Nuevo logo/icono:** una "A" de trazo continuo (degradado cian→violeta) con travesaño; iconos Tauri regenerados.
+- **Funciones nuevas:** archivos recientes (`Ctrl+E`), snippets con campos editables (`Alt+S`, gestor incluido), vista previa Markdown (`Alt+M`), reemplazar en todo el proyecto (panel Búsqueda; omite archivos con cambios sin guardar), menú contextual con copiar ruta / ruta relativa / mostrar en el gestor de archivos.
+- **Toolbox:** +7 herramientas (Markdown, Números y px↔rem, URL, chmod, Cron, HTTP, TODOs del proyecto).
+- **Correcciones:** el editor conserva el foco y el scroll al guardar; el Explorer, Búsqueda y Git ya no se descuadran con las barras de herramientas.

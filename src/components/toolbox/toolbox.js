@@ -1,6 +1,9 @@
 // src/components/toolbox/toolbox.js — página "Toolbox": utilidades de desarrollo a pantalla completa
 import { t } from "../../app/i18n.js";
 import { renderDiff } from "../features/features.js";
+import { renderMarkdown } from "../features/labs2.js";
+import { appState } from "../../app/state.js";
+import { searchProject } from "../../services/fs.service.js";
 import { toastError, toastSuccess } from "../ui/toast.js";
 
 const STORE_KEY = "aurelius.toolbox.v1";
@@ -127,6 +130,14 @@ function actions(buttons) {
     .map(([action, label, extra = ""]) => `<button type="button" class="au-tb__btn ${extra}" data-tb-action="${action}">${esc(label)}</button>`)
     .join("")}</div>`;
 }
+
+const HTTP_CODES = {
+  100: "Continue", 101: "Switching Protocols", 200: "OK", 201: "Created", 202: "Accepted", 204: "No Content", 206: "Partial Content",
+  301: "Moved Permanently", 302: "Found", 303: "See Other", 304: "Not Modified", 307: "Temporary Redirect", 308: "Permanent Redirect",
+  400: "Bad Request", 401: "Unauthorized", 403: "Forbidden", 404: "Not Found", 405: "Method Not Allowed", 408: "Request Timeout",
+  409: "Conflict", 410: "Gone", 413: "Payload Too Large", 415: "Unsupported Media Type", 418: "I'm a teapot", 422: "Unprocessable Entity",
+  429: "Too Many Requests", 500: "Internal Server Error", 501: "Not Implemented", 502: "Bad Gateway", 503: "Service Unavailable", 504: "Gateway Timeout"
+};
 
 const TOOLS = [
   {
@@ -360,6 +371,160 @@ const TOOLS = [
     }
   },
   {
+    id: "markdown",
+    icon: "eye",
+    title: "Markdown",
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "md-in", label: "Markdown", rows: 20, value: val("md-in", "# Título\n\nTexto con **negrita**, *cursiva* y `código`.\n\n- [x] Tarea hecha\n- [ ] Tarea pendiente\n\n| A | B |\n|---|---|\n| 1 | 2 |\n") })}
+      <div class="au-tb__field"><span>${t("Vista previa", "Preview")}</span><article class="au-md au-tb__out" id="md-out"></article></div></div>`,
+    live: ["md-in"],
+    run() {
+      $("md-out").innerHTML = renderMarkdown($("md-in").value);
+      save("md-in");
+    }
+  },
+  {
+    id: "numbers",
+    icon: "hash",
+    title: t("Números", "Numbers"),
+    render: () => `
+      <label class="au-tb__field"><span>${t("Número (decimal, 0x hex, 0b binario, 0o octal)", "Number (decimal, 0x hex, 0b binary, 0o octal)")}</span><input id="num-in" value="${esc(val("num-in", "255"))}" spellcheck="false" /></label>
+      <div class="au-tb__hashes" id="num-out"></div>
+      <label class="au-tb__field"><span>px ⇄ rem (base 16)</span><input id="num-px" value="${esc(val("num-px", "24"))}" spellcheck="false" /></label>
+      <div class="au-tb__hashes" id="num-css"></div>`,
+    live: ["num-in", "num-px"],
+    run() {
+      const raw = $("num-in").value.trim().replace(/_/g, "");
+      let n = NaN;
+      if (/^0x/i.test(raw)) n = parseInt(raw.slice(2), 16);
+      else if (/^0b/i.test(raw)) n = parseInt(raw.slice(2), 2);
+      else if (/^0o/i.test(raw)) n = parseInt(raw.slice(2), 8);
+      else n = Number(raw);
+      $("num-out").innerHTML = Number.isFinite(n) && Number.isInteger(n)
+        ? [["DEC", n.toString(10)], ["HEX", "0x" + n.toString(16).toUpperCase()], ["BIN", "0b" + n.toString(2)], ["OCT", "0o" + n.toString(8)], ["Bytes", n >= 0 ? `${Math.ceil(Math.max(1, n.toString(2).length) / 8)}` : "—"]].map(([k, v]) => `<div class="au-tb__hash"><b>${k}</b><code>${esc(v)}</code></div>`).join("")
+        : `<p class="au-tb__status is-err">✗ ${t("Entero inválido", "Invalid integer")}</p>`;
+      const px = parseFloat($("num-px").value);
+      $("num-css").innerHTML = Number.isFinite(px) ? [["px → rem", `${+(px / 16).toFixed(4)}rem`], ["rem → px", `${+(px * 16).toFixed(2)}px`]].map(([k, v]) => `<div class="au-tb__hash"><b>${k}</b><code>${v}</code></div>`).join("") : "";
+      save("num-in", "num-px");
+    }
+  },
+  {
+    id: "url",
+    icon: "globe-2",
+    title: "URL",
+    render: () => `
+      <label class="au-tb__field"><span>URL</span><input id="url-in" value="${esc(val("url-in", "https://user@example.com:8080/ruta/a?x=1&y=dos#seccion"))}" spellcheck="false" /></label>
+      <div class="au-tb__hashes" id="url-out"></div>`,
+    live: ["url-in"],
+    run() {
+      try {
+        const u = new URL($("url-in").value.trim());
+        const rows = [["Protocol", u.protocol], ["Host", u.hostname], ["Port", u.port || "—"], ["User", u.username || "—"], ["Path", u.pathname], ["Hash", u.hash || "—"], ...[...u.searchParams].map(([k, v]) => [`?${k}`, v])];
+        $("url-out").innerHTML = rows.map(([k, v]) => `<div class="au-tb__hash"><b>${esc(k)}</b><code>${esc(v)}</code></div>`).join("");
+      } catch (error) {
+        $("url-out").innerHTML = `<p class="au-tb__status is-err">✗ ${esc(error.message)}</p>`;
+      }
+      save("url-in");
+    }
+  },
+  {
+    id: "chmod",
+    icon: "lock",
+    title: "chmod",
+    render: () => `
+      <label class="au-tb__field"><span>${t("Permisos (octal, ej. 755) o simbólicos (rwxr-xr-x)", "Permissions (octal, e.g. 755) or symbolic (rwxr-xr-x)")}</span><input id="chmod-in" value="${esc(val("chmod-in", "755"))}" spellcheck="false" /></label>
+      <div class="au-tb__hashes" id="chmod-out"></div>`,
+    live: ["chmod-in"],
+    run() {
+      const raw = $("chmod-in").value.trim();
+      let octal = "";
+      if (/^[0-7]{3,4}$/.test(raw)) octal = raw.slice(-3);
+      else if (/^[r-][w-][x-][r-][w-][x-][r-][w-][x-]$/.test(raw)) {
+        octal = [0, 3, 6].map((i) => [...raw.slice(i, i + 3)].reduce((acc, c, k) => acc + (c !== "-" ? [4, 2, 1][k] : 0), 0)).join("");
+      }
+      if (!octal) { $("chmod-out").innerHTML = `<p class="au-tb__status is-err">✗ ${t("Formato inválido", "Invalid format")}</p>`; return; }
+      const sym = [...octal].map((d) => ["r", "w", "x"].map((c, k) => (Number(d) & [4, 2, 1][k] ? c : "-")).join("")).join("");
+      const who = ["Owner", "Group", "Others"];
+      $("chmod-out").innerHTML = [["Octal", octal], [t("Simbólico", "Symbolic"), sym], ["Comando", `chmod ${octal} archivo`], ...[...octal].map((d, i) => [who[i], sym.slice(i * 3, i * 3 + 3)])].map(([k, v]) => `<div class="au-tb__hash"><b>${k}</b><code>${esc(v)}</code></div>`).join("");
+      save("chmod-in");
+    }
+  },
+  {
+    id: "cron",
+    icon: "clock-3",
+    title: "Cron",
+    render: () => `
+      <label class="au-tb__field"><span>${t("Expresión (5 campos: min hora día mes día-semana)", "Expression (5 fields: min hour dom month dow)")}</span><input id="cron-in" value="${esc(val("cron-in", "*/15 9-17 * * 1-5"))}" spellcheck="false" /></label>
+      <div class="au-tb__hashes" id="cron-out"></div>`,
+    live: ["cron-in"],
+    run() {
+      const parts = $("cron-in").value.trim().split(/\s+/);
+      const ranges = [[0, 59], [0, 23], [1, 31], [1, 12], [0, 6]];
+      const expand = (field, [lo, hi]) => {
+        const set = new Set();
+        for (const chunk of field.split(",")) {
+          const [rangePart, stepPart] = chunk.split("/");
+          const step = stepPart ? Number(stepPart) : 1;
+          let a = lo; let b = hi;
+          if (rangePart !== "*") { const [x, y] = rangePart.split("-"); a = Number(x); b = y !== undefined ? Number(y) : stepPart ? hi : a; }
+          if (![a, b, step].every(Number.isFinite) || step < 1 || a < lo || b > hi) return null;
+          for (let v = a; v <= b; v += step) set.add(v);
+        }
+        return set;
+      };
+      const sets = parts.length === 5 ? parts.map((p, i) => expand(p, ranges[i])) : null;
+      if (!sets || sets.some((x) => !x)) { $("cron-out").innerHTML = `<p class="au-tb__status is-err">✗ ${t("Expresión inválida", "Invalid expression")}</p>`; return; }
+      const runs = [];
+      const d = new Date(); d.setSeconds(0, 0);
+      for (let i = 0; i < 60 * 24 * 366 && runs.length < 8; i += 1) {
+        d.setMinutes(d.getMinutes() + 1);
+        if (sets[0].has(d.getMinutes()) && sets[1].has(d.getHours()) && sets[3].has(d.getMonth() + 1) && sets[2].has(d.getDate()) && sets[4].has(d.getDay())) runs.push(new Date(d));
+      }
+      $("cron-out").innerHTML = runs.length ? runs.map((r, i) => `<div class="au-tb__hash"><b>${t("Próxima", "Next")} ${i + 1}</b><code>${esc(r.toLocaleString())}</code></div>`).join("") : `<p class="au-tb__status">${t("Sin ejecuciones el próximo año.", "No runs in the next year.")}</p>`;
+      save("cron-in");
+    }
+  },
+  {
+    id: "http",
+    icon: "radio-tower",
+    title: "HTTP",
+    render: () => `
+      <label class="au-tb__field"><span>${t("Código o texto", "Code or text")}</span><input id="http-in" value="${esc(val("http-in", "404"))}" spellcheck="false" /></label>
+      <div class="au-tb__hashes" id="http-out"></div>`,
+    live: ["http-in"],
+    run() {
+      const q = $("http-in").value.trim().toLowerCase();
+      const hits = Object.entries(HTTP_CODES).filter(([code, text]) => !q || code.startsWith(q) || text.toLowerCase().includes(q)).slice(0, 40);
+      $("http-out").innerHTML = hits.map(([c, tx]) => `<div class="au-tb__hash"><b>${c}</b><code>${esc(tx)}</code></div>`).join("") || `<p class="au-tb__status">${t("Sin resultados", "No results")}</p>`;
+      save("http-in");
+    }
+  },
+  {
+    id: "todos",
+    icon: "check-circle-2",
+    title: "TODOs",
+    render: () => `
+      <div class="au-tb__row"><button type="button" class="au-tb__btn is-primary" data-tb-action="todo-scan">${t("Escanear proyecto", "Scan project")}</button>
+      <span class="au-tb__status" id="todo-status">${appState.projectPath ? "" : t("Abrí un proyecto primero.", "Open a project first.")}</span></div>
+      <div class="au-tb__hashes" id="todo-out"></div>`,
+    async run() {
+      if (!appState.projectPath) return;
+      $("todo-status").textContent = t("Escaneando…", "Scanning…");
+      const seen = new Map();
+      for (const tag of ["TODO", "FIXME", "HACK", "XXX", "BUG"]) {
+        const results = await searchProject(appState.projectPath, tag);
+        for (const r of results || []) {
+          if (!new RegExp(`\\b${tag}\\b`).test(r.line_text || "")) continue;
+          seen.set(`${r.path}:${r.line_number}`, { tag, ...r });
+        }
+      }
+      const items = [...seen.values()].sort((a, b) => a.path.localeCompare(b.path) || a.line_number - b.line_number);
+      const base = `${appState.projectPath}/`;
+      $("todo-status").textContent = `${items.length} ${t("pendientes", "items")}`;
+      $("todo-out").innerHTML = items.map((r) => `<button type="button" class="au-tb__hash au-tb__todo" data-tb-open="${esc(r.path)}|${r.line_number}"><b>${esc(r.tag)}</b><code>${esc(r.path.replace(base, ""))}:${r.line_number} — ${esc((r.line_text || "").trim().slice(0, 120))}</code></button>`).join("");
+    }
+  },
+  {
     id: "gen",
     icon: "zap",
     title: t("Generadores", "Generators"),
@@ -477,6 +642,14 @@ export function bindToolboxEvents() {
         window.lucide?.createIcons?.();
         afterMount();
       }
+      return;
+    }
+
+    const opener = event.target.closest("[data-tb-open]");
+
+    if (opener) {
+      const [path, line] = opener.dataset.tbOpen.split("|");
+      window.dispatchEvent(new CustomEvent("au:open-file", { detail: { path, line: Number(line) } }));
       return;
     }
 

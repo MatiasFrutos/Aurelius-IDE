@@ -7,6 +7,7 @@ import { toastError, toastInfo, toastSuccess } from "../ui/toast.js";
 import { runCommandInTerminal, openTerminalHere } from "../bottom-panel/bottom-panel.js";
 import { refreshIcons } from "../../app/app-icons.js";
 import { chatWithAi } from "../../services/fs.service.js";
+import { replaceInProject } from "./labs2.js";
 import { getAiProviderPreset, normalizeAiRuntimeSettings } from "../../app/app-settings.js";
 
 const esc = (value) =>
@@ -91,6 +92,9 @@ function injectExplorer() {
   if (!anchor || document.querySelector('[data-px-bar="explorer"]')) return;
 
   markInjected();
+  // El Explorer es un grid de filas fijas: añadimos una fila para la barra.
+  anchor.parentElement.style.gridTemplateRows = "48px 30px auto auto minmax(0, 1fr)";
+
   anchor.insertAdjacentHTML(
     "afterend",
     bar(
@@ -161,6 +165,8 @@ function injectSearch() {
     `<button type="button" class="au-px__chip ${searchFilters[key] ? "is-on" : ""}" data-px="srch-${key}" title="${esc(title)}">${label}</button>`;
 
   markInjected();
+  form.parentElement.style.gridTemplateRows = "40px auto auto auto minmax(0, 1fr)";
+
   form.insertAdjacentHTML(
     "afterend",
     bar(
@@ -173,7 +179,11 @@ function injectSearch() {
          ${exts.map((e) => `<option value="${e}" ${searchFilters.ext === e ? "selected" : ""}>.${e}</option>`).join("")}
        </select>
        <span class="au-px__count" data-px-count></span>
-       ${btn("srch-copy", "copy", t("Copiar", "Copy"))}`
+       ${btn("srch-copy", "copy", t("Copiar", "Copy"))}
+       <div class="au-px__form au-px__replace">
+         <input class="au-px__input" data-px-replace placeholder="${esc(t("Reemplazar por…", "Replace with…"))}" spellcheck="false" />
+         ${btn("srch-replace", "pencil", t("Reemplazar todo", "Replace all"), "is-primary")}
+       </div>`
     )
   );
 }
@@ -199,6 +209,8 @@ function injectGit() {
   if (!header || document.querySelector('[data-px-bar="git"]')) return;
 
   markInjected();
+  header.parentElement.style.gridTemplateRows = "46px auto minmax(0, 1fr)";
+
   header.insertAdjacentHTML(
     "afterend",
     bar("git", GIT_COMMANDS.map(([id, icon, label]) => btn(id, icon, label)).join(""), "is-wrap")
@@ -452,6 +464,22 @@ function handle(action, target) {
       store.set("search", searchFilters);
       target.classList.toggle("is-on", searchFilters[key]);
       return applySearchFilters();
+    }
+    case "srch-replace": {
+      const input = document.querySelector("[data-px-replace]");
+      const files = [...document.querySelectorAll(".au-search__result")]
+        .filter((item) => item.style.display !== "none")
+        .map((item) => decodeURIComponent(item.dataset.searchFilePath || ""))
+        .filter(Boolean);
+
+      return replaceInProject({
+        query: appState.search?.query || "",
+        replacement: input?.value ?? "",
+        filters: searchFilters,
+        files
+      }).then((result) => {
+        if (result) document.getElementById("search-project-form")?.requestSubmit();
+      });
     }
     case "srch-copy":
       return copy((appState.search?.results || []).map((r) => `${r.path}:${r.line_number || 1}: ${(r.line_text || "").trim()}`).join("\n"), t("Búsqueda", "Search"));
