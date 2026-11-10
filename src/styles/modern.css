@@ -13,7 +13,6 @@
 .au-toast,
 .au-palette,
 .au-quick-open {
-  backdrop-filter: none;
 }
 
 /* ---------- Movimiento global (rápido: <= 200ms) ---------- */
@@ -58,39 +57,8 @@ button:not(:disabled):active {
   to   { transform: translateX(100%); }
 }
 
-.aurelius-side-panel > *,
-.aurelius-right-panel > * {
-  animation: au-slide-x var(--au-dur) var(--au-ease) both;
-}
-
-.aurelius-workspace > *,
-.aurelius-page-area > * {
-  animation: au-rise var(--au-dur-slow) var(--au-ease) both;
-}
-
-.aurelius-editor-area .cm-editor {
-  animation: au-rise var(--au-dur) var(--au-ease) both;
-}
-
-.aurelius-tab {
-  animation: au-pop var(--au-dur) var(--au-ease) both;
-}
-
-.aurelius-tab.is-active {
-  position: relative;
-}
-
-.aurelius-tab.is-active::after {
-  content: "";
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 0;
-  height: 2px;
-  border-radius: 2px 2px 0 0;
-  background: var(--au-primary);
-  animation: au-rise var(--au-dur) var(--au-ease) both;
-}
+/* Nota: no se animan las entradas de paneles/tabs/editor: la app re-renderiza el árbol
+   completo en cada acción y la animación se repetiría (se percibe como lentitud). */
 
 /* Cursor de actividad: indicador deslizante plano (sin brillo) */
 .au-activity__button.is-active::before,
@@ -196,7 +164,6 @@ button:not(:disabled):active {
   grid-template-columns: auto minmax(0, max-content) minmax(160px, 1fr) auto auto;
   background: var(--au-bg-topbar) !important;
   box-shadow: none !important;
-  backdrop-filter: none;
   padding-right: 0;
   user-select: none;
 }
@@ -325,4 +292,14 @@ button[class*="primary"],
 .au-modal-backdrop,
 .au-quick-open-backdrop {
   background-image: none !important;
+}
+
+/* Sin animaciones de entrada que se repiten en cada render */
+.au-search__result,
+.au-explorer__tree,
+.au-explorer__tree > *,
+.au-tb__body,
+.au-ai__message,
+.au-command-palette__item {
+  animation: none !important;
 }

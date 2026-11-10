@@ -42,10 +42,27 @@ const AI_PROVIDER_PRESETS = {
     id: "claude",
     label: "Claude",
     mode: "external",
-    baseUrl: "https://api.anthropic.com/v1",
-    model: "claude-3-5-sonnet",
+    baseUrl: "https://api.anthropic.com",
+    model: "claude-sonnet-5-5",
     apiKeyRequired: true
   }
+};
+
+// Valores guardados por versiones anteriores que ya no funcionan con la API actual.
+const LEGACY_AI_BASE_URLS = ["https://api.anthropic.com/v1"];
+const LEGACY_AI_MODELS = ["claude-3-5-sonnet", "claude-3-5-sonnet-latest"];
+
+export const AI_MODEL_SUGGESTIONS = {
+  ollama: ["llama3.2", "qwen2.5-coder", "mistral", "deepseek-coder-v2"],
+  openai: ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "o4-mini"],
+  openrouter: [
+    "openai/gpt-4o-mini",
+    "anthropic/claude-3.5-sonnet",
+    "google/gemini-2.0-flash-001",
+    "meta-llama/llama-3.3-70b-instruct",
+    "deepseek/deepseek-chat"
+  ],
+  claude: ["claude-sonnet-5-5", "claude-opus-5-5", "claude-haiku-5-5"]
 };
 
 const DEFAULT_SETTINGS = {
@@ -166,11 +183,17 @@ export function normalizeAiRuntimeSettings(settings = {}, forcedProvider = null)
   const rawModel = safeSettings.aiModel ?? safeSettings.ai_model ?? "";
   const rawApiKey = safeSettings.aiApiKey ?? safeSettings.ai_api_key ?? "";
 
-  const nextBaseUrl = shouldReplaceProviderBaseUrl(provider, rawBaseUrl)
+  const isLegacyBaseUrl =
+    provider === "claude" && LEGACY_AI_BASE_URLS.includes(normalizeBaseUrl(rawBaseUrl));
+
+  const isLegacyModel =
+    provider === "claude" && LEGACY_AI_MODELS.includes(normalizeModelName(rawModel));
+
+  const nextBaseUrl = isLegacyBaseUrl || shouldReplaceProviderBaseUrl(provider, rawBaseUrl)
     ? preset.baseUrl
     : normalizeBaseUrl(rawBaseUrl);
 
-  const nextModel = shouldReplaceProviderModel(provider, rawModel)
+  const nextModel = isLegacyModel || shouldReplaceProviderModel(provider, rawModel)
     ? preset.model
     : normalizeModelName(rawModel);
 

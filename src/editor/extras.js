@@ -6,7 +6,7 @@ import { Decoration, EditorView, GutterMarker, ViewPlugin, WidgetType, gutter } 
 import { syntaxTree } from "@codemirror/language";
 import { appState, updateSetting } from "../app/state.js";
 
-const MAX_SCAN_CHARS = 400_000;
+const MAX_SCAN_CHARS = 120_000; // por encima, los paréntesis arcoíris se desactivan (O(n) por cambio)
 
 /* ------------------------------------------------------------------ */
 /* Muestras de color                                                   */
@@ -181,8 +181,8 @@ const CLOSE = ")]}";
 function buildRainbow(view) {
   const builder = new RangeSetBuilder();
   const { doc } = view.state;
-  const end = Math.min(view.viewport.to, MAX_SCAN_CHARS);
-  if (end <= 0) return builder.finish();
+  const end = view.viewport.to;
+  if (end <= 0 || end > MAX_SCAN_CHARS) return builder.finish();
 
   const tree = syntaxTree(view.state);
   const text = doc.sliceString(0, end);
@@ -237,6 +237,7 @@ const minimap = ViewPlugin.fromClass(
     constructor(view) {
       this.view = view;
       this.raf = 0;
+      this.timer = 0;
       this.dragging = false;
 
       this.root = document.createElement("div");
@@ -276,12 +277,19 @@ const minimap = ViewPlugin.fromClass(
     }
 
     schedule() {
-      if (this.raf) return;
-      this.raf = requestAnimationFrame(() => {
-        this.raf = 0;
-        this.draw();
-        this.positionSlider();
-      });
+      if (this.raf || this.timer) return;
+
+      // En documentos grandes, redibujar en cada tecla es caro: espaciamos el trabajo.
+      const delay = this.view.state.doc.lines > 1500 ? 250 : 0;
+
+      this.timer = setTimeout(() => {
+        this.timer = 0;
+        this.raf = requestAnimationFrame(() => {
+          this.raf = 0;
+          this.draw();
+          this.positionSlider();
+        });
+      }, delay);
     }
 
     getScale() {
@@ -351,6 +359,7 @@ const minimap = ViewPlugin.fromClass(
 
     destroy() {
       if (this.raf) cancelAnimationFrame(this.raf);
+      if (this.timer) clearTimeout(this.timer);
       this.view.scrollDOM.removeEventListener("scroll", this.onScroll);
       this.root.remove();
     }

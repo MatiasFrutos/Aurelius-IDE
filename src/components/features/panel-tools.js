@@ -6,6 +6,8 @@ import { t } from "../../app/i18n.js";
 import { toastError, toastInfo, toastSuccess } from "../ui/toast.js";
 import { runCommandInTerminal, openTerminalHere } from "../bottom-panel/bottom-panel.js";
 import { refreshIcons } from "../../app/app-icons.js";
+import { chatWithAi } from "../../services/fs.service.js";
+import { getAiProviderPreset, normalizeAiRuntimeSettings } from "../../app/app-settings.js";
 
 const esc = (value) =>
   String(value ?? "")
@@ -31,6 +33,10 @@ const store = {
     }
   }
 };
+
+function markInjected() {
+  window.__auPxInjected = true;
+}
 
 function rerender() {
   window.dispatchEvent(new CustomEvent("au:rerender"));
@@ -84,6 +90,7 @@ function injectExplorer() {
   const anchor = document.querySelector(".au-explorer__meta");
   if (!anchor || document.querySelector('[data-px-bar="explorer"]')) return;
 
+  markInjected();
   anchor.insertAdjacentHTML(
     "afterend",
     bar(
@@ -153,6 +160,7 @@ function injectSearch() {
   const toggle = (key, label, title) =>
     `<button type="button" class="au-px__chip ${searchFilters[key] ? "is-on" : ""}" data-px="srch-${key}" title="${esc(title)}">${label}</button>`;
 
+  markInjected();
   form.insertAdjacentHTML(
     "afterend",
     bar(
@@ -190,6 +198,7 @@ function injectGit() {
   const header = document.querySelector(".au-git-panel__header");
   if (!header || document.querySelector('[data-px-bar="git"]')) return;
 
+  markInjected();
   header.insertAdjacentHTML(
     "afterend",
     bar("git", GIT_COMMANDS.map(([id, icon, label]) => btn(id, icon, label)).join(""), "is-wrap")
@@ -265,6 +274,7 @@ function injectMonitor() {
 
   const current = store.get("monitor-interval", 0);
 
+  markInjected();
   header.insertAdjacentHTML(
     "afterend",
     bar(
@@ -296,6 +306,7 @@ function injectTasks() {
 
   const history = store.get("cmd-history", []);
 
+  markInjected();
   header.insertAdjacentHTML(
     "afterend",
     bar(
@@ -331,6 +342,7 @@ function injectToolchain() {
 
   const anchor = root.querySelector("header") || root.firstElementChild;
 
+  markInjected();
   anchor?.insertAdjacentHTML(
     "afterend",
     bar(
@@ -354,6 +366,7 @@ function injectSettings() {
   const root = document.querySelector(".au-settings");
   if (!root || document.querySelector('[data-px-bar="settings"]')) return;
 
+  markInjected();
   root.insertAdjacentHTML(
     "beforeend",
     `<section class="au-px au-px--settings" data-px-bar="settings">
@@ -388,6 +401,7 @@ function injectAi() {
   const list = document.querySelector(".au-right-ai__quick-list");
   if (!list || list.querySelector("[data-px-ai]")) return;
 
+  markInjected();
   list.insertAdjacentHTML(
     "beforeend",
     AI_PROMPTS.map(([label, prompt]) => `<button type="button" data-px-ai data-ai-quick-prompt="${esc(prompt)}"><span>${esc(label)}</span></button>`).join("")
@@ -490,6 +504,56 @@ function handle(action, target) {
   }
 }
 
+async function testAiConnection(button) {
+  const status = document.getElementById("settings-ai-test-status");
+  const value = (id) => document.getElementById(id)?.value || "";
+
+  const runtime = normalizeAiRuntimeSettings(
+    {
+      aiProvider: value("settings-ai-provider"),
+      aiBaseUrl: value("settings-ai-base-url"),
+      aiApiKey: value("settings-ai-api-key"),
+      aiModel: value("settings-ai-model")
+    },
+    value("settings-ai-provider")
+  );
+
+  const preset = getAiProviderPreset(runtime.aiProvider);
+  const paint = (text, kind) => {
+    if (status) {
+      status.textContent = text;
+      status.dataset.kind = kind;
+    }
+  };
+
+  if (preset.apiKeyRequired && !runtime.aiApiKey.trim()) {
+    paint(t("Falta la API Key.", "API key is missing."), "error");
+    return;
+  }
+
+  button.disabled = true;
+  paint(t("Conectando…", "Connecting…"), "pending");
+
+  const started = performance.now();
+
+  try {
+    const response = await chatWithAi({
+      provider: runtime.aiProvider,
+      baseUrl: runtime.aiBaseUrl,
+      apiKey: runtime.aiApiKey,
+      model: runtime.aiModel,
+      messages: [{ role: "user", content: "Reply with the single word: ok" }]
+    });
+
+    const ms = Math.round(performance.now() - started);
+    paint(`✓ ${t("Conectado", "Connected")} · ${runtime.aiModel} · ${ms} ms · “${String(response.content).slice(0, 40)}”`, "ok");
+  } catch (error) {
+    paint(`✗ ${String(error?.message || error)}`, "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
 let started = false;
 
 export function initPanelTools() {
@@ -497,6 +561,13 @@ export function initPanelTools() {
   started = true;
 
   document.addEventListener("click", (event) => {
+    const aiTest = event.target.closest("[data-ai-test]");
+
+    if (aiTest) {
+      testAiConnection(aiTest);
+      return;
+    }
+
     const target = event.target.closest("[data-px]");
     if (target) handle(target.dataset.px, target);
   });
@@ -545,8 +616,11 @@ export function initPanelTools() {
   });
 
   let queued = false;
+  let injected = false;
+
   const run = () => {
     queued = false;
+    injected = false;
     injectExplorer();
     injectSearch();
     injectGit();
@@ -556,11 +630,29 @@ export function initPanelTools() {
     injectSettings();
     injectAi();
     applySearchFilters();
-    refreshIcons();
+
+    // Solo refrescamos iconos si realmente inyectamos algo nuevo (createIcons recorre todo el DOM).
+    if (window.__auPxInjected) {
+      window.__auPxInjected = false;
+      refreshIcons();
+    }
+
+    injected = true;
   };
 
-  new MutationObserver(() => {
+  new MutationObserver((mutations) => {
     if (queued) return;
+
+    // Ignorar el ruido del editor y de la terminal (cada tecla muta su DOM).
+    const relevant = mutations.some((mutation) => {
+      const node = mutation.target;
+      const el = node.nodeType === 1 ? node : node.parentElement;
+
+      return !el?.closest?.(".cm-editor, .xterm, .au-fx-overlay, .au-scratch, .au-toast, .au-tb");
+    });
+
+    if (!relevant) return;
+
     queued = true;
     requestAnimationFrame(run);
   }).observe(document.getElementById("app") || document.body, { childList: true, subtree: true });

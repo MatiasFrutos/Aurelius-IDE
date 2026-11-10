@@ -40,7 +40,6 @@
   transition:
     opacity 110ms ease,
     transform 110ms ease;
-  backdrop-filter: blur(14px);
 }
 
 .au-context-menu.is-visible {

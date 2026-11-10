@@ -2,6 +2,7 @@
 import { appState } from "../../app/state.js";
 
 import {
+  AI_MODEL_SUGGESTIONS,
   getAiProviderPreset,
   normalizeAiRuntimeSettings
 } from "../../app/app-settings.js";
@@ -550,6 +551,8 @@ export function renderSettingsPanel() {
                 <input
                   id="settings-ai-model"
                   type="text"
+                  list="settings-ai-model-list"
+                  autocomplete="off"
                   value="${escapeHTML(aiRuntime.aiModel)}"
                   placeholder="${escapeHTML(aiPreset.model)}"
                 />
@@ -569,6 +572,10 @@ export function renderSettingsPanel() {
                 />
               </label>
 
+              <datalist id="settings-ai-model-list">
+                ${(AI_MODEL_SUGGESTIONS[aiRuntime.aiProvider] || []).map((model) => `<option value="${escapeHTML(model)}"></option>`).join("")}
+              </datalist>
+
               <label class="au-settings__field au-settings__field--wide">
                 <span>
                   <strong>API Key</strong>
@@ -584,6 +591,13 @@ export function renderSettingsPanel() {
                   ${aiRuntime.aiProvider === "ollama" ? "disabled" : ""}
                 />
               </label>
+            </div>
+
+            <div class="au-settings__test" id="settings-ai-test">
+              <button type="button" class="au-settings__button" data-ai-test>
+                ${text("Probar conexión", "Test connection")}
+              </button>
+              <span class="au-settings__test-status" id="settings-ai-test-status" role="status"></span>
             </div>
 
             <div class="au-settings__providers">

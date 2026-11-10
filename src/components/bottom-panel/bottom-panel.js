@@ -1449,6 +1449,64 @@ function createTerminalView(record, container) {
   record.resizeObserver.observe(container);
 }
 
+let stashedTerminalView = null;
+
+function observeTerminalContainer(record, container) {
+  record.resizeObserver?.disconnect();
+
+  record.resizeObserver = new ResizeObserver(() => {
+    requestAnimationFrame(() => {
+      syncTerminalSize(record);
+    });
+  });
+
+  record.resizeObserver.observe(container);
+}
+
+// renderApp() reconstruye todo el DOM: apartamos el nodo de xterm para no recrear la terminal
+// (y reescribir su buffer completo) en cada cambio de panel.
+export function stashTerminalView() {
+  const record = getActiveTerminal();
+  const element = record?.terminal?.element;
+
+  if (!element || !element.parentElement || activeBottomTab !== "terminal") {
+    stashedTerminalView = null;
+    return;
+  }
+
+  stashedTerminalView = { localId: record.localId, element };
+  element.remove();
+}
+
+export function restoreTerminalView() {
+  const stash = stashedTerminalView;
+  stashedTerminalView = null;
+
+  if (!stash) {
+    return;
+  }
+
+  const record = terminalRegistry.get(stash.localId);
+  const mount = document.getElementById("terminal-mount");
+
+  if (
+    !mount ||
+    !record?.terminal ||
+    record.terminal.element !== stash.element ||
+    activeBottomTab !== "terminal" ||
+    activeTerminalId !== stash.localId
+  ) {
+    return;
+  }
+
+  mount.innerHTML = "";
+  mount.appendChild(stash.element);
+  record.mounted = true;
+
+  observeTerminalContainer(record, mount);
+  fitTerminalStable(record);
+}
+
 function isTerminalViewAttached(record, container) {
   if (!record || !container || !record.terminal || !record.mounted) {
     return false;
