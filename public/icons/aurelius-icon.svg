@@ -1,33 +1,28 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aurelius IDE">
   <defs>
-    <linearGradient id="bg" x1="512" y1="0" x2="512" y2="1024" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#171b29"/>
-      <stop offset="1" stop-color="#07080d"/>
+    <linearGradient id="bg" x1="130" y1="64" x2="894" y2="960" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1b2033"/>
+      <stop offset="1" stop-color="#0a0c14"/>
     </linearGradient>
-    <linearGradient id="leg" x1="512" y1="196" x2="512" y2="828" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#9aa7cc"/>
-    </linearGradient>
-    <linearGradient id="bar" x1="400" y1="620" x2="624" y2="620" gradientUnits="userSpaceOnUse">
+    <linearGradient id="peak" x1="260" y1="780" x2="760" y2="260" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#38bdf8"/>
-      <stop offset="1" stop-color="#8b7cff"/>
+      <stop offset="1" stop-color="#a78bfa"/>
     </linearGradient>
-    <clipPath id="tile"><rect x="64" y="64" width="896" height="896" rx="228"/></clipPath>
+    <clipPath id="tile"><rect x="64" y="64" width="896" height="896" rx="232"/></clipPath>
   </defs>
 
-  <rect x="64" y="64" width="896" height="896" rx="228" fill="url(#bg)"/>
-  <rect x="65.5" y="65.5" width="893" height="893" rx="226.5" stroke="#ffffff" stroke-opacity="0.09" stroke-width="3"/>
+  <rect x="64" y="64" width="896" height="896" rx="232" fill="url(#bg)"/>
+  <rect x="65.5" y="65.5" width="893" height="893" rx="230.5" stroke="#ffffff" stroke-opacity="0.1" stroke-width="3"/>
 
-  <g clip-path="url(#tile)">
-    <!-- cuadrícula técnica muy sutil -->
-    <path d="M64 288H960M64 512H960M64 736H960M288 64V960M512 64V960M736 64V960" stroke="#ffffff" stroke-opacity="0.025" stroke-width="2"/>
+  <!-- horizonte: líneas técnicas -->
+  <g clip-path="url(#tile)" stroke="#ffffff" stroke-opacity="0.05" stroke-width="3">
+    <path d="M64 800H960"/>
+    <path d="M64 860H960" stroke-opacity="0.03"/>
   </g>
 
-  <g transform="translate(51.2 40) scale(0.9)">
-  <!-- piernas de la "A" -->
-  <path d="M458 196H566L792 828H684L512 346L340 828H232L458 196Z" fill="url(#leg)"/>
+  <!-- pico: una sola línea continua que dibuja la "A" -->
+  <path d="M268 770 L512 262 L756 770" stroke="url(#peak)" stroke-width="104" stroke-linecap="round" stroke-linejoin="round"/>
 
-  <!-- travesaño: prompt de terminal -->
-  <path d="M398 596H626L650 664H374L398 596Z" fill="url(#bar)"/>
-  </g>
+  <!-- travesaño: barra de progreso / cursor -->
+  <rect x="380" y="560" width="264" height="64" rx="32" fill="#e9ecf4"/>
 </svg>

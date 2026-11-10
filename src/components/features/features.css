@@ -394,3 +394,35 @@
 .au-settings__test-status { font-size: 12px; color: var(--au-muted); word-break: break-word; min-width: 0; flex: 1; }
 .au-settings__test-status[data-kind="ok"] { color: var(--au-success-strong); }
 .au-settings__test-status[data-kind="error"] { color: var(--au-danger); }
+
+/* ---------- Snippets / Markdown ---------- */
+.au-sym__footer { margin-top: 10px; display: flex; justify-content: flex-end; }
+.au-snip { display: grid; gap: 8px; max-height: 48vh; overflow: auto; margin: 8px 0 12px; }
+.au-snip__row { display: grid; grid-template-columns: 140px minmax(0, 1fr) 28px; gap: 8px; align-items: start; }
+.au-snip__row input, .au-snip__row textarea {
+  padding: 7px 9px; border: 1px solid var(--au-border); border-radius: 7px;
+  background: var(--au-bg-input); color: var(--au-text); font: 12px/1.5 var(--au-font-mono); outline: 0; resize: vertical;
+}
+.au-snip__actions { display: flex; gap: 8px; justify-content: flex-end; }
+.au-md { font-size: 13.5px; line-height: 1.7; color: var(--au-text); max-height: 66vh; overflow: auto; padding-right: 8px; }
+.au-md h1, .au-md h2, .au-md h3 { margin: 1.1em 0 0.5em; line-height: 1.25; }
+.au-md h1 { font-size: 1.7em; border-bottom: 1px solid var(--au-border); padding-bottom: 0.3em; }
+.au-md h2 { font-size: 1.35em; }
+.au-md p { margin: 0.6em 0; }
+.au-md code { padding: 1px 5px; border-radius: 4px; background: var(--au-bg-input); font-family: var(--au-font-mono); font-size: 0.9em; }
+.au-md pre { padding: 12px; border: 1px solid var(--au-border); border-radius: 8px; background: var(--au-bg-editor); overflow: auto; }
+.au-md pre code { padding: 0; background: none; }
+.au-md blockquote { margin: 0.8em 0; padding: 2px 14px; border-left: 3px solid var(--au-primary); color: var(--au-muted-strong); }
+.au-md a { color: var(--au-primary-strong); }
+.au-md img { max-width: 100%; border-radius: 6px; }
+.au-md table { border-collapse: collapse; margin: 0.8em 0; }
+.au-md th, .au-md td { border: 1px solid var(--au-border); padding: 6px 12px; }
+.au-md th { background: var(--au-bg-input); }
+.au-md hr { border: 0; border-top: 1px solid var(--au-border); margin: 1.4em 0; }
+.au-md li.task { list-style: none; margin-left: -1.2em; }
+
+/* La barra de herramientas no debe estirar su fila */
+.au-px[data-px-bar="explorer"], .au-px[data-px-bar="search"], .au-px[data-px-bar="git"] { align-self: start; min-width: 0; }
+.au-px__replace { flex: 1 1 100%; width: 100%; min-width: 0; box-sizing: border-box; }
+.au-px__replace .au-px__btn { flex: none; }
+.au-px__replace .au-px__input { padding: 5px 8px; font-size: 11px; }

@@ -47,6 +47,7 @@ import {
 
 import {
   renderEditorShell,
+  captureEditorScroll,
   mountEditor
 } from "../components/editor/editor.js";
 
@@ -297,6 +298,8 @@ function focusEditorSoon() {
 }
 
 function patchEditorWorkspace({ focusEditor = true } = {}) {
+  captureEditorScroll();
+
   const tabsUpdated = updateTabsDom();
   const editorUpdated = updateEditorShellDom();
 

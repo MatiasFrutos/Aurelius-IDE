@@ -131,8 +131,9 @@ export function renderTopbar() {
       <div class="au-topbar__brand" data-tauri-drag-region>
         <span class="au-topbar__logo" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10.7 3.6h2.6L19.6 20.4h-2.7L12 7.7 7.1 20.4H4.4L10.7 3.6Z" fill="currentColor" stroke="none"/>
-            <path d="M8.9 14.2h6.2l.8 2.2H8.1l.8-2.2Z" fill="rgb(var(--au-accent-rgb))" stroke="none"/>
+            <path d="M6.2 18.4 12 5.4l5.8 13" stroke="url(#au-logo-grad)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="9.3" y="12.6" width="5.4" height="1.7" rx=".85" fill="currentColor" stroke="none"/>
+            <defs><linearGradient id="au-logo-grad" x1="6" y1="18" x2="18" y2="5" gradientUnits="userSpaceOnUse"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
           </svg>
         </span>
 

@@ -140,7 +140,7 @@ export function closeOverlay() {
   }
 }
 
-function openOverlay({ title, icon, width = 560, body, onMount }) {
+export function openOverlay({ title, icon, width = 560, body, onMount }) {
   closeOverlay();
 
   const el = document.createElement("div");
@@ -808,6 +808,68 @@ export function openSymbolPicker(mode = "symbols") {
       list.addEventListener("click", (event) => {
         const button = event.target.closest("button[data-i]");
         if (button) go(Number(button.dataset.i));
+      });
+
+      paint();
+      input.focus();
+      setTimeout(() => input.focus(), 30);
+    }
+  });
+}
+
+/* Selector genérico (lista filtrable con teclado) */
+export function openPicker({ title, icon = "search", items, onPick, footer = "", onFooter }) {
+  openOverlay({
+    title,
+    icon,
+    width: 600,
+    body: `<input class="au-sym__input" placeholder="${t("Filtrar…", "Filter…")}" /><ul class="au-sym__list"></ul>${footer ? `<div class="au-sym__footer">${footer}</div>` : ""}`,
+    onMount: (el) => {
+      const input = el.querySelector("input");
+      const list = el.querySelector("ul");
+      let filtered = items;
+      let active = 0;
+
+      const paint = () => {
+        list.innerHTML = filtered
+          .map(
+            (item, index) => `<li><button type="button" data-i="${index}" class="${index === active ? "is-on" : ""}">
+              <span class="au-sym__kind">${escapeHTML(item.kind || "")}</span>
+              <span class="au-sym__name">${escapeHTML(item.name)}</span>
+              <span class="au-sym__line">${escapeHTML(item.meta || "")}</span></button></li>`
+          )
+          .join("");
+        list.querySelector(".is-on")?.scrollIntoView({ block: "nearest" });
+      };
+
+      const pick = (index) => {
+        const item = filtered[index];
+        if (!item) return;
+        closeOverlay();
+        onPick?.(item);
+      };
+
+      input.addEventListener("input", () => {
+        const q = input.value.trim().toLowerCase();
+        filtered = items.filter((item) => !q || `${item.name} ${item.meta || ""}`.toLowerCase().includes(q));
+        active = 0;
+        paint();
+      });
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown") { event.preventDefault(); active = Math.min(filtered.length - 1, active + 1); paint(); }
+        else if (event.key === "ArrowUp") { event.preventDefault(); active = Math.max(0, active - 1); paint(); }
+        else if (event.key === "Enter") { event.preventDefault(); pick(active); }
+      });
+
+      list.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-i]");
+        if (button) pick(Number(button.dataset.i));
+      });
+
+      el.querySelector("[data-fx-manage-snippets]")?.addEventListener("click", () => {
+        closeOverlay();
+        onFooter?.();
       });
 
       paint();

@@ -10,6 +10,7 @@ import { persistLayoutPreferences } from "./app-session.js";
 import { decodePath, getBaseName, isModalOpen } from "./app-utils.js";
 
 import { showContextMenu } from "../components/context-menu/context-menu.js";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { openTerminalHere } from "../components/bottom-panel/bottom-panel.js";
 
 import {
@@ -168,6 +169,26 @@ function handleContextOpenTerminalHere(target, handlers) {
   });
 }
 
+async function copyContextPath(target, { relative = false } = {}) {
+  const base = appState.projectPath ? `${appState.projectPath}/` : "";
+  const value = relative && base ? target.path.replace(base, "") : target.path;
+
+  try {
+    await navigator.clipboard.writeText(value);
+    toastSuccess(value, relative ? t("Ruta relativa copiada", "Relative path copied") : t("Ruta copiada", "Path copied"));
+  } catch (error) {
+    toastWarning(String(error), t("No se pudo copiar", "Could not copy"));
+  }
+}
+
+async function revealContextPath(target) {
+  try {
+    await revealItemInDir(target.path);
+  } catch (error) {
+    toastWarning(String(error), t("No se pudo abrir el gestor de archivos", "Could not open the file manager"));
+  }
+}
+
 export function handleAppContextMenu(event, handlers) {
   const app = document.getElementById("app");
 
@@ -243,6 +264,31 @@ export function handleAppContextMenu(event, handlers) {
         disabled: !canUseProjectActions,
         separatorBefore: true,
         run: () => handleContextOpenTerminalHere(target, handlers)
+      },
+      {
+        id: "copy-path",
+        label: t("Copiar ruta", "Copy path"),
+        description: t("Ruta absoluta al portapapeles", "Absolute path to clipboard"),
+        icon: "copy",
+        disabled: !canDelete,
+        separatorBefore: true,
+        run: () => copyContextPath(target)
+      },
+      {
+        id: "copy-relative-path",
+        label: t("Copiar ruta relativa", "Copy relative path"),
+        description: t("Relativa a la raíz del proyecto", "Relative to the project root"),
+        icon: "copy",
+        disabled: !canDelete,
+        run: () => copyContextPath(target, { relative: true })
+      },
+      {
+        id: "reveal",
+        label: t("Mostrar en el gestor de archivos", "Reveal in file manager"),
+        description: t("Abrir la carpeta contenedora", "Open the containing folder"),
+        icon: "external-link",
+        disabled: !target.path || target.kind === "empty",
+        run: () => revealContextPath(target)
       },
       {
         id: "close-folder",

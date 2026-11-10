@@ -1031,10 +1031,12 @@ export function renderEmptyEditor() {
 
 let mountedEditorPath = null;
 let pendingEditorScroll = 0;
+let pendingEditorFocus = false;
 
 // Se llama antes de que renderApp() destruya el DOM: el scroll de un nodo desacoplado se pierde.
 export function captureEditorScroll() {
   pendingEditorScroll = appState.editorView?.scrollDOM?.scrollTop || 0;
+  pendingEditorFocus = Boolean(appState.editorView?.hasFocus);
 }
 
 function canReuseEditorView() {
@@ -1069,6 +1071,11 @@ export function mountEditor() {
     requestAnimationFrame(() => {
       view.scrollDOM.scrollTop = scrollTop;
     });
+
+    // Al desacoplar el DOM el editor pierde el foco: lo devolvemos si lo tenía.
+    if (pendingEditorFocus) {
+      view.focus();
+    }
 
     return;
   }

@@ -90,6 +90,7 @@ import { refreshMonitorSnapshot } from "./app-monitor.js";
 import { refreshIcons } from "./app-icons.js";
 import { afterMount as toolboxAfterMount } from "../components/toolbox/toolbox.js";
 import { initPanelTools } from "../components/features/panel-tools.js";
+import { initLabs2 } from "../components/features/labs2.js";
 import { initFeatures, applyAppearance, openAppearancePanel } from "../components/features/features.js";
 import { createCommandActions } from "./app-command-actions.js";
 import { handleAppContextMenu } from "./app-context-menu.js";
@@ -1956,6 +1957,21 @@ export async function initAureliusApp() {
   renderApp();
   bindGlobalEvents();
   initPanelTools();
+  initLabs2();
+
+  window.addEventListener("au:open-file", async (event) => {
+    const { path, line } = event.detail || {};
+
+    if (!path) {
+      return;
+    }
+
+    await handleOpenFile(path);
+
+    if (Number(line) > 0) {
+      setTimeout(() => jumpEditorToPosition(Number(line), 1), 120);
+    }
+  });
 
   window.addEventListener("au:rerender", () => renderApp());
   window.addEventListener("au:monitor-refresh", () => {

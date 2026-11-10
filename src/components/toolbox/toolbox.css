@@ -113,3 +113,6 @@
   .au-tb__cols, .au-tb__colors { grid-template-columns: minmax(0, 1fr); }
   .au-tb__header { flex-direction: column; align-items: flex-start; }
 }
+.au-tb__todo { width: 100%; text-align: left; cursor: pointer; color: var(--au-text); box-shadow: none; }
+.au-tb__todo:hover { border-color: rgba(var(--au-accent-rgb), 0.5); }
+.au-tb__out.au-md { max-height: none; min-height: 300px; }
