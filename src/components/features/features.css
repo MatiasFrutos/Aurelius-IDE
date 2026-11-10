@@ -331,3 +331,60 @@
 .au-sym__kind { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--au-primary-strong); font-weight: 650; }
 .au-sym__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--au-font-mono); }
 .au-sym__line { color: var(--au-muted); font-size: 11px; }
+
+/* ======================================================================
+   Herramientas extra de paneles (panel-tools.js)
+   ====================================================================== */
+.au-px { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--au-border); }
+.au-px.is-block { display: block; }
+.au-px__row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.au-px__btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 8px; border: 1px solid var(--au-border); border-radius: 6px;
+  background: var(--au-button-bg); color: var(--au-muted-strong);
+  font-size: 10.5px; font-weight: 620; box-shadow: none; white-space: nowrap;
+}
+.au-px__btn svg { width: 11px; height: 11px; }
+.au-px__btn:hover { background: var(--au-button-bg-hover); color: var(--au-text); }
+.au-px__btn.is-primary { background: var(--au-primary); border-color: transparent; color: var(--au-primary-contrast); }
+.au-px__chip {
+  padding: 3px 8px; border: 1px solid var(--au-border); border-radius: 999px;
+  background: transparent; color: var(--au-muted-strong); font-size: 10.5px; font-weight: 600;
+  box-shadow: none; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.au-px__chip.is-on { background: var(--au-primary-soft); border-color: rgba(var(--au-accent-rgb), 0.5); color: var(--au-primary-strong); }
+.au-px__select, .au-px__input {
+  padding: 4px 8px; border: 1px solid var(--au-border); border-radius: 6px;
+  background: var(--au-bg-input); color: var(--au-text); font-size: 10.5px; outline: 0;
+}
+.au-px__input { flex: 1; min-width: 0; padding: 7px 10px; font: 12px var(--au-font-mono); }
+.au-px__input:focus { border-color: rgba(var(--au-accent-rgb), 0.6); }
+.au-px__count { margin-left: auto; color: var(--au-muted); font-size: 10.5px; }
+.au-px__inline { display: inline-flex; align-items: center; gap: 8px; color: var(--au-muted); font-size: 11px; }
+.au-px__form { display: flex; align-items: center; gap: 8px; }
+.au-px__form > svg { width: 14px; height: 14px; color: var(--au-muted); }
+.au-px__recent { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.au-px__sparks { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-top: 10px; }
+.au-px__spark { padding: 10px 12px; border: 1px solid var(--au-border); border-radius: 10px; }
+.au-px__spark header { display: flex; justify-content: space-between; font-size: 11px; color: var(--au-muted); }
+.au-px__spark header strong { color: var(--au-text); font-size: 13px; }
+.au-px__spark svg { width: 100%; height: 56px; margin: 6px 0; }
+.au-px__spark polyline { fill: none; stroke: var(--au-primary); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.au-px__spark footer { color: var(--au-muted); font-size: 10px; }
+.au-px--settings { display: block; padding: 18px 24px 28px; border: 0; }
+.au-px--settings h3 { margin: 14px 0 10px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--au-muted); }
+.au-px__keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+.au-px__keys div { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--au-border); border-radius: 8px; font-size: 12px; color: var(--au-muted-strong); }
+.au-px__keys kbd { min-width: 96px; padding: 2px 6px; border: 1px solid var(--au-border-strong); border-radius: 5px; background: var(--au-bg-input); font: 11px var(--au-font-mono); color: var(--au-text); }
+
+/* ---------- Páginas completas: aprovechar todo el ancho ---------- */
+.aurelius-workspace.is-page .au-monitor,
+.aurelius-workspace.is-page .au-tasks,
+.aurelius-workspace.is-page .au-toolchain {
+  padding: 18px 28px 28px;
+}
+.is-page-monitor .au-monitor__grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+.is-page-toolchain .au-toolchain__list,
+.is-page-tasks .au-tasks__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 10px; }
+@media (max-width: 1100px) { .is-page-monitor .au-monitor__grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+.au-statusbar__item[hidden]{display:none!important}

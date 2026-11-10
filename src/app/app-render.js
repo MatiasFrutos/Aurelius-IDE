@@ -1,5 +1,6 @@
 // src/app/app-render.js
-import { appState } from "./state.js";
+import { appState, isPageActivityPanel } from "./state.js";
+import { renderToolboxPage } from "../components/toolbox/toolbox.js";
 import { encodePath } from "./app-utils.js";
 import { t } from "./i18n.js";
 
@@ -64,6 +65,21 @@ export function renderTabs() {
     .join("");
 }
 
+function renderPageContent() {
+  switch (appState.activityPanel) {
+    case "monitor":
+      return renderMonitorPanel();
+    case "tasks":
+      return renderTasksPanel();
+    case "toolchain":
+      return renderToolchainPanel();
+    case "toolbox":
+      return renderToolboxPage();
+    default:
+      return renderSettingsPanel();
+  }
+}
+
 export function renderSidePanel() {
   if (appState.activityPanel === "search") {
     return renderSearchPanel();
@@ -71,18 +87,6 @@ export function renderSidePanel() {
 
   if (appState.activityPanel === "git") {
     return renderGitPanel();
-  }
-
-  if (appState.activityPanel === "monitor") {
-    return renderMonitorPanel();
-  }
-
-  if (appState.activityPanel === "tasks") {
-    return renderTasksPanel();
-  }
-
-  if (appState.activityPanel === "toolchain") {
-    return renderToolchainPanel();
   }
 
   return renderExplorer({
@@ -94,11 +98,11 @@ export function renderSidePanel() {
 }
 
 export function renderWorkspace() {
-  if (appState.activityPanel === "settings") {
+  if (isPageActivityPanel()) {
     return `
-      <section class="aurelius-workspace is-page">
+      <section class="aurelius-workspace is-page is-page-${appState.activityPanel}">
         <div class="aurelius-page-area">
-          ${renderSettingsPanel()}
+          ${renderPageContent()}
         </div>
       </section>
     `;
@@ -177,9 +181,11 @@ export function renderAppShell({
   quickOpenItems,
   quickOpenActiveIndex
 }) {
+  const showSidebar = appState.layout.sidebarVisible && !isPageActivityPanel();
+
   const layoutClasses = [
     appState.layout.topbarVisible ? "has-topbar" : "is-topbar-hidden",
-    appState.layout.sidebarVisible ? "has-sidebar" : "is-sidebar-hidden",
+    showSidebar ? "has-sidebar" : "is-sidebar-hidden",
     appState.layout.rightPanelVisible ? "has-right-panel" : "is-right-panel-hidden",
     appState.layout.bottomPanelVisible ? "has-bottom-panel" : "is-bottom-panel-hidden"
   ].join(" ");
@@ -192,7 +198,7 @@ export function renderAppShell({
         ${renderActivityBar()}
 
         ${
-          appState.layout.sidebarVisible
+          showSidebar
             ? `
               <aside class="aurelius-side-panel">
                 ${renderSidePanel()}

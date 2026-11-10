@@ -511,6 +511,37 @@ export function listBookmarks(view) {
   });
 }
 
+/* ------------------------------------------------------------------ */
+/* Información para la barra de estado: selección, palabras, cursores  */
+/* ------------------------------------------------------------------ */
+
+const editorInfo = ViewPlugin.fromClass(
+  class {
+    constructor(view) {
+      this.emit(view);
+    }
+
+    update(update) {
+      if (update.selectionSet || update.docChanged) this.emit(update.view);
+    }
+
+    emit(view) {
+      const { state } = view;
+      const selected = state.selection.ranges.reduce((sum, range) => sum + (range.to - range.from), 0);
+      const lines = state.selection.ranges.reduce(
+        (sum, range) => sum + (range.empty ? 0 : state.doc.lineAt(range.to).number - state.doc.lineAt(range.from).number + 1),
+        0
+      );
+
+      window.dispatchEvent(
+        new CustomEvent("au:editor-info", {
+          detail: { selected, lines, cursors: state.selection.ranges.length, docLines: state.doc.lines, docChars: state.doc.length }
+        })
+      );
+    }
+  }
+);
+
 export function createEditorExtras(filePath = "") {
   return [
     colorSwatches,
@@ -518,6 +549,7 @@ export function createEditorExtras(filePath = "") {
     rainbowBrackets,
     minimap,
     wheelZoom,
+    editorInfo,
     ...createBookmarkExtensions(filePath || "__untitled__")
   ];
 }

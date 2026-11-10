@@ -179,6 +179,11 @@ export function renderTopbar() {
         })}
 
         ${renderMenuButton({
+          panel: "toolbox",
+          label: "Toolbox"
+        })}
+
+        ${renderMenuButton({
           panel: "ai",
           label: t("IA", "AI")
         })}

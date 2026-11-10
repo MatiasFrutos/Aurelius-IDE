@@ -113,6 +113,7 @@ fn normalize_ui_session(session: UiSession) -> UiSession {
         "monitor" => "monitor",
         "tasks" => "tasks",
         "toolchain" => "toolchain",
+        "toolbox" => "toolbox",
         "ai" => "ai",
         "settings" => "settings",
         _ => "explorer",

@@ -87,6 +87,8 @@ import {
 
 import { refreshMonitorSnapshot } from "./app-monitor.js";
 import { refreshIcons } from "./app-icons.js";
+import { afterMount as toolboxAfterMount } from "../components/toolbox/toolbox.js";
+import { initPanelTools } from "../components/features/panel-tools.js";
 import { initFeatures, applyAppearance, openAppearancePanel } from "../components/features/features.js";
 import { createCommandActions } from "./app-command-actions.js";
 import { handleAppContextMenu } from "./app-context-menu.js";
@@ -327,6 +329,9 @@ function renderApp() {
 
   refreshIcons();
   bindEvents();
+  if (document.getElementById("au-toolbox")) {
+    toolboxAfterMount();
+  }
 
   if (appState.activeFilePath && appState.activityPanel !== "settings") {
     mountEditor();
@@ -1933,4 +1938,20 @@ export async function initAureliusApp() {
 
   renderApp();
   bindGlobalEvents();
+  initPanelTools();
+
+  window.addEventListener("au:rerender", () => renderApp());
+  window.addEventListener("au:monitor-refresh", () => {
+    refreshMonitorSnapshot({ renderApp, silent: true, background: true });
+  });
+  window.addEventListener("au:import-settings", async (event) => {
+    for (const [key, value] of Object.entries(event.detail || {})) {
+      if (key !== "aiApiKey" && key in appState.settings) {
+        updateSetting(key, value);
+      }
+    }
+
+    await persistSettings();
+    renderApp();
+  });
 }
