@@ -72,7 +72,15 @@ function buildAiMessages(prompt, includeActiveFile) {
     });
   }
 
-  for (const message of appState.ai.messages.slice(-8)) {
+  // El prompt actual ya fue agregado al historial: lo quitamos para no enviarlo dos veces.
+  const history = appState.ai.messages.slice(-9);
+  const lastMessage = history[history.length - 1];
+
+  if (lastMessage?.role === "user" && lastMessage.content === prompt) {
+    history.pop();
+  }
+
+  for (const message of history.slice(-8)) {
     messages.push({
       role: message.role,
       content: message.content

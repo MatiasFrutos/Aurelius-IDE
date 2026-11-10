@@ -388,3 +388,9 @@
 .is-page-tasks .au-tasks__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 10px; }
 @media (max-width: 1100px) { .is-page-monitor .au-monitor__grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
 .au-statusbar__item[hidden]{display:none!important}
+
+/* ---------- Probar conexión IA ---------- */
+.au-settings__test { display: flex; align-items: center; gap: 12px; margin: 4px 0 14px; flex-wrap: wrap; }
+.au-settings__test-status { font-size: 12px; color: var(--au-muted); word-break: break-word; min-width: 0; flex: 1; }
+.au-settings__test-status[data-kind="ok"] { color: var(--au-success-strong); }
+.au-settings__test-status[data-kind="error"] { color: var(--au-danger); }

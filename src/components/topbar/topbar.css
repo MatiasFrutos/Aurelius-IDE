@@ -22,7 +22,6 @@
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.022) inset,
     0 7px 18px rgba(0, 0, 0, 0.065);
-  backdrop-filter: blur(14px);
   z-index: 80;
   overflow: hidden;
 }

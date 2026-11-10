@@ -387,8 +387,120 @@ pub async fn execute_ai_chat(request: AiChatRequest) -> Result<AiChatResponse, S
     }
 }
 
+fn http_client() -> Result<Client, String> {
+    Client::builder()
+        .connect_timeout(std::time::Duration::from_secs(15))
+        .timeout(std::time::Duration::from_secs(180))
+        .build()
+        .map_err(|error| format!("No se pudo crear el cliente HTTP. Detalle: {}", error))
+}
+
+/// Extrae un mensaje legible de las respuestas de error de OpenAI / OpenRouter / Anthropic / Ollama.
+fn api_error_message(value: &Value) -> String {
+    let error = value.get("error");
+
+    if let Some(text) = error.and_then(Value::as_str) {
+        return text.to_string();
+    }
+
+    let message = error
+        .and_then(|error| error.get("message"))
+        .and_then(Value::as_str);
+
+    // OpenRouter suele anidar el motivo real del proveedor en error.metadata.raw
+    let raw = error
+        .and_then(|error| error.get("metadata"))
+        .and_then(|metadata| metadata.get("raw"))
+        .and_then(Value::as_str);
+
+    match (message, raw) {
+        (Some(message), Some(raw)) => format!("{} ({})", message, raw),
+        (Some(message), None) => message.to_string(),
+        _ => value.to_string(),
+    }
+}
+
+fn describe_status(status: reqwest::StatusCode) -> &'static str {
+    match status.as_u16() {
+        401 | 403 => "API Key inválida o sin permisos",
+        404 => "modelo o URL no encontrados (revisá la Base URL y el nombre del modelo)",
+        429 => "límite de uso o saldo agotado",
+        500..=599 => "el proveedor tuvo un error interno",
+        _ => "error del proveedor",
+    }
+}
+
+/// Anthropic espera `{base}/v1/messages`; aceptamos Base URL con o sin `/v1`.
+fn claude_messages_url(base_url: &str) -> String {
+    let base = normalize_base_url(base_url, "https://api.anthropic.com");
+    let base = base.trim_end_matches("/v1").trim_end_matches('/').to_string();
+
+    format!("{}/v1/messages", base)
+}
+
+/// OpenRouter usa `/api/v1`; si el usuario puso solo `https://openrouter.ai/api`, lo completamos.
+fn openai_like_base_url(base_url: &str, provider: &str) -> String {
+    let default_base_url = if provider == "openrouter" {
+        "https://openrouter.ai/api/v1"
+    } else {
+        "https://api.openai.com/v1"
+    };
+
+    let base = normalize_base_url(base_url, default_base_url);
+
+    if provider == "openrouter" && base.ends_with("openrouter.ai/api") {
+        return format!("{}/v1", base);
+    }
+
+    base
+}
+
+/// Anthropic exige que el primer mensaje sea `user` y acepta mejor roles alternados:
+/// descartamos asistentes iniciales y fusionamos mensajes consecutivos del mismo rol.
+fn sanitize_claude_messages(messages: Vec<Value>) -> Vec<Value> {
+    let mut merged: Vec<Value> = Vec::new();
+
+    for message in messages {
+        let role = message
+            .get("role")
+            .and_then(Value::as_str)
+            .unwrap_or("user")
+            .to_string();
+        let content = message
+            .get("content")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+            .to_string();
+
+        if content.trim().is_empty() {
+            continue;
+        }
+
+        if merged.is_empty() && role != "user" {
+            continue;
+        }
+
+        if let Some(last) = merged.last_mut() {
+            if last.get("role").and_then(Value::as_str) == Some(role.as_str()) {
+                let previous = last
+                    .get("content")
+                    .and_then(Value::as_str)
+                    .unwrap_or("")
+                    .to_string();
+
+                last["content"] = Value::String(format!("{}\n\n{}", previous, content));
+                continue;
+            }
+        }
+
+        merged.push(json!({ "role": role, "content": content }));
+    }
+
+    merged
+}
+
 async fn chat_ollama(request: AiChatRequest) -> Result<AiChatResponse, String> {
-    let client = Client::new();
+    let client = http_client()?;
     let base_url = normalize_base_url(&request.base_url, "http://localhost:11434");
     let url = format!("{}/api/chat", base_url);
 
@@ -412,7 +524,11 @@ async fn chat_ollama(request: AiChatRequest) -> Result<AiChatResponse, String> {
         .map_err(|error| format!("Ollama respondió en un formato inválido. Detalle: {}", error))?;
 
     if !status.is_success() {
-        return Err(format!("Ollama devolvió error: {}", value));
+        return Err(format!(
+            "Ollama devolvió error ({}): {}",
+            describe_status(status),
+            api_error_message(&value)
+        ));
     }
 
     let content = value
@@ -437,20 +553,14 @@ async fn chat_openai_like(request: AiChatRequest, provider: &str) -> Result<AiCh
         return Err("Tenés que configurar una API Key para este proveedor.".to_string());
     }
 
-    let default_base_url = if provider == "openrouter" {
-        "https://openrouter.ai/api/v1"
-    } else {
-        "https://api.openai.com/v1"
-    };
-
-    let client = Client::new();
-    let base_url = normalize_base_url(&request.base_url, default_base_url);
+    let client = http_client()?;
+    let base_url = openai_like_base_url(&request.base_url, provider);
     let url = format!("{}/chat/completions", base_url);
 
+    // Sin `temperature`: los modelos de razonamiento (o1/o3/gpt-5…) la rechazan.
     let body = json!({
         "model": request.model,
-        "messages": request.messages,
-        "temperature": 0.2
+        "messages": request.messages
     });
 
     let mut builder = client
@@ -460,35 +570,68 @@ async fn chat_openai_like(request: AiChatRequest, provider: &str) -> Result<AiCh
 
     if provider == "openrouter" {
         builder = builder
-            .header("HTTP-Referer", "http://localhost/aurelius-ide")
+            .header("HTTP-Referer", "https://github.com/MatiasFrutos/Aurelius-IDE")
             .header("X-Title", "Aurelius IDE");
     }
 
     let response = builder
         .send()
         .await
-        .map_err(|error| format!("No se pudo conectar con el proveedor IA. Detalle: {}", error))?;
+        .map_err(|error| {
+            if error.is_timeout() {
+                "El proveedor IA tardó demasiado en responder (timeout).".to_string()
+            } else {
+                format!("No se pudo conectar con el proveedor IA. Detalle: {}", error)
+            }
+        })?;
 
     let status = response.status();
-    let value: Value = response
-        .json()
+    let text = response
+        .text()
         .await
-        .map_err(|error| format!("El proveedor IA respondió en un formato inválido. Detalle: {}", error))?;
+        .map_err(|error| format!("No se pudo leer la respuesta del proveedor IA. Detalle: {}", error))?;
+
+    let value: Value = serde_json::from_str(&text).map_err(|_| {
+        format!(
+            "El proveedor IA respondió en un formato inválido (HTTP {}): {}",
+            status.as_u16(),
+            text.chars().take(300).collect::<String>()
+        )
+    })?;
 
     if !status.is_success() {
-        return Err(format!("El proveedor IA devolvió error: {}", value));
+        return Err(format!(
+            "El proveedor IA devolvió HTTP {} ({}): {}",
+            status.as_u16(),
+            describe_status(status),
+            api_error_message(&value)
+        ));
     }
 
-    let content = value
+    // OpenRouter puede responder 200 con un objeto `error` cuando falla el proveedor final.
+    if value.get("error").is_some() && value.get("choices").is_none() {
+        return Err(format!("El proveedor IA devolvió un error: {}", api_error_message(&value)));
+    }
+
+    let message_content = value
         .get("choices")
         .and_then(Value::as_array)
         .and_then(|choices| choices.first())
         .and_then(|choice| choice.get("message"))
-        .and_then(|message| message.get("content"))
-        .and_then(Value::as_str)
-        .unwrap_or("")
-        .trim()
-        .to_string();
+        .and_then(|message| message.get("content"));
+
+    // `content` puede ser texto o una lista de partes {type, text}.
+    let content = match message_content {
+        Some(Value::String(text)) => text.trim().to_string(),
+        Some(Value::Array(parts)) => parts
+            .iter()
+            .filter_map(|part| part.get("text").and_then(Value::as_str))
+            .collect::<Vec<&str>>()
+            .join("\n")
+            .trim()
+            .to_string(),
+        _ => String::new(),
+    };
 
     if content.is_empty() {
         return Err("El proveedor IA no devolvió contenido.".to_string());
@@ -504,9 +647,8 @@ async fn chat_claude(request: AiChatRequest) -> Result<AiChatResponse, String> {
         return Err("Tenés que configurar una API Key de Claude.".to_string());
     }
 
-    let client = Client::new();
-    let base_url = normalize_base_url(&request.base_url, "https://api.anthropic.com");
-    let url = format!("{}/v1/messages", base_url);
+    let client = http_client()?;
+    let url = claude_messages_url(&request.base_url);
 
     let mut system_prompt = String::from("Sos un asistente técnico integrado dentro de Aurelius IDE.");
     let mut messages = Vec::new();
@@ -529,9 +671,15 @@ async fn chat_claude(request: AiChatRequest) -> Result<AiChatResponse, String> {
         }));
     }
 
+    let messages = sanitize_claude_messages(messages);
+
+    if messages.is_empty() {
+        return Err("No hay ningún mensaje de usuario para enviar a Claude.".to_string());
+    }
+
     let body = json!({
         "model": request.model,
-        "max_tokens": 1800,
+        "max_tokens": 4096,
         "system": system_prompt,
         "messages": messages
     });
@@ -543,16 +691,35 @@ async fn chat_claude(request: AiChatRequest) -> Result<AiChatResponse, String> {
         .json(&body)
         .send()
         .await
-        .map_err(|error| format!("No se pudo conectar con Claude. Detalle: {}", error))?;
+        .map_err(|error| {
+            if error.is_timeout() {
+                "Claude tardó demasiado en responder (timeout).".to_string()
+            } else {
+                format!("No se pudo conectar con Claude. Detalle: {}", error)
+            }
+        })?;
 
     let status = response.status();
-    let value: Value = response
-        .json()
+    let text = response
+        .text()
         .await
-        .map_err(|error| format!("Claude respondió en un formato inválido. Detalle: {}", error))?;
+        .map_err(|error| format!("No se pudo leer la respuesta de Claude. Detalle: {}", error))?;
+
+    let value: Value = serde_json::from_str(&text).map_err(|_| {
+        format!(
+            "Claude respondió en un formato inválido (HTTP {}): {}",
+            status.as_u16(),
+            text.chars().take(300).collect::<String>()
+        )
+    })?;
 
     if !status.is_success() {
-        return Err(format!("Claude devolvió error: {}", value));
+        return Err(format!(
+            "Claude devolvió HTTP {} ({}): {}",
+            status.as_u16(),
+            describe_status(status),
+            api_error_message(&value)
+        ));
     }
 
     let content = value
@@ -1015,7 +1182,7 @@ fn default_ai_model(provider: &str) -> &'static str {
     match provider {
         "openai" => "gpt-4o-mini",
         "openrouter" => "openai/gpt-4o-mini",
-        "claude" => "claude-3-5-sonnet-latest",
+        "claude" => "claude-sonnet-5-5",
         _ => "llama3.2",
     }
 }

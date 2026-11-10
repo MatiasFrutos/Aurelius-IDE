@@ -57,7 +57,6 @@
     transform 170ms ease,
     border-color 170ms ease;
   pointer-events: auto;
-  backdrop-filter: blur(16px) saturate(1.08);
 }
 
 :root[data-theme="light"] .au-toast {

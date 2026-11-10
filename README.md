@@ -988,3 +988,9 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - **Páginas a ancho completo:** Monitor, Tasks, Doctor, Ajustes y la nueva **Toolbox** ocupan todo el ancho (el sidebar se oculta en esas páginas; al abrir un archivo se vuelve al editor).
 - **Toolbox (nueva página):** JSON, Regex, Codificar (Base64/URL/HTML/Hex/Unicode), Hash (SHA), JWT, Tiempo, Color (+contraste), Diff, Generadores (UUID/contraseñas/lorem) y Texto. Todo local.
 - **Más herramientas en los paneles existentes:** Explorer (colapsar/expandir/revelar/terminal aquí/copiar ruta), Búsqueda (mayúsculas/palabra/regex/filtro por extensión/copiar), Git (fetch/pull/push/stash/log/diff/ramas/amend), Monitor (gráficas de historial, auto-actualización, copiar snapshot), Tasks (ejecutor de comandos con historial), Doctor (reporte Markdown, comandos de instalación), Ajustes (exportar/importar, atajos), IA (6 acciones rápidas nuevas) y barra de estado (selección, cursores, codificación).
+
+### v2.3 — rendimiento e IA
+
+- **Rendimiento:** al cambiar de panel/ajustes ya no se recrean el editor (CodeMirror) ni la terminal: se reutilizan sus vistas. Se quitaron `backdrop-filter` y animaciones que se repetían en cada render (costosas en WebKitGTK); los paréntesis arcoíris se desactivan en archivos muy grandes y el minimapa se espacia.
+- **IA / Claude:** corregida la URL de Claude (`/v1/v1/messages` → 404), modelo por defecto actualizado, mensajes normalizados (Anthropic exige empezar con `user`), timeouts, mensajes de error legibles (401/404/429), OpenRouter con `error` dentro de un 200, y el prompt ya no se envía duplicado.
+- **Ajustes → IA:** botón **Probar conexión**, sugerencias de modelos y migración automática de valores antiguos de Claude.

@@ -30,6 +30,7 @@ import {
   persistSettings,
   saveSettings,
   getAiProviderPreset,
+  AI_MODEL_SUGGESTIONS,
   getDefaultAiRuntimeSettings,
   normalizeAiRuntimeSettings
 } from "./app-settings.js";
@@ -128,7 +129,11 @@ import {
   refreshGitStatus
 } from "../components/git/git-panel.js";
 
-import { runDiagnosticsAndPopulate } from "../components/bottom-panel/bottom-panel.js";
+import {
+  restoreTerminalView,
+  runDiagnosticsAndPopulate,
+  stashTerminalView
+} from "../components/bottom-panel/bottom-panel.js";
 
 import {
   filterCommandActions,
@@ -141,7 +146,7 @@ import {
 } from "../components/command-help/command-help.js";
 
 import { hideContextMenu } from "../components/context-menu/context-menu.js";
-import { mountEditor } from "../components/editor/editor.js";
+import { captureEditorScroll, mountEditor } from "../components/editor/editor.js";
 import { updateStatusbar } from "../components/statusbar/statusbar.js";
 
 import {
@@ -312,6 +317,9 @@ function renderApp() {
 
   const quickOpenState = getQuickOpenRenderState();
 
+  captureEditorScroll();
+  stashTerminalView();
+
   app.innerHTML =
     renderAppShell({
       commandPaletteOpen,
@@ -327,6 +335,7 @@ function renderApp() {
       shortcuts: getCommandHelpShortcuts()
     });
 
+  restoreTerminalView();
   refreshIcons();
   bindEvents();
   if (document.getElementById("au-toolbox")) {
@@ -1072,6 +1081,14 @@ function syncSettingsAiProviderFields(provider, { forceDefaults = false, keepApi
     : t("No requerida para Ollama local", "Not required for local Ollama");
 
   apiKeyInput.disabled = !preset.apiKeyRequired;
+
+  const modelList = document.getElementById("settings-ai-model-list");
+
+  if (modelList) {
+    modelList.innerHTML = (AI_MODEL_SUGGESTIONS[preset.id] || [])
+      .map((model) => `<option value="${model}"></option>`)
+      .join("");
+  }
 }
 
 function handleSettingsAiProviderChange(event) {

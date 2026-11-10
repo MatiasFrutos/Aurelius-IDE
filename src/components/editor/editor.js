@@ -1029,10 +1029,47 @@ export function renderEmptyEditor() {
   `;
 }
 
+let mountedEditorPath = null;
+let pendingEditorScroll = 0;
+
+// Se llama antes de que renderApp() destruya el DOM: el scroll de un nodo desacoplado se pierde.
+export function captureEditorScroll() {
+  pendingEditorScroll = appState.editorView?.scrollDOM?.scrollTop || 0;
+}
+
+function canReuseEditorView() {
+  const view = appState.editorView;
+
+  return Boolean(
+    view &&
+      view.dom &&
+      mountedEditorPath &&
+      mountedEditorPath === appState.activeFilePath &&
+      view.state.doc.toString() === String(appState.activeFileContent ?? "")
+  );
+}
+
 export function mountEditor() {
   const mount = document.getElementById("editor-mount");
 
   if (!mount) {
+    return;
+  }
+
+  // Reutilizar el EditorView evita recrear CodeMirror (lenguaje, extensiones, undo, selección)
+  // cada vez que cambia un panel, el tema o el layout.
+  if (canReuseEditorView()) {
+    const view = appState.editorView;
+    const scrollTop = pendingEditorScroll;
+
+    mount.innerHTML = "";
+    mount.appendChild(view.dom);
+
+    view.requestMeasure();
+    requestAnimationFrame(() => {
+      view.scrollDOM.scrollTop = scrollTop;
+    });
+
     return;
   }
 
@@ -1068,6 +1105,7 @@ export function mountEditor() {
   });
 
   setEditorView(view);
+  mountedEditorPath = appState.activeFilePath;
 
   queueMicrotask(() => {
     try {

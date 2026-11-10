@@ -41,7 +41,6 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent),
     rgba(2, 6, 23, 0.13);
-  backdrop-filter: blur(12px);
   overflow: visible;
 }
 
@@ -1044,7 +1043,6 @@
   box-shadow:
     0 10px 24px rgba(0, 0, 0, 0.11),
     0 0 0 1px rgba(255, 255, 255, 0.016) inset;
-  backdrop-filter: blur(14px);
 }
 
 :root[data-theme="light"] .aurelius-welcome__hero-copy,
