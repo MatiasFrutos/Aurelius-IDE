@@ -359,7 +359,7 @@ export function renderStatusbar() {
           title="${t("Versión de Aurelius IDE", "Aurelius IDE version")}"
         >
           <i data-lucide="sparkles"></i>
-          <span>Aurelius v0.1</span>
+          <span>Aurelius v1.0</span>
         </span>
       </div>
     </footer>

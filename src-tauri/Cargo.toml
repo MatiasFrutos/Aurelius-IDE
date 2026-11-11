@@ -1,6 +1,6 @@
 [package]
 name = "aurelius-ide"
-version = "0.1.0"
+version = "1.0.0"
 description = "Aurelius IDE - Linux-first lightweight IDE"
 authors = ["Matias"]
 edition = "2021"
