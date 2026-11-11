@@ -93,3 +93,64 @@ export function createLabs3Commands() {
     { id: "notif-history", title: t("Historial de notificaciones", "Notification history"), description: t("Revisa los avisos recientes que ya desaparecieron.", "Review recent notices that already disappeared."), group: "Aurelius Labs", icon: "info", keywords: ["notificaciones", "notifications", "toast", "avisos"], run: openNotificationHistory }
   ];
 }
+
+/* ====================================================================== */
+/* Rama Git y cambios en la barra de estado                                */
+/* ====================================================================== */
+
+let branchTimer = null;
+let lastProject = null;
+
+async function refreshBranch() {
+  const el = document.getElementById("status-branch");
+  const project = appState.projectPath;
+
+  if (!project) {
+    if (el) el.hidden = true;
+    return;
+  }
+
+  try {
+    const { gitStatusProject } = await import("../../services/git.service.js");
+    const status = await gitStatusProject(project);
+    const target = document.getElementById("status-branch");
+
+    if (!target) return;
+
+    if (!status?.is_repo && !status?.isRepo && !status?.branch) {
+      target.hidden = true;
+      return;
+    }
+
+    const changes = Array.isArray(status.files) ? status.files.length : Array.isArray(status.changes) ? status.changes.length : 0;
+    target.hidden = false;
+    target.querySelector("span").textContent = `${status.branch || "HEAD"}${changes ? ` · ${changes}` : ""}`;
+    target.title = `${t("Rama", "Branch")}: ${status.branch || "HEAD"}${changes ? ` — ${changes} ${t("cambio(s)", "change(s)")}` : ""}`;
+  } catch {
+    const target = document.getElementById("status-branch");
+    if (target) target.hidden = true;
+  }
+}
+
+export function initBranchWatcher() {
+  if (branchTimer) return;
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("#status-branch")) window.dispatchEvent(new CustomEvent("au:open-git-panel"));
+  });
+
+  branchTimer = setInterval(() => {
+    if (document.hidden) return;
+    refreshBranch();
+  }, 15000);
+
+  // Tras cada render, si el item aún no tiene texto o cambió el proyecto, refrescamos.
+  new MutationObserver(() => {
+    const el = document.getElementById("status-branch");
+    if (el && (appState.projectPath !== lastProject || !el.dataset.ready)) {
+      lastProject = appState.projectPath;
+      el.dataset.ready = "1";
+      refreshBranch();
+    }
+  }).observe(document.getElementById("app") || document.body, { childList: true, subtree: true });
+}

@@ -499,7 +499,7 @@ function getTerminalTheme() {
   const isLight = document.documentElement.dataset.theme === "light";
   const accentRgb = readCssVar("--au-accent-rgb", "56, 189, 248");
   const accent = `rgb(${accentRgb})`;
-  const background = readCssVar("--au-bg-panel", isLight ? "#ffffff" : "#0f1117");
+  const background = readCssVar("--au-bg-editor", isLight ? "#ffffff" : "#0b0d12");
 
   if (isLight) {
     return {

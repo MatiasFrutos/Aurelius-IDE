@@ -30,6 +30,7 @@ import "./styles/modern.css";
 import "./components/features/features.css";
 import "./components/toolbox/toolbox.css";
 import "./styles/enterprise.css";
+import "./ai/ai-chat.css";
 
 import { initAureliusApp } from "./app/app.js";
 

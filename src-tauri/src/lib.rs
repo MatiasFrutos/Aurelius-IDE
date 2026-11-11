@@ -2,6 +2,12 @@
 mod commands;
 mod core;
 
+use commands::ai_commands::{
+    ai_cancel,
+    chat_with_ai_stream,
+    AiStreams,
+};
+
 use commands::fs_commands::{
     add_recent_project,
     chat_with_ai,
@@ -67,6 +73,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .manage(TerminalManager::default())
         .manage(LiveServerManager::default())
+        .manage(AiStreams::default())
         .invoke_handler(tauri::generate_handler![
             open_project_dialog,
             read_project_tree,
@@ -84,6 +91,8 @@ pub fn run() {
             write_settings,
             search_project,
             chat_with_ai,
+            chat_with_ai_stream,
+            ai_cancel,
             terminal_spawn,
             terminal_write,
             terminal_resize,

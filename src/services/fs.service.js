@@ -96,7 +96,13 @@ function normalizeAiRequest(request = {}) {
     model: normalizeText(safeRequest.model || "llama3.2").trim() || "llama3.2",
     messages: Array.isArray(safeRequest.messages)
       ? safeRequest.messages.map(normalizeAiMessage)
-      : []
+      : [],
+    ...(Number.isFinite(Number(safeRequest.temperature)) && safeRequest.temperature !== null
+      ? { temperature: Number(safeRequest.temperature) }
+      : {}),
+    ...(Number.isFinite(Number(safeRequest.maxTokens)) && safeRequest.maxTokens
+      ? { max_tokens: Math.round(Number(safeRequest.maxTokens)) }
+      : {})
   };
 }
 
@@ -186,6 +192,17 @@ export function searchProject(projectPath, query) {
     projectPath: assertPath(projectPath, "La ruta del proyecto"),
     query: normalizeText(query).trim()
   });
+}
+
+export function chatWithAiStream(streamId, request) {
+  return invoke("chat_with_ai_stream", {
+    streamId,
+    request: normalizeAiRequest(request)
+  });
+}
+
+export function cancelAiStream(streamId) {
+  return invoke("ai_cancel", { streamId });
 }
 
 export function chatWithAi(request) {
