@@ -2,6 +2,7 @@
 import { Terminal as XtermTerminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
+import { SearchAddon } from "@xterm/addon-search";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
 import { appState } from "../../app/state.js";
@@ -553,6 +554,55 @@ function getTerminalTheme() {
 
 let terminalThemeObserver = null;
 
+function toggleTerminalSearch(record) {
+  const mount = document.getElementById("terminal-mount");
+
+  if (!mount || !record?.searchAddon) {
+    return;
+  }
+
+  const existing = mount.parentElement?.querySelector(".au-term-search");
+
+  if (existing) {
+    existing.remove();
+    record.searchAddon.clearDecorations?.();
+    record.terminal?.focus();
+    return;
+  }
+
+  const bar = document.createElement("div");
+  bar.className = "au-term-search";
+  bar.innerHTML = `
+    <input type="text" placeholder="${escapeHTML(t("Buscar en la terminal…", "Search in terminal…"))}" spellcheck="false" />
+    <button type="button" data-dir="prev" title="${escapeHTML(t("Anterior", "Previous"))}">↑</button>
+    <button type="button" data-dir="next" title="${escapeHTML(t("Siguiente", "Next"))}">↓</button>
+    <button type="button" data-dir="close" title="${escapeHTML(t("Cerrar", "Close"))}">✕</button>
+  `;
+
+  const input = bar.querySelector("input");
+  const options = { decorations: { matchOverviewRuler: "#888", activeMatchColorOverviewRuler: "#4d8dff", matchBackground: "#3b4252", activeMatchBackground: "#4d8dff" } };
+  const run = (direction) => {
+    if (!input.value) return;
+    if (direction === "prev") record.searchAddon.findPrevious(input.value, options);
+    else record.searchAddon.findNext(input.value, options);
+  };
+
+  input.addEventListener("input", () => run("next"));
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") { event.preventDefault(); run(event.shiftKey ? "prev" : "next"); }
+    if (event.key === "Escape") { event.preventDefault(); bar.querySelector('[data-dir="close"]').click(); }
+  });
+  bar.addEventListener("click", (event) => {
+    const dir = event.target.closest("[data-dir]")?.dataset.dir;
+    if (dir === "close") toggleTerminalSearch(record);
+    else if (dir) run(dir);
+  });
+
+  mount.parentElement.style.position = "relative";
+  mount.parentElement.appendChild(bar);
+  input.focus();
+}
+
 function watchTerminalTheme() {
   if (terminalThemeObserver || typeof MutationObserver === "undefined") {
     return;
@@ -572,7 +622,7 @@ function watchTerminalTheme() {
 
   terminalThemeObserver.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ["data-theme", "data-accent", "data-surface", "style"]
+    attributeFilter: ["data-theme", "data-accent", "data-surface", "data-palette", "style"]
   });
 }
 
@@ -1393,6 +1443,11 @@ function createTerminalView(record, container) {
         return false;
       }
 
+      if (hasCtrl && !event.shiftKey && key === "f") {
+        toggleTerminalSearch(record);
+        return false;
+      }
+
       if (hasCtrl && event.shiftKey && key === "k") {
         record.terminal?.clear();
         return false;
@@ -1412,6 +1467,8 @@ function createTerminalView(record, container) {
       }
     })
   );
+  record.searchAddon = new SearchAddon();
+  record.terminal.loadAddon(record.searchAddon);
   watchTerminalTheme();
   record.terminal.open(container);
   record.mounted = true;

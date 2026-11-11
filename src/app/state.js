@@ -1046,6 +1046,10 @@ export function closeTab(path) {
 
   const wasActive = appState.activeFilePath === normalizedPath;
 
+  if (typeof window !== "undefined") {
+    window.__auClosedTabs = [normalizedPath, ...(window.__auClosedTabs || []).filter((item) => item !== normalizedPath)].slice(0, 15);
+  }
+
   appState.openTabs.splice(index, 1);
 
   if (!wasActive) {

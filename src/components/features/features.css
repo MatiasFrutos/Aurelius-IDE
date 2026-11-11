@@ -426,3 +426,15 @@
 .au-px__replace { flex: 1 1 100%; width: 100%; min-width: 0; box-sizing: border-box; }
 .au-px__replace .au-px__btn { flex: none; }
 .au-px__replace .au-px__input { padding: 5px 8px; font-size: 11px; }
+
+/* ---------- Historial de notificaciones ---------- */
+.au-notif { list-style: none; margin: 0; padding: 0; max-height: 60vh; overflow: auto; display: grid; gap: 2px; }
+.au-notif li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 9px 6px; border-bottom: 1px solid var(--au-border); }
+.au-notif i { width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: var(--au-muted); }
+.au-notif .is-success i { background: var(--au-success); }
+.au-notif .is-error i { background: var(--au-danger); }
+.au-notif .is-warning i { background: var(--au-warning); }
+.au-notif .is-info i { background: var(--au-primary); }
+.au-notif strong { display: block; font-size: 12.5px; }
+.au-notif span { color: var(--au-muted); font-size: 12px; word-break: break-word; }
+.au-notif time { color: var(--au-muted); font-size: 11px; }

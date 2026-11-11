@@ -91,6 +91,7 @@ import { refreshIcons } from "./app-icons.js";
 import { afterMount as toolboxAfterMount } from "../components/toolbox/toolbox.js";
 import { initPanelTools } from "../components/features/panel-tools.js";
 import { initLabs2 } from "../components/features/labs2.js";
+import { applyPersonalization } from "../components/features/personalize.js";
 import { initFeatures, applyAppearance, openAppearancePanel } from "../components/features/features.js";
 import { createCommandActions } from "./app-command-actions.js";
 import { handleAppContextMenu } from "./app-context-menu.js";
@@ -1938,6 +1939,7 @@ function bindGlobalEvents() {
 export async function initAureliusApp() {
   initFeatures();
   await loadSettings();
+  applyPersonalization();
   applyAppearance();
 
   const savedSession = await applyLayoutPreferences();

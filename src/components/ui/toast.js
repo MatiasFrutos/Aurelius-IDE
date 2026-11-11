@@ -98,6 +98,12 @@ function trimOldToasts(container) {
   });
 }
 
+const toastHistory = [];
+
+export function getToastHistory() {
+  return toastHistory.slice();
+}
+
 function createToast({
   type = "info",
   title = "Aurelius",
@@ -106,6 +112,9 @@ function createToast({
 }) {
   const safeType = normalizeToastType(type);
   const safeTimeout = normalizeTimeout(timeout);
+
+  toastHistory.unshift({ type: safeType, title, message, at: Date.now() });
+  toastHistory.length = Math.min(toastHistory.length, 80);
   const hasTimer = safeTimeout > 0;
   const container = ensureToastContainer();
 

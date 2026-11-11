@@ -1006,3 +1006,10 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 
 - **Aspecto empresarial:** tipografía más legible (se eliminaron los tamaños de 7–10 px), acento azul sobrio por defecto, esquinas y tarjetas consistentes, títulos y etiquetas discretos, IA con acciones rápidas en rejilla.
 - **Toolbox (+7):** JSON→TypeScript, CSV⇄JSON, JSON⇄YAML, constructor de commits (Conventional Commits), plantillas de proyecto (.gitignore, LICENSE, README, CI de GitHub Actions, Dockerfile, SECURITY… con *Crear en el proyecto*), zonas horarias y analizador del proyecto (archivos y líneas por lenguaje).
+
+### v2.6 — Personalización y limpieza visual
+
+- **Personalización (`Alt+A`)**: 7 paletas completas (Obsidian, Nord, Dracula, Tokyo Night, Gruvbox, Rosé Pine, Bosque), color de acento libre (selector + hex), 3 paquetes de iconos del Explorer (minimal con puntos, lineal a color, monocromo) y **fondo configurable**: degradados, cuadrícula, puntos, partículas (con animación opcional y pausa si la ventana no está visible) o **imagen propia** (archivo o URL, con oscurecido, desenfoque y opacidad de paneles). Todo se guarda localmente y sin glow.
+- **Editor**: cabecera compacta de una línea (ruta de migas), gutter y línea activa más sobrios.
+- **Nuevas funciones**: búsqueda en la terminal (`Ctrl+F`), cerrar otras/guardadas, reabrir pestaña cerrada, comparar con otra pestaña, historial de notificaciones.
+- **Correcciones**: el footer de Ajustes se superponía al hacer scroll (elementos sticky ahora opacos y sin hueco); el breadcrumb del editor se recortaba.
