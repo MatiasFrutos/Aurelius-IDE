@@ -303,3 +303,83 @@ button[class*="primary"],
 .au-command-palette__item {
   animation: none !important;
 }
+
+/* ==========================================================================
+   v2.5 — Aspecto empresarial: sobrio, consistente, legible
+   ========================================================================== */
+
+:root {
+  --au-radius-sm-base: 5px;
+  --au-radius-md-base: 8px;
+}
+
+/* Esquinas contenidas y consistentes (nada de píldoras exageradas) */
+.au-topbar__menu-item,
+.au-topbar__action,
+.au-px__btn,
+.au-tb__btn,
+.au-tb__tab,
+.au-settings__button,
+.au-explorer__action,
+.au-git-panel__action,
+.au-bottom-panel__main-tab {
+  border-radius: 6px;
+}
+
+/* Etiquetas "eyebrow": sin mayúsculas gritonas ni tracking exagerado */
+[class*="__eyebrow"],
+[class*="__badge"],
+.au-tb__eyebrow {
+  letter-spacing: 0.04em !important;
+  font-weight: 650 !important;
+}
+
+/* Inicio: títulos sobrios en vez de marketing */
+.aurelius-welcome__hero h1,
+.aurelius-welcome__hero-copy h1,
+.aurelius-welcome h1 {
+  font-size: clamp(24px, 2.4vw, 32px) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.015em !important;
+  font-weight: 650 !important;
+}
+
+/* Tarjetas: borde fino, sin relleno de color, hover discreto */
+.aurelius-welcome__panel,
+.aurelius-welcome__hero,
+.au-monitor-card,
+.au-monitor__section,
+.au-monitor__header,
+.au-settings__section,
+.au-tasks__header,
+.au-toolchain__header {
+  background: var(--au-bg-panel) !important;
+  border-color: var(--au-border) !important;
+  box-shadow: none !important;
+  border-radius: 10px !important;
+}
+
+/* Barra de estado: sobria */
+.au-statusbar { border-top: 1px solid var(--au-border); }
+.au-statusbar__item { border-radius: 4px; }
+
+/* Pestañas: planas */
+.aurelius-tab { border-radius: 6px 6px 0 0; }
+
+/* Foco accesible y discreto */
+:focus-visible { outline: 2px solid rgba(var(--au-accent-rgb), 0.7); outline-offset: 1px; border-radius: 4px; }
+
+/* Scrollbars finas */
+* { scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, 0.28) transparent; }
+
+/* Acciones rápidas de IA en rejilla compacta */
+.au-right-ai__quick-list { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px !important; }
+.au-right-ai__quick-list button { min-width: 0; }
+.au-right-ai__quick-list button,
+.au-right-ai__quick-list button span {
+  white-space: normal !important;
+  text-overflow: clip !important;
+  overflow: visible !important;
+  line-height: 1.25;
+  text-align: left;
+}

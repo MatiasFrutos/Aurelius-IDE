@@ -101,7 +101,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -136,7 +136,7 @@
   min-width: 0;
   margin: 5px 0 0;
   color: var(--au-muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.42;
   overflow-wrap: anywhere;
 }
@@ -153,7 +153,7 @@
   border-radius: 10px;
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 880;
   white-space: nowrap;
   cursor: pointer;
@@ -249,7 +249,7 @@
 .au-task-group__header strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -267,7 +267,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.078);
   color: var(--au-primary-strong);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 900;
   white-space: nowrap;
 }
@@ -350,7 +350,7 @@
 
 .au-task-item__content strong {
   color: var(--au-text);
-  font-size: 11.4px;
+  font-size: 13.5px;
   font-weight: 880;
 }
 
@@ -361,12 +361,12 @@
     "Fira Code",
     ui-monospace,
     monospace;
-  font-size: 9.8px;
+  font-size: 11.5px;
 }
 
 .au-task-item__content small {
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   line-height: 1.32;
 }
 
@@ -410,7 +410,7 @@
   min-width: 62px;
   max-width: 100%;
   padding: 0 8px;
-  font-size: 10.5px;
+  font-size: 12.5px;
   font-weight: 880;
   white-space: nowrap;
 }
@@ -492,7 +492,7 @@
 
 .au-tasks__empty strong {
   color: var(--au-text);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
 }
 
@@ -500,7 +500,7 @@
   max-width: 300px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 10.6px;
+  font-size: 12.5px;
   line-height: 1.42;
 }
 
@@ -537,7 +537,7 @@
 .au-task-output span {
   display: block;
   color: var(--au-muted);
-  font-size: 8.8px;
+  font-size: 10.5px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.075em;
@@ -548,7 +548,7 @@
   min-width: 0;
   margin-top: 2px;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 880;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -560,7 +560,7 @@
   align-self: center;
   padding: 3px 7px;
   border-radius: 999px;
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 900;
 }
 
@@ -585,7 +585,7 @@
     "Fira Code",
     ui-monospace,
     monospace;
-  font-size: 10.5px;
+  font-size: 12.5px;
   line-height: 1.45;
   white-space: pre-wrap;
   scrollbar-width: thin;
@@ -612,7 +612,7 @@
   margin: 0;
   padding: 9px;
   color: var(--au-muted);
-  font-size: 10.8px;
+  font-size: 12.5px;
   line-height: 1.42;
 }
 
@@ -667,7 +667,7 @@
 
   .au-tasks__eyebrow {
     max-width: 100%;
-    font-size: 8.5px;
+    font-size: 10.5px;
   }
 
   .au-tasks__header h2 {
@@ -675,7 +675,7 @@
   }
 
   .au-tasks__header p {
-    font-size: 10.4px;
+    font-size: 12.5px;
   }
 
   .au-task-group__header {
@@ -707,12 +707,12 @@
   }
 
   .au-task-item__content strong {
-    font-size: 10.8px;
+    font-size: 12.5px;
   }
 
   .au-task-item__content code,
   .au-task-item__content small {
-    font-size: 9.2px;
+    font-size: 11px;
   }
 
   .au-task-item__actions {
@@ -733,7 +733,7 @@
   .au-task-item__run {
     min-width: 70px;
     padding: 0 7px;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .au-task-output header {

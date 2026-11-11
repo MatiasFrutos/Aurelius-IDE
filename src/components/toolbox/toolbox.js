@@ -3,7 +3,7 @@ import { t } from "../../app/i18n.js";
 import { renderDiff } from "../features/features.js";
 import { renderMarkdown } from "../features/labs2.js";
 import { appState } from "../../app/state.js";
-import { searchProject } from "../../services/fs.service.js";
+import { createFile, readFile, searchProject, writeFile } from "../../services/fs.service.js";
 import { toastError, toastSuccess } from "../ui/toast.js";
 
 const STORE_KEY = "aurelius.toolbox.v1";
@@ -137,6 +137,18 @@ const HTTP_CODES = {
   400: "Bad Request", 401: "Unauthorized", 403: "Forbidden", 404: "Not Found", 405: "Method Not Allowed", 408: "Request Timeout",
   409: "Conflict", 410: "Gone", 413: "Payload Too Large", 415: "Unsupported Media Type", 418: "I'm a teapot", 422: "Unprocessable Entity",
   429: "Too Many Requests", 500: "Internal Server Error", 501: "Not Implemented", 502: "Bad Gateway", 503: "Service Unavailable", 504: "Gateway Timeout"
+};
+
+const TEMPLATES = {
+  ".gitignore (Node)": { file: ".gitignore", body: "node_modules/\ndist/\nbuild/\n.env\n.env.*\n!.env.example\n*.log\n.DS_Store\ncoverage/\n.vscode/*\n!.vscode/extensions.json\n" },
+  ".gitignore (Rust)": { file: ".gitignore", body: "/target\nCargo.lock.bak\n**/*.rs.bk\n.env\n.DS_Store\n" },
+  ".gitignore (Python)": { file: ".gitignore", body: "__pycache__/\n*.py[cod]\n.venv/\nvenv/\n.env\ndist/\n*.egg-info/\n.pytest_cache/\n.mypy_cache/\n" },
+  "LICENSE (MIT)": { file: "LICENSE", body: "MIT License\n\nCopyright (c) {{year}} {{author}}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n" },
+  ".editorconfig": { file: ".editorconfig", body: "root = true\n\n[*]\ncharset = utf-8\nend_of_line = lf\nindent_style = space\nindent_size = 2\ninsert_final_newline = true\ntrim_trailing_whitespace = true\n\n[*.md]\ntrim_trailing_whitespace = false\n" },
+  "README.md": { file: "README.md", body: "# {{name}}\n\nDescripción breve del proyecto.\n\n## Requisitos\n\n- \n\n## Instalación\n\n```bash\n\n```\n\n## Uso\n\n## Contribuir\n\n1. Haz un fork\n2. Crea una rama (`git checkout -b feat/mi-cambio`)\n3. Abre un Pull Request\n\n## Licencia\n\n© {{year}} {{author}}\n" },
+  "CI GitHub Actions (Node)": { file: ".github/workflows/ci.yml", body: "name: CI\n\non:\n  push:\n    branches: [main]\n  pull_request:\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n          cache: npm\n      - run: npm ci\n      - run: npm run build --if-present\n      - run: npm test --if-present\n" },
+  "Dockerfile (Node)": { file: "Dockerfile", body: "FROM node:22-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM node:22-alpine\nWORKDIR /app\nENV NODE_ENV=production\nCOPY --from=build /app/dist ./dist\nCOPY package*.json ./\nRUN npm ci --omit=dev\nUSER node\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n" },
+  "SECURITY.md": { file: "SECURITY.md", body: "# Política de seguridad\n\n## Reportar una vulnerabilidad\n\nNo abras un issue público. Escribe a security@ejemplo.com con los pasos para reproducirla. Respondemos en un máximo de 72 horas.\n\n## Versiones con soporte\n\n| Versión | Soporte |\n|---------|---------|\n| última  | ✅ |\n" }
 };
 
 const TOOLS = [
@@ -522,6 +534,261 @@ const TOOLS = [
       const base = `${appState.projectPath}/`;
       $("todo-status").textContent = `${items.length} ${t("pendientes", "items")}`;
       $("todo-out").innerHTML = items.map((r) => `<button type="button" class="au-tb__hash au-tb__todo" data-tb-open="${esc(r.path)}|${r.line_number}"><b>${esc(r.tag)}</b><code>${esc(r.path.replace(base, ""))}:${r.line_number} — ${esc((r.line_text || "").trim().slice(0, 120))}</code></button>`).join("");
+    }
+  },
+  {
+    id: "json2ts",
+    icon: "braces",
+    title: "JSON → TS",
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "ts-in", label: "JSON", rows: 18, value: val("ts-in", '{"id":1,"name":"Ana","tags":["a","b"],"profile":{"age":30,"admin":false},"items":[{"sku":"x","qty":2}]}') })}
+      ${io({ id: "ts-out", label: "TypeScript", readonly: true, rows: 18 })}</div>
+      ${actions([["copy:ts-out", t("Copiar", "Copy")]])}`,
+    live: ["ts-in"],
+    run() {
+      try {
+        const interfaces = [];
+        const pascal = (k) => k.replace(/(^|[_\-\s]+)(\w)/g, (_, __, c) => c.toUpperCase()).replace(/[^A-Za-z0-9]/g, "") || "Item";
+        const typeOf = (value, name) => {
+          if (value === null) return "null";
+          if (Array.isArray(value)) return value.length ? `${[...new Set(value.map((v) => typeOf(v, name.replace(/s$/, ""))))].join(" | ")}[]` : "unknown[]";
+          if (typeof value === "object") {
+            const iface = pascal(name);
+            const body = Object.entries(value).map(([k, v]) => `  ${/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k)}: ${typeOf(v, k)};`).join("\n");
+            interfaces.push(`export interface ${iface} {\n${body}\n}`);
+            return iface;
+          }
+          return typeof value;
+        };
+        const root = typeOf(JSON.parse($("ts-in").value), "Root");
+        $("ts-out").value = interfaces.reverse().join("\n\n") + (root === "Root" ? "" : `\n\nexport type Root = ${root};`);
+      } catch (error) {
+        $("ts-out").value = `// ✗ ${error.message}`;
+      }
+      save("ts-in");
+    }
+  },
+  {
+    id: "csv",
+    icon: "table-2",
+    title: "CSV ⇄ JSON",
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "csv-in", label: "CSV / JSON", rows: 16, value: val("csv-in", "id,nombre,activo\n1,Ana,true\n2,\"Luis, Jr\",false") })}
+      ${io({ id: "csv-out", label: t("Resultado", "Result"), readonly: true, rows: 16 })}</div>
+      ${actions([["csv-to-json", "CSV → JSON", "is-primary"], ["json-to-csv", "JSON → CSV"], ["copy:csv-out", t("Copiar", "Copy")]])}
+      <p class="au-tb__status" id="csv-status"></p>`,
+    run(action) {
+      const input = $("csv-in").value.trim();
+      const parse = (text) => {
+        const rows = []; let row = []; let cell = ""; let quoted = false;
+        for (let i = 0; i < text.length; i += 1) {
+          const c = text[i];
+          if (quoted) { if (c === '"' && text[i + 1] === '"') { cell += '"'; i += 1; } else if (c === '"') quoted = false; else cell += c; }
+          else if (c === '"') quoted = true;
+          else if (c === ",") { row.push(cell); cell = ""; }
+          else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i += 1; row.push(cell); rows.push(row); row = []; cell = ""; }
+          else cell += c;
+        }
+        if (cell || row.length) { row.push(cell); rows.push(row); }
+        return rows;
+      };
+      const coerce = (v) => (v === "true" ? true : v === "false" ? false : v !== "" && !Number.isNaN(Number(v)) ? Number(v) : v);
+      try {
+        if (action === "json-to-csv") {
+          const data = JSON.parse(input);
+          const list = Array.isArray(data) ? data : [data];
+          const keys = [...new Set(list.flatMap((o) => Object.keys(o)))];
+          const esc2 = (v) => { const x = v === null || v === undefined ? "" : typeof v === "object" ? JSON.stringify(v) : String(v); return /[",\n]/.test(x) ? `"${x.replace(/"/g, '""')}"` : x; };
+          $("csv-out").value = [keys.join(","), ...list.map((o) => keys.map((k) => esc2(o[k])).join(","))].join("\n");
+        } else {
+          const [head, ...body] = parse(input);
+          $("csv-out").value = JSON.stringify(body.map((r) => Object.fromEntries(head.map((h, i) => [h, coerce(r[i] ?? "")]))), null, 2);
+        }
+        $("csv-status").textContent = "";
+      } catch (error) {
+        $("csv-out").value = "";
+        $("csv-status").textContent = `✗ ${error.message}`;
+        $("csv-status").className = "au-tb__status is-err";
+      }
+      save("csv-in");
+    }
+  },
+  {
+    id: "yaml",
+    icon: "file-text",
+    title: "JSON ⇄ YAML",
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "yml-in", label: "JSON / YAML", rows: 16, value: val("yml-in", '{"app":{"name":"demo","ports":[80,443],"debug":false},"owner":null}') })}
+      ${io({ id: "yml-out", label: t("Resultado", "Result"), readonly: true, rows: 16 })}</div>
+      ${actions([["yml-from-json", "JSON → YAML", "is-primary"], ["yml-to-json", "YAML → JSON"], ["copy:yml-out", t("Copiar", "Copy")]])}
+      <p class="au-tb__status" id="yml-status"></p>`,
+    run(action) {
+      const scalar = (v) => (v === null ? "null" : typeof v === "string" ? (/^[\w./-]+$/.test(v) && !/^(true|false|null|\d+(\.\d+)?)$/i.test(v) ? v : JSON.stringify(v)) : String(v));
+      const dump = (v, depth) => {
+        const pad = "  ".repeat(depth);
+        if (Array.isArray(v)) return v.length ? v.map((x) => (x && typeof x === "object" ? `${pad}-\n${dump(x, depth + 1)}` : `${pad}- ${scalar(x)}`)).join("\n") : `${pad}[]`;
+        if (v && typeof v === "object") return Object.entries(v).map(([k, x]) => (x && typeof x === "object" && Object.keys(x).length ? `${pad}${k}:\n${dump(x, depth + 1)}` : `${pad}${k}: ${Array.isArray(x) ? "[]" : x && typeof x === "object" ? "{}" : scalar(x)}`)).join("\n");
+        return `${pad}${scalar(v)}`;
+      };
+      const parseScalar = (raw) => { const v = raw.trim(); if (v === "null" || v === "~" || v === "") return null; if (v === "true") return true; if (v === "false") return false; if (/^-?\d+(\.\d+)?$/.test(v)) return Number(v); if (/^".*"$/.test(v)) return JSON.parse(v); if (/^'.*'$/.test(v)) return v.slice(1, -1); if (v === "[]") return []; if (v === "{}") return {}; if (/^\[.*\]$/.test(v)) return v.slice(1, -1).split(",").map(parseScalar); return v; };
+      const parseYaml = (text) => {
+        const lines = text.split("\n").filter((l) => l.trim() && !l.trim().startsWith("#")).map((l) => ({ indent: l.match(/^ */)[0].length, text: l.trim() }));
+        let pos = 0;
+        const block = (indent) => {
+          if (lines[pos]?.text.startsWith("- ") || lines[pos]?.text === "-") {
+            const arr = [];
+            while (pos < lines.length && lines[pos].indent === indent && (lines[pos].text.startsWith("- ") || lines[pos].text === "-")) {
+              const rest = lines[pos].text.slice(1).trim();
+              pos += 1;
+              if (rest) arr.push(parseScalar(rest)); else if (lines[pos]?.indent > indent) arr.push(block(lines[pos].indent)); else arr.push(null);
+            }
+            return arr;
+          }
+          const obj = {};
+          while (pos < lines.length && lines[pos].indent === indent) {
+            const m = lines[pos].text.match(/^([^:]+):\s*(.*)$/);
+            if (!m) throw new Error(`Línea ${pos + 1}: se esperaba "clave: valor"`);
+            pos += 1;
+            obj[m[1].trim()] = m[2] ? parseScalar(m[2]) : lines[pos]?.indent > indent ? block(lines[pos].indent) : null;
+          }
+          return obj;
+        };
+        return block(lines[0]?.indent ?? 0);
+      };
+      try {
+        const input = $("yml-in").value;
+        $("yml-out").value = action === "yml-to-json" ? JSON.stringify(parseYaml(input), null, 2) : dump(JSON.parse(input), 0);
+        $("yml-status").textContent = t("Soporta el subconjunto común de YAML (mapas, listas, escalares).", "Supports the common YAML subset (maps, lists, scalars).");
+        $("yml-status").className = "au-tb__status";
+      } catch (error) {
+        $("yml-out").value = "";
+        $("yml-status").textContent = `✗ ${error.message}`;
+        $("yml-status").className = "au-tb__status is-err";
+      }
+      save("yml-in");
+    }
+  },
+  {
+    id: "commit",
+    icon: "git-branch",
+    title: "Commit",
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Tipo", "Type")}</span><select id="cm-type" class="au-tb__select">${["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert"].map((x) => `<option ${val("cm-type", "feat") === x ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+        <label class="au-tb__field"><span>Scope</span><input id="cm-scope" value="${esc(val("cm-scope"))}" style="width:160px" spellcheck="false" /></label>
+        <label class="au-tb__field grow"><span>${t("Resumen (imperativo, ≤ 72)", "Summary (imperative, ≤ 72)")}</span><input id="cm-summary" value="${esc(val("cm-summary"))}" spellcheck="false" /></label>
+        <label class="au-tb__field"><span>Breaking</span><input id="cm-breaking" type="checkbox" ${val("cm-breaking") === "true" ? "checked" : ""} style="width:auto" /></label>
+      </div>
+      ${io({ id: "cm-body", label: t("Cuerpo (opcional)", "Body (optional)"), rows: 5 })}
+      ${io({ id: "cm-out", label: t("Mensaje", "Message"), readonly: true, rows: 6 })}
+      ${actions([["copy:cm-out", t("Copiar", "Copy")], ["cm-git", t("Copiar comando git commit", "Copy git commit command")]])}
+      <p class="au-tb__status" id="cm-status"></p>`,
+    live: ["cm-type", "cm-scope", "cm-summary", "cm-body", "cm-breaking"],
+    async run(action) {
+      const type = $("cm-type").value;
+      const scope = $("cm-scope").value.trim();
+      const summary = $("cm-summary").value.trim();
+      const breaking = $("cm-breaking").checked;
+      const header = `${type}${scope ? `(${scope})` : ""}${breaking ? "!" : ""}: ${summary}`;
+      const body = $("cm-body").value.trim();
+      const message = [header, body, breaking ? "BREAKING CHANGE: " + (body || summary) : ""].filter(Boolean).join("\n\n");
+      $("cm-out").value = summary ? message : "";
+      $("cm-status").textContent = summary ? `${header.length} ${t("caracteres en el encabezado", "chars in header")}${header.length > 72 ? " ⚠" : " ✓"}` : "";
+      if (action === "cm-git" && summary) {
+        await navigator.clipboard.writeText(`git commit -m ${JSON.stringify(header)}${body ? ` -m ${JSON.stringify(body)}` : ""}`);
+        toastSuccess(t("Comando copiado.", "Command copied."), "Toolbox");
+      }
+      state.values["cm-breaking"] = String(breaking);
+      save("cm-type", "cm-scope", "cm-summary", "cm-body");
+    }
+  },
+  {
+    id: "templates",
+    icon: "file-plus-2",
+    title: t("Plantillas", "Templates"),
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Plantilla", "Template")}</span><select id="tpl-kind" class="au-tb__select">${Object.keys(TEMPLATES).map((k) => `<option value="${k}" ${val("tpl-kind", ".gitignore (Node)") === k ? "selected" : ""}>${k}</option>`).join("")}</select></label>
+        <label class="au-tb__field"><span>${t("Autor / organización", "Author / organization")}</span><input id="tpl-author" value="${esc(val("tpl-author", ""))}" spellcheck="false" /></label>
+      </div>
+      ${io({ id: "tpl-out", label: t("Contenido", "Content"), rows: 18 })}
+      ${actions([["tpl-create", t("Crear en el proyecto", "Create in project"), "is-primary"], ["copy:tpl-out", t("Copiar", "Copy")]])}
+      <p class="au-tb__status" id="tpl-status"></p>`,
+    live: ["tpl-kind", "tpl-author"],
+    async run(action) {
+      const kind = $("tpl-kind").value;
+      const author = $("tpl-author").value.trim() || "Autor";
+      const tpl = TEMPLATES[kind];
+      if (action === "live") $("tpl-out").value = tpl.body.replaceAll("{{author}}", author).replaceAll("{{year}}", String(new Date().getFullYear())).replaceAll("{{name}}", appState.projectName || "proyecto");
+      save("tpl-kind", "tpl-author");
+      if (action === "tpl-create") {
+        if (!appState.projectPath) return toastError(t("Abrí un proyecto primero.", "Open a project first."), "Toolbox");
+        try {
+          const created = await createFile(appState.projectPath, tpl.file);
+          await writeFile(created, $("tpl-out").value);
+          $("tpl-status").textContent = `✓ ${t("Creado", "Created")}: ${tpl.file}`;
+          $("tpl-status").className = "au-tb__status is-ok";
+          window.dispatchEvent(new CustomEvent("au:refresh-project"));
+        } catch (error) {
+          $("tpl-status").textContent = `✗ ${String(error?.message || error)}`;
+          $("tpl-status").className = "au-tb__status is-err";
+        }
+      }
+    }
+  },
+  {
+    id: "tz",
+    icon: "globe-2",
+    title: t("Zonas horarias", "Time zones"),
+    render: () => `
+      <label class="au-tb__field"><span>${t("Fecha y hora (local) — vacío = ahora", "Date & time (local) — empty = now")}</span><input id="tz-in" type="datetime-local" value="${esc(val("tz-in"))}" /></label>
+      <div class="au-tb__hashes" id="tz-out"></div>`,
+    live: ["tz-in"],
+    run() {
+      const raw = $("tz-in").value;
+      const date = raw ? new Date(raw) : new Date();
+      const zones = ["UTC", "America/Mexico_City", "America/Bogota", "America/New_York", "America/Argentina/Buenos_Aires", "America/Sao_Paulo", "Europe/Madrid", "Europe/London", "Asia/Dubai", "Asia/Kolkata", "Asia/Tokyo", "Australia/Sydney"];
+      $("tz-out").innerHTML = zones.map((z) => `<div class="au-tb__hash"><b>${z.split("/").pop().replace(/_/g, " ")}</b><code>${esc(new Intl.DateTimeFormat(undefined, { timeZone: z, dateStyle: "medium", timeStyle: "short" }).format(date))}</code></div>`).join("");
+      save("tz-in");
+    }
+  },
+  {
+    id: "stats",
+    icon: "activity",
+    title: t("Proyecto", "Project"),
+    render: () => `
+      <div class="au-tb__row"><button type="button" class="au-tb__btn is-primary" data-tb-action="stats-scan">${t("Analizar proyecto", "Analyze project")}</button>
+      <span class="au-tb__status" id="stats-status">${appState.projectPath ? "" : t("Abrí un proyecto primero.", "Open a project first.")}</span></div>
+      <div class="au-tb__hashes" id="stats-out"></div>`,
+    async run() {
+      if (!appState.projectPath) return;
+      const files = [];
+      const walk = (nodes) => nodes?.forEach((n) => (n.is_dir ? walk(n.children) : files.push(n)));
+      walk(appState.fileTree);
+      const byExt = new Map();
+      for (const f of files) {
+        const ext = (f.name.includes(".") ? f.name.split(".").pop() : "(sin ext)").toLowerCase();
+        byExt.set(ext, (byExt.get(ext) || 0) + 1);
+      }
+      $("stats-status").textContent = t("Contando líneas…", "Counting lines…");
+      const textExt = new Set(["js", "ts", "jsx", "tsx", "py", "rs", "go", "java", "c", "h", "cpp", "css", "scss", "html", "json", "md", "toml", "yml", "yaml", "sh", "sql", "vue", "svelte", "php", "rb"]);
+      const sample = files.filter((f) => textExt.has((f.name.split(".").pop() || "").toLowerCase())).slice(0, 250);
+      const loc = new Map();
+      let total = 0;
+      let largest = { path: "", lines: 0 };
+      for (const f of sample) {
+        try {
+          const lines = (await readFile(f.path)).split("\n").length;
+          const ext = f.name.split(".").pop().toLowerCase();
+          loc.set(ext, (loc.get(ext) || 0) + lines);
+          total += lines;
+          if (lines > largest.lines) largest = { path: f.path, lines };
+        } catch { /* binario o ilegible */ }
+      }
+      const max = Math.max(1, ...loc.values());
+      $("stats-status").textContent = `${files.length} ${t("archivos", "files")} · ${total.toLocaleString()} ${t("líneas", "lines")}${files.length > sample.length ? ` (${t("muestra de", "sample of")} ${sample.length})` : ""}`;
+      const bars = [...loc.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([ext, n]) => `<div class="au-tb__bar"><b>.${esc(ext)}</b><span style="--w:${(n / max) * 100}%"></span><code>${n.toLocaleString()} · ${byExt.get(ext) || 0} ${t("arch.", "files")}</code></div>`).join("");
+      $("stats-out").innerHTML = `${bars}${largest.path ? `<div class="au-tb__hash"><b>${t("Más largo", "Largest")}</b><code>${esc(largest.path.replace(`${appState.projectPath}/`, ""))} · ${largest.lines.toLocaleString()}</code></div>` : ""}`;
     }
   },
   {

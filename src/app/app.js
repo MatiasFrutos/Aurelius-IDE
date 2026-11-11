@@ -1974,6 +1974,9 @@ export async function initAureliusApp() {
   });
 
   window.addEventListener("au:rerender", () => renderApp());
+  window.addEventListener("au:refresh-project", () => {
+    handleRefreshProject();
+  });
   window.addEventListener("au:monitor-refresh", () => {
     refreshMonitorSnapshot({ renderApp, silent: true, background: true });
   });

@@ -88,7 +88,7 @@
   align-items: center;
   gap: 6px;
   color: var(--au-muted);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -104,7 +104,7 @@
 .au-explorer__title strong {
   max-width: 162px;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 860;
   letter-spacing: -0.008em;
   white-space: nowrap;
@@ -187,7 +187,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.014);
   color: var(--au-muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 740;
   white-space: nowrap;
 }
@@ -257,7 +257,7 @@
   outline: 0;
   background: transparent;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 680;
 }
 
@@ -296,7 +296,7 @@
   gap: 5px;
   min-width: 0;
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 700;
   line-height: 1.32;
 }
@@ -399,7 +399,7 @@
 .au-explorer__empty strong,
 .au-explorer__filter-empty strong {
   color: var(--au-text);
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 900;
 }
 
@@ -408,7 +408,7 @@
   max-width: 220px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.45;
 }
 
@@ -490,7 +490,7 @@
   background: transparent;
   color: var(--au-muted-strong);
   text-align: left;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   transition:
     background var(--au-transition-fast),
@@ -568,7 +568,7 @@
   border-radius: 999px;
   background: rgba(148, 163, 184, 0.08);
   color: var(--au-muted);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 850;
 }
 
@@ -666,7 +666,7 @@
   border-radius: 999px;
   background: color-mix(in srgb, currentColor 8%, transparent);
   color: var(--au-tree-icon-color, var(--au-muted)) !important;
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 900;
   line-height: 1.3;
   text-transform: uppercase;
@@ -989,7 +989,7 @@
 
   .au-tree__row {
     height: 29px;
-    font-size: 11.8px;
+    font-size: 14px;
   }
 
   .au-tree__count,

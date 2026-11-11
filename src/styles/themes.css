@@ -2,7 +2,7 @@
 
 :root {
   /* Accent (overridable por [data-accent] y por el módulo de apariencia) */
-  --au-accent-rgb: 56, 189, 248;
+  --au-accent-rgb: 77, 141, 255;
   --au-success-rgb: 52, 211, 153;
   --au-success: rgb(var(--au-success-rgb));
   --au-success-strong: rgb(110, 231, 183);
@@ -21,6 +21,7 @@
   --au-dur-slow: 320ms;
 }
 
+:root[data-accent="azure"]   { --au-accent-rgb: 77, 141, 255; }
 :root[data-accent="cyan"]    { --au-accent-rgb: 56, 189, 248; }
 :root[data-accent="violet"]  { --au-accent-rgb: 139, 124, 255; }
 :root[data-accent="emerald"] { --au-accent-rgb: 52, 211, 153; }
@@ -31,10 +32,10 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --au-bg: #090a0e;
+  --au-bg: #0b0c10;
   --au-bg-soft: #0d0f14;
-  --au-bg-panel: #0f1117;
-  --au-bg-elevated: #151821;
+  --au-bg-panel: #111319;
+  --au-bg-elevated: #171a22;
   --au-bg-topbar: rgba(9, 10, 14, 0.86);
   --au-bg-workspace: #0b0d12;
   --au-bg-editor: #0b0d12;

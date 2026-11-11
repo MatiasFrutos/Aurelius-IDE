@@ -121,7 +121,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--au-text);
-  font-size: 11.6px;
+  font-size: 13.5px;
   font-weight: 850;
   letter-spacing: -0.01em;
   text-overflow: ellipsis;
@@ -132,7 +132,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--au-muted);
-  font-size: 9.6px;
+  font-size: 11.5px;
   font-weight: 680;
   letter-spacing: 0.01em;
   text-overflow: ellipsis;
@@ -285,7 +285,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--au-text);
-  font-size: 11.4px;
+  font-size: 13.5px;
   font-weight: 760;
   line-height: 1.22;
   text-overflow: ellipsis;
@@ -296,7 +296,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--au-muted);
-  font-size: 9.6px;
+  font-size: 11.5px;
   font-weight: 560;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -322,7 +322,7 @@
   border-radius: 5px;
   background: rgba(2, 6, 23, 0.24);
   color: var(--au-muted);
-  font-size: 8.8px;
+  font-size: 10.5px;
   font-weight: 800;
   font-family: inherit;
   line-height: 1;
@@ -371,7 +371,7 @@
   min-height: 34px;
   padding: 7px;
   color: var(--au-muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .au-context-menu__empty svg {
@@ -400,7 +400,7 @@
   gap: 5px;
   min-width: 0;
   color: var(--au-muted);
-  font-size: 9.6px;
+  font-size: 11.5px;
   font-weight: 720;
 }
 

@@ -225,7 +225,7 @@
   border-radius: 8px;
   background: transparent;
   color: var(--au-muted-strong);
-  font-size: 10.4px;
+  font-size: 12.5px;
   white-space: nowrap;
   transition:
     background var(--au-transition-fast),
@@ -401,7 +401,7 @@ body.is-resizing-layout * {
   .aurelius-tab {
     max-width: 170px;
     height: 23px;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .aurelius-tab__close {
@@ -427,7 +427,7 @@ body.is-resizing-layout * {
   .aurelius-tab {
     max-width: 150px;
     height: 22px;
-    font-size: 9.6px;
+    font-size: 11.5px;
   }
 }
 
@@ -498,7 +498,7 @@ body.is-resizing-layout * {
 
   .aurelius-tab {
     height: 21px;
-    font-size: 9.4px;
+    font-size: 11px;
   }
 }
 

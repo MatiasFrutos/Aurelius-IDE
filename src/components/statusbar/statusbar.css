@@ -19,7 +19,7 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.014), transparent),
     var(--au-bg-topbar);
   color: var(--au-muted-strong);
-  font-size: 9.4px;
+  font-size: 11px;
   box-shadow:
     0 -1px 0 rgba(255, 255, 255, 0.02) inset,
     0 -6px 16px rgba(0, 0, 0, 0.055);
@@ -359,7 +359,7 @@
     height: 17px;
     gap: 3px;
     padding: 0 5px;
-    font-size: 9px;
+    font-size: 10.5px;
   }
 
   .au-statusbar__item svg {
@@ -468,7 +468,7 @@
 
 @media (max-height: 820px) {
   .au-statusbar {
-    font-size: 9px;
+    font-size: 10.5px;
   }
 
   .au-statusbar__item {
@@ -478,7 +478,7 @@
 
 @media (max-height: 700px) {
   .au-statusbar {
-    font-size: 8.8px;
+    font-size: 10.5px;
   }
 
   .au-statusbar__item {
