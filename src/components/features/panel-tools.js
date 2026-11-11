@@ -656,7 +656,6 @@ export function initPanelTools() {
     injectTasks();
     injectToolchain();
     injectSettings();
-    injectAi();
     applySearchFilters();
 
     // Solo refrescamos iconos si realmente inyectamos algo nuevo (createIcons recorre todo el DOM).

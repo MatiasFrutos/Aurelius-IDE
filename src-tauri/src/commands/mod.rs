@@ -1,4 +1,5 @@
 // src-tauri/src/commands/mod.rs
+pub mod ai_commands;
 pub mod fs_commands;
 pub mod terminal_commands;
 pub mod task_commands;

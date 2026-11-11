@@ -734,7 +734,7 @@ export function renderEditorShell() {
             ${escapeHTML(fileMeta.language)}
           </span>
 
-          <span class="au-editor__pill ${appState.isDirty ? "is-dirty" : "is-saved"}">
+          <span class="au-editor__pill ${appState.isDirty ? "is-dirty" : "is-saved"}" data-file-state>
             <i data-lucide="${getFileStateIcon()}"></i>
             ${escapeHTML(getFileStateLabel())}
           </span>

@@ -59,6 +59,10 @@ pub struct AiChatRequest {
     pub api_key: String,
     pub model: String,
     pub messages: Vec<AiMessage>,
+    #[serde(default)]
+    pub temperature: Option<f64>,
+    #[serde(default)]
+    pub max_tokens: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -387,7 +391,7 @@ pub async fn execute_ai_chat(request: AiChatRequest) -> Result<AiChatResponse, S
     }
 }
 
-fn http_client() -> Result<Client, String> {
+pub(crate) fn http_client() -> Result<Client, String> {
     Client::builder()
         .connect_timeout(std::time::Duration::from_secs(15))
         .timeout(std::time::Duration::from_secs(180))
@@ -396,7 +400,7 @@ fn http_client() -> Result<Client, String> {
 }
 
 /// Extrae un mensaje legible de las respuestas de error de OpenAI / OpenRouter / Anthropic / Ollama.
-fn api_error_message(value: &Value) -> String {
+pub(crate) fn api_error_message(value: &Value) -> String {
     let error = value.get("error");
 
     if let Some(text) = error.and_then(Value::as_str) {
@@ -420,7 +424,7 @@ fn api_error_message(value: &Value) -> String {
     }
 }
 
-fn describe_status(status: reqwest::StatusCode) -> &'static str {
+pub(crate) fn describe_status(status: reqwest::StatusCode) -> &'static str {
     match status.as_u16() {
         401 | 403 => "API Key inválida o sin permisos",
         404 => "modelo o URL no encontrados (revisá la Base URL y el nombre del modelo)",
@@ -431,7 +435,7 @@ fn describe_status(status: reqwest::StatusCode) -> &'static str {
 }
 
 /// Anthropic espera `{base}/v1/messages`; aceptamos Base URL con o sin `/v1`.
-fn claude_messages_url(base_url: &str) -> String {
+pub(crate) fn claude_messages_url(base_url: &str) -> String {
     let base = normalize_base_url(base_url, "https://api.anthropic.com");
     let base = base.trim_end_matches("/v1").trim_end_matches('/').to_string();
 
@@ -439,7 +443,7 @@ fn claude_messages_url(base_url: &str) -> String {
 }
 
 /// OpenRouter usa `/api/v1`; si el usuario puso solo `https://openrouter.ai/api`, lo completamos.
-fn openai_like_base_url(base_url: &str, provider: &str) -> String {
+pub(crate) fn openai_like_base_url(base_url: &str, provider: &str) -> String {
     let default_base_url = if provider == "openrouter" {
         "https://openrouter.ai/api/v1"
     } else {
@@ -457,7 +461,7 @@ fn openai_like_base_url(base_url: &str, provider: &str) -> String {
 
 /// Anthropic exige que el primer mensaje sea `user` y acepta mejor roles alternados:
 /// descartamos asistentes iniciales y fusionamos mensajes consecutivos del mismo rol.
-fn sanitize_claude_messages(messages: Vec<Value>) -> Vec<Value> {
+pub(crate) fn sanitize_claude_messages(messages: Vec<Value>) -> Vec<Value> {
     let mut merged: Vec<Value> = Vec::new();
 
     for message in messages {
@@ -504,11 +508,21 @@ async fn chat_ollama(request: AiChatRequest) -> Result<AiChatResponse, String> {
     let base_url = normalize_base_url(&request.base_url, "http://localhost:11434");
     let url = format!("{}/api/chat", base_url);
 
-    let body = json!({
+    let mut body = json!({
         "model": request.model,
         "messages": request.messages,
         "stream": false
     });
+
+    if request.temperature.is_some() || request.max_tokens.is_some() {
+        body["options"] = json!({});
+        if let Some(temperature) = request.temperature {
+            body["options"]["temperature"] = json!(temperature);
+        }
+        if let Some(max_tokens) = request.max_tokens {
+            body["options"]["num_predict"] = json!(max_tokens);
+        }
+    }
 
     let response = client
         .post(url)
@@ -558,10 +572,18 @@ async fn chat_openai_like(request: AiChatRequest, provider: &str) -> Result<AiCh
     let url = format!("{}/chat/completions", base_url);
 
     // Sin `temperature`: los modelos de razonamiento (o1/o3/gpt-5…) la rechazan.
-    let body = json!({
+    let mut body = json!({
         "model": request.model,
         "messages": request.messages
     });
+
+    // Solo se envían si el usuario los configuró (los modelos de razonamiento rechazan temperature).
+    if let Some(temperature) = request.temperature {
+        body["temperature"] = json!(temperature);
+    }
+    if let Some(max_tokens) = request.max_tokens {
+        body["max_tokens"] = json!(max_tokens);
+    }
 
     let mut builder = client
         .post(url)
@@ -677,12 +699,16 @@ async fn chat_claude(request: AiChatRequest) -> Result<AiChatResponse, String> {
         return Err("No hay ningún mensaje de usuario para enviar a Claude.".to_string());
     }
 
-    let body = json!({
+    let mut body = json!({
         "model": request.model,
-        "max_tokens": 4096,
+        "max_tokens": request.max_tokens.unwrap_or(4096),
         "system": system_prompt,
         "messages": messages
     });
+
+    if let Some(temperature) = request.temperature {
+        body["temperature"] = json!(temperature.clamp(0.0, 1.0));
+    }
 
     let response = client
         .post(url)
@@ -1148,7 +1174,7 @@ fn normalize_settings(settings: AppSettings) -> AppSettings {
     }
 }
 
-fn normalize_ai_provider(provider: &str) -> String {
+pub(crate) fn normalize_ai_provider(provider: &str) -> String {
     match provider.trim().to_lowercase().as_str() {
         "openai" => "openai".to_string(),
         "openrouter" => "openrouter".to_string(),
@@ -1168,7 +1194,7 @@ fn normalize_ai_base_url_by_provider(provider: &str, base_url: &str) -> String {
     normalize_base_url(base_url, fallback)
 }
 
-fn normalize_base_url(base_url: &str, fallback: &str) -> String {
+pub(crate) fn normalize_base_url(base_url: &str, fallback: &str) -> String {
     let clean = base_url.trim();
 
     if clean.is_empty() {

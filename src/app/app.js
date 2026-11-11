@@ -91,6 +91,8 @@ import { refreshIcons } from "./app-icons.js";
 import { afterMount as toolboxAfterMount } from "../components/toolbox/toolbox.js";
 import { initPanelTools } from "../components/features/panel-tools.js";
 import { initLabs2 } from "../components/features/labs2.js";
+import { initBranchWatcher } from "../components/features/labs3.js";
+import { afterAppRender as aiAfterRender, initAiChat } from "../ai/ai-chat.js";
 import { applyPersonalization } from "../components/features/personalize.js";
 import { initFeatures, applyAppearance, openAppearancePanel } from "../components/features/features.js";
 import { createCommandActions } from "./app-command-actions.js";
@@ -339,6 +341,7 @@ function renderApp() {
 
   restoreTerminalView();
   refreshIcons();
+  aiAfterRender();
   bindEvents();
   if (document.getElementById("au-toolbox")) {
     toolboxAfterMount();
@@ -1930,6 +1933,20 @@ function bindGlobalEvents() {
       refreshIcons();
     }
 
+    // El indicador de estado de la cabecera del editor también debe reflejar los cambios al teclear.
+    const statePill = document.querySelector("[data-file-state]");
+
+    if (statePill) {
+      const dirty = Boolean(appState.isDirty);
+      const wasDirty = statePill.classList.contains("is-dirty");
+
+      if (dirty !== wasDirty) {
+        statePill.className = `au-editor__pill ${dirty ? "is-dirty" : "is-saved"}`;
+        statePill.innerHTML = `<i data-lucide="${dirty ? "circle-alert" : "check-circle-2"}"></i>${dirty ? t("Sin guardar", "Unsaved") : t("Guardado", "Saved")}`;
+        refreshIcons();
+      }
+    }
+
     updateStatusbar();
   });
 
@@ -1960,6 +1977,16 @@ export async function initAureliusApp() {
   bindGlobalEvents();
   initPanelTools();
   initLabs2();
+  initAiChat();
+  initBranchWatcher();
+
+  window.addEventListener("au:open-git-panel", () => {
+    handleOpenGitPanel();
+  });
+
+  window.addEventListener("au:open-settings-panel", () => {
+    handleActivityPanel("settings");
+  });
 
   window.addEventListener("au:open-file", async (event) => {
     const { path, line } = event.detail || {};

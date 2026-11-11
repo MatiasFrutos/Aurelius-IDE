@@ -1,6 +1,7 @@
 // src/components/right-panel/right-ai-panel.js
 import { appState } from "../../app/state.js";
 import { t } from "../../app/i18n.js";
+import { renderAiChat } from "../../ai/ai-chat.js";
 
 function escapeHTML(value) {
   return String(value ?? "")
@@ -191,7 +192,7 @@ function renderRightMessages() {
   `;
 }
 
-export function renderRightAiPanel() {
+function renderLegacyRightAiPanel() {
   const providerLabel = getProviderLabel(appState.settings.aiProvider);
   const providerMode = getProviderMode(appState.settings.aiProvider);
   const contextLabel = getContextLabel();
@@ -294,4 +295,8 @@ export function renderRightAiPanel() {
       </form>
     </section>
   `;
+}
+
+export function renderRightAiPanel() {
+  return renderAiChat();
 }

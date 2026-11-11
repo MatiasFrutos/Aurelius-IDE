@@ -309,6 +309,11 @@ export function renderStatusbar() {
           <span>${escapeHTML(dirtyLabel)}</span>
         </span>
 
+        <span class="au-statusbar__item au-statusbar__branch" id="status-branch" role="button" tabindex="0" hidden>
+          <i data-lucide="git-branch"></i>
+          <span></span>
+        </span>
+
         <span class="au-statusbar__item au-statusbar__selection" id="status-selection" hidden>
           <i data-lucide="text-cursor-input"></i>
           <span></span>

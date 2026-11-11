@@ -131,6 +131,19 @@ function actions(buttons) {
     .join("")}</div>`;
 }
 
+const REGEX_LIB = {
+  Email: ["[\\w.+-]+@[\\w-]+\\.[\\w.-]+", "ana@correo.com, luis.perez@sitio.org"],
+  URL: ["https?:\\/\\/[^\\s/$.?#].[^\\s]*", "visita https://aurelius.dev/docs?x=1 y http://a.b"],
+  "IPv4": ["\\b(?:(?:25[0-5]|2[0-4]\\d|1?\\d?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1?\\d?\\d)\\b", "10.0.0.1 y 192.168.1.255, no 999.1.1.1"],
+  "Fecha ISO": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}(?::\\d{2})?(?:Z|[+-]\\d{2}:\\d{2})?)?", "2026-11-11 y 2026-11-11T10:30:00Z"],
+  "Color HEX": ["#(?:[0-9a-fA-F]{3}){1,2}\\b", "color: #fff; fondo: #4d8dff;"],
+  "UUID": ["[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", "id: 3f2504e0-4f89-41d3-9a0c-0305e82c3301"],
+  "Versión semver": ["\\bv?\\d+\\.\\d+\\.\\d+(?:-[\\w.]+)?\\b", "v1.2.3, 2.0.0-beta.1"],
+  "Teléfono": ["\\+?\\d[\\d\\s().-]{7,}\\d", "+54 11 5555-1234 o (011) 4444 5678"],
+  "Espacios dobles": ["[ \\t]{2,}", "a  b    c"],
+  "Línea vacía": ["^\\s*$", "a\\n\\nb"]
+};
+
 const HTTP_CODES = {
   100: "Continue", 101: "Switching Protocols", 200: "OK", 201: "Created", 202: "Accepted", 204: "No Content", 206: "Partial Content",
   301: "Moved Permanently", 302: "Found", 303: "See Other", 304: "Not Modified", 307: "Temporary Redirect", 308: "Permanent Redirect",
@@ -193,6 +206,7 @@ const TOOLS = [
     title: "Regex",
     render: () => `
       <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Biblioteca", "Library")}</span><select id="rx-lib" class="au-tb__select"><option value="">—</option>${Object.keys(REGEX_LIB).map((k) => `<option>${k}</option>`).join("")}</select></label>
         <label class="au-tb__field grow"><span>${t("Patrón", "Pattern")}</span><input id="rx-pattern" value="${esc(val("rx-pattern", "(\\w+)@(\\w+)\\.com"))}" spellcheck="false" /></label>
         <label class="au-tb__field"><span>${t("Flags", "Flags")}</span><input id="rx-flags" value="${esc(val("rx-flags", "g"))}" style="width:90px" spellcheck="false" /></label>
       </div>
@@ -202,8 +216,14 @@ const TOOLS = [
       </div>
       <label class="au-tb__field"><span>${t("Reemplazo (opcional, $1…)", "Replacement (optional, $1…)")}</span><input id="rx-replace" value="${esc(val("rx-replace"))}" spellcheck="false" /></label>
       ${io({ id: "rx-result", label: t("Texto reemplazado", "Replaced text"), readonly: true, rows: 5 })}`,
-    live: ["rx-pattern", "rx-flags", "rx-text", "rx-replace"],
+    live: ["rx-pattern", "rx-flags", "rx-text", "rx-replace", "rx-lib"],
     run() {
+      const lib = $("rx-lib")?.value;
+      if (lib && REGEX_LIB[lib]) {
+        $("rx-pattern").value = REGEX_LIB[lib][0];
+        $("rx-text").value = REGEX_LIB[lib][1];
+        $("rx-lib").value = "";
+      }
       const out = $("rx-out");
       try {
         const flags = $("rx-flags").value;
@@ -789,6 +809,51 @@ const TOOLS = [
       $("stats-status").textContent = `${files.length} ${t("archivos", "files")} · ${total.toLocaleString()} ${t("líneas", "lines")}${files.length > sample.length ? ` (${t("muestra de", "sample of")} ${sample.length})` : ""}`;
       const bars = [...loc.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([ext, n]) => `<div class="au-tb__bar"><b>.${esc(ext)}</b><span style="--w:${(n / max) * 100}%"></span><code>${n.toLocaleString()} · ${byExt.get(ext) || 0} ${t("arch.", "files")}</code></div>`).join("");
       $("stats-out").innerHTML = `${bars}${largest.path ? `<div class="au-tb__hash"><b>${t("Más largo", "Largest")}</b><code>${esc(largest.path.replace(`${appState.projectPath}/`, ""))} · ${largest.lines.toLocaleString()}</code></div>` : ""}`;
+    }
+  },
+  {
+    id: "jsonpath",
+    icon: "search",
+    title: "JSONPath",
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "jp-in", label: "JSON", rows: 16, value: val("jp-in", '{"tienda":{"libros":[{"titulo":"A","precio":10},{"titulo":"B","precio":25}],"abierta":true}}') })}
+      <div class="au-tb__field"><label class="au-tb__field"><span>${t("Expresión", "Expression")} ($.a.b[0] · $..clave · $.lista[*].x)</span><input id="jp-path" value="${esc(val("jp-path", "$.tienda.libros[*].titulo"))}" spellcheck="false" /></label>
+      ${io({ id: "jp-out", label: t("Resultado", "Result"), readonly: true, rows: 12 })}</div></div>
+      <p class="au-tb__status" id="jp-status"></p>`,
+    live: ["jp-in", "jp-path"],
+    run() {
+      try {
+        const data = JSON.parse($("jp-in").value);
+        const path = $("jp-path").value.trim();
+        const tokens = [...path.replace(/^\$/, "").matchAll(/\.\.([\w$-]+)|\.([\w$-]+|\*)|\[(\d+|\*|'[^']*'|"[^"]*")\]/g)];
+        let current = [data];
+        const walk = (value, key, out) => {
+          if (value && typeof value === "object") {
+            if (key in value) out.push(value[key]);
+            for (const child of Object.values(value)) walk(child, key, out);
+          }
+        };
+        for (const m of tokens) {
+          const next = [];
+          for (const node of current) {
+            if (m[1]) walk(node, m[1], next);
+            else {
+              const key = (m[2] ?? m[3]).replace(/^['"]|['"]$/g, "");
+              if (key === "*") next.push(...(Array.isArray(node) ? node : node && typeof node === "object" ? Object.values(node) : []));
+              else if (node && typeof node === "object" && key in node) next.push(node[key]);
+            }
+          }
+          current = next;
+        }
+        $("jp-out").value = JSON.stringify(current.length === 1 && !/\*|\.\./.test(path) ? current[0] : current, null, 2);
+        $("jp-status").textContent = `${current.length} ${t("coincidencia(s)", "match(es)")}`;
+        $("jp-status").className = "au-tb__status is-ok";
+      } catch (error) {
+        $("jp-out").value = "";
+        $("jp-status").textContent = `✗ ${error.message}`;
+        $("jp-status").className = "au-tb__status is-err";
+      }
+      save("jp-in", "jp-path");
     }
   },
   {

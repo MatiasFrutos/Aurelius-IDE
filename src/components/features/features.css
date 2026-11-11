@@ -438,3 +438,5 @@
 .au-notif strong { display: block; font-size: 12.5px; }
 .au-notif span { color: var(--au-muted); font-size: 12px; word-break: break-word; }
 .au-notif time { color: var(--au-muted); font-size: 11px; }
+.au-statusbar__branch { cursor: pointer; }
+.au-statusbar__branch:hover { color: var(--au-text); }

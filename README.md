@@ -1013,3 +1013,16 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - **Editor**: cabecera compacta de una línea (ruta de migas), gutter y línea activa más sobrios.
 - **Nuevas funciones**: búsqueda en la terminal (`Ctrl+F`), cerrar otras/guardadas, reabrir pestaña cerrada, comparar con otra pestaña, historial de notificaciones.
 - **Correcciones**: el footer de Ajustes se superponía al hacer scroll (elementos sticky ahora opacos y sin hueco); el breadcrumb del editor se recortaba.
+
+### v2.7 — Asistente de IA con skills y streaming
+
+- **Respuestas en vivo (streaming)** para Ollama, OpenAI, OpenRouter y Claude, con botón **Detener** (comandos Tauri `chat_with_ai_stream` / `ai_cancel`; modo clásico como respaldo).
+- **Skills configurables**: 10 integradas (Revisor, Tests, Documentador, Explicador, Refactor, Seguridad, Commit, SQL, Traductor…) y las tuyas: nombre, comando `/slash`, icono, instrucciones, temperatura propia y contexto automático. Importar/exportar JSON.
+- **Slash commands**: escribe `/` en el chat para invocar una skill en un mensaje.
+- **Contexto elegible**: archivo activo, selección, pestañas abiertas y estructura del proyecto (se adjunta solo al último mensaje).
+- **Conversaciones**: varias, con historial, nueva, eliminar y exportar a Markdown. Editar y reenviar, regenerar y copiar.
+- **Acciones sobre el código** de cada respuesta: copiar, insertar en el cursor, **aplicar al archivo con vista previa de diff** (deshacible con Ctrl+Z) o guardar como archivo nuevo.
+- **Configuración**: temperatura, máximo de tokens, instrucciones personalizadas globales y contexto por defecto.
+- **Terminal** rediseñada: pestañas de solo texto, iconos sin cajas, lista de terminales plana y barra de estado sin pastillas.
+- **Barra de estado**: rama Git y nº de cambios (clic abre Git). Toolbox: JSONPath y biblioteca de regex.
+- **Corrección**: el indicador "Guardado/Sin guardar" del editor ahora se actualiza al escribir.
