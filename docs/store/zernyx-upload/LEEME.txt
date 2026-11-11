@@ -1,0 +1,11 @@
+Imágenes para subir a Zernyx (Imágenes → Subir imágenes). Sube en este orden: la primera queda como portada.
+Formato PNG, cada archivo pesa menos de 1 MB (el límite de la tienda es 5 MB) y son 8 en total (el máximo).
+
+01-portada.png                 (portada)
+02-editor-ia-terminal.png
+03-skills-de-ia.png
+04-paleta-de-comandos.png
+05-personalizacion-paletas.png
+06-tema-dracula.png
+07-toolbox.png
+08-tema-claro.png
