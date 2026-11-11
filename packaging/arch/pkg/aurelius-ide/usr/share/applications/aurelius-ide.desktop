@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Aurelius IDE
+GenericName=Entorno de desarrollo
+Comment=Entorno de desarrollo Aurelius IDE
+Exec=aurelius-ide
+Icon=aurelius-ide
+Terminal=false
+Categories=Development;IDE;
+StartupNotify=true

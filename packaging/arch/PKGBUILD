@@ -1,0 +1,38 @@
+pkgname=aurelius-ide
+pkgver=0.1.1
+pkgrel=1
+pkgdesc="Aurelius IDE - Entorno de desarrollo"
+arch=('x86_64')
+url="https://github.com"
+license=('proprietary')
+
+depends=(
+  'gtk3'
+  'webkit2gtk-4.1'
+)
+
+source=(
+  'aurelius-ide'
+  'aurelius-ide.png'
+  'aurelius-ide.desktop'
+)
+
+sha256sums=(
+  'SKIP'
+  'SKIP'
+  'SKIP'
+)
+
+package() {
+  install -Dm755 \
+    "$srcdir/aurelius-ide" \
+    "$pkgdir/usr/bin/aurelius-ide"
+
+  install -Dm644 \
+    "$srcdir/aurelius-ide.png" \
+    "$pkgdir/usr/share/icons/hicolor/256x256/apps/aurelius-ide.png"
+
+  install -Dm644 \
+    "$srcdir/aurelius-ide.desktop" \
+    "$pkgdir/usr/share/applications/aurelius-ide.desktop"
+}
