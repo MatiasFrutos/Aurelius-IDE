@@ -1026,3 +1026,10 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - **Terminal** rediseñada: pestañas de solo texto, iconos sin cajas, lista de terminales plana y barra de estado sin pastillas.
 - **Barra de estado**: rama Git y nº de cambios (clic abre Git). Toolbox: JSONPath y biblioteca de regex.
 - **Corrección**: el indicador "Guardado/Sin guardar" del editor ahora se actualiza al escribir.
+
+### v2.8 — Ventanas y barra derecha
+
+- **Paleta de comandos y Quick Open** estilo *launcher*: solo búsqueda grande + lista compacta (descripción solo en la fila activa, grupo como texto, atajos como teclas), sin tarjetas de resumen ni cabeceras.
+- **Menú contextual** compacto de una línea por acción, con peligro en rojo y separadores finos.
+- **Modales** limpios (icono, título, mensaje, campo y botones), **avisos** centrados abajo y compactos (ya no tapan el chat), overlays con la misma familia visual. Sin `backdrop-filter` ni glow.
+- **Barra derecha (asistente)**: composer como una sola tarjeta con chips integrados, burbujas sobrias, cabecera más limpia; **barra de actividad** con indicador lateral.
