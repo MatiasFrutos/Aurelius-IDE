@@ -1,0 +1,46 @@
+name: Release
+
+# Genera los instaladores de Linux (.deb, .rpm y .AppImage) y los adjunta a un borrador de GitHub Release.
+# Uso: crea un tag (git tag v1.0.0 && git push origin v1.0.0) o ejecútalo a mano desde la pestaña Actions.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  linux:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias del sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev \
+            libssl-dev libxdo-dev patchelf build-essential curl wget file rpm
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NO_STRIP: "true"
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Aurelius IDE ${{ github.ref_name }}"
+          releaseBody: "Instaladores para Linux: .deb (Debian/Ubuntu), .rpm (Fedora/openSUSE) y .AppImage (cualquier distro)."
+          releaseDraft: true
+          prerelease: false

@@ -103,3 +103,12 @@
 .au-sk__ctx label { display: inline-flex; flex-direction: row; align-items: center; gap: 5px; font-weight: 400; color: var(--au-muted-strong); }
 .au-sk__actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 @media (max-width: 760px) { .au-sk { grid-template-columns: 1fr; } }
+
+/* Evita que un bloque de código largo ensanche la columna del chat y se corte por la derecha */
+.au-ai2, .au-ai2__conversation { min-width: 0; max-width: 100%; }
+.au-ai2__conversation { overflow-x: hidden; }
+.au-ai2__msg.is-assistant { min-width: 0; }
+.au-ai2__body { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.au-ai2__md, .au-code { min-width: 0; max-width: 100%; }
+.au-code pre { max-width: 100%; }
+.au-ai2__md table { display: block; overflow-x: auto; max-width: 100%; }
