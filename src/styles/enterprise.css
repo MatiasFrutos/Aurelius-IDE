@@ -1,0 +1,207 @@
+/* src/styles/enterprise.css — v2.6: minimalista, empresarial, sin glow */
+
+/* ==========================================================================
+   1. Elementos sticky SIEMPRE opacos (bug: el contenido se veía a través
+      del footer de Ajustes al hacer scroll)
+   ========================================================================== */
+.au-settings__footer,
+.au-settings__nav,
+.au-ai__quick-strip,
+.aurelius-tabs {
+  background: var(--au-bg-elevated) !important;
+  background-image: none !important;
+  box-shadow: 0 -1px 0 var(--au-border) !important;
+}
+
+.au-settings__footer { border-radius: 10px !important; border: 1px solid var(--au-border-strong) !important; z-index: 20; }
+.au-settings__nav { box-shadow: none !important; }
+.aurelius-tabs { box-shadow: none !important; background: var(--au-bg-activity) !important; }
+
+/* ==========================================================================
+   2. Explorer — paquetes de iconos
+      dots   (por defecto): punto de color por tipo, carpetas lineales
+      lineal : icono Lucide coloreado por tipo
+      mono   : todo en un solo tono
+   ========================================================================== */
+.au-tree__badge { display: none !important; }
+
+:root[data-iconpack="dots"] .au-tree__icon--file,
+:root[data-iconpack="dots"] .au-tree__icon:not([data-folder]) { position: relative; }
+
+:root[data-iconpack="dots"] .au-tree__icon svg { display: none; }
+:root[data-iconpack="dots"] .au-tree__row[data-file-path] .au-tree__icon::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--au-tree-icon-color, var(--au-muted));
+  opacity: 0.9;
+}
+/* Carpetas: icono de carpeta fino y neutro */
+:root[data-iconpack="dots"] .au-tree__row[data-folder-path] .au-tree__icon svg { display: block; opacity: 0.8; }
+
+:root[data-iconpack="mono"] .au-tree__icon { --au-tree-icon-color: var(--au-muted) !important; }
+:root[data-iconpack="mono"] .au-tree__row.is-active .au-tree__icon { --au-tree-icon-color: var(--au-text) !important; }
+
+/* Fila: limpia, con indicador lateral en vez de recuadro */
+.au-tree__row { border-radius: 6px !important; border-color: transparent !important; box-shadow: none !important; background-image: none !important; }
+.au-tree__row:hover { background: var(--au-button-bg) !important; }
+.au-tree__row.is-active { background: rgba(var(--au-accent-rgb), 0.12) !important; box-shadow: inset 2px 0 0 var(--au-primary) !important; }
+.au-tree__count { opacity: 0.55; font-size: 10.5px; }
+
+/* Pestañas e iconos de archivo en cabecera, también con el paquete elegido */
+:root[data-iconpack="dots"] .aurelius-tab__button svg,
+:root[data-iconpack="dots"] .aurelius-tab svg[data-lucide]:not(.lucide-x) { display: none; }
+
+/* ==========================================================================
+   3. Editor: cabecera compacta de una sola línea
+   ========================================================================== */
+.au-editor__top {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 0 12px !important;
+  gap: 12px;
+  background: var(--au-bg-editor) !important;
+  background-image: none !important;
+  border-bottom: 1px solid var(--au-border) !important;
+  box-shadow: none !important;
+  align-items: center;
+}
+.au-editor__file-icon,
+.au-editor__project,
+.au-editor__file-copy > strong,
+.au-editor__pill--language,
+.au-editor__pill.is-path { display: none !important; }
+.au-editor__file-copy { display: flex; align-items: center; min-width: 0; }
+.au-editor__breadcrumbs { display: flex; align-items: center; flex-wrap: nowrap; overflow: hidden; font-size: 12px; color: var(--au-muted); }
+.au-editor__crumb { display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
+.au-editor__crumb svg { width: 12px; height: 12px; opacity: 0.5; }
+.au-editor__crumb.is-current b { color: var(--au-text); font-weight: 600; }
+.au-editor__crumb b { font-weight: 500; }
+.au-editor__pill { height: 20px !important; padding: 0 8px !important; border-radius: 999px; font-size: 11px !important; box-shadow: none !important; background-image: none !important; }
+.au-editor__body { background: var(--au-bg-editor); }
+.cm-editor { background: transparent; }
+.cm-gutters { background: transparent !important; border-right: 0 !important; }
+.cm-activeLine { background: rgba(255, 255, 255, 0.035) !important; }
+:root[data-theme="light"] .cm-activeLine { background: rgba(15, 23, 42, 0.04) !important; }
+.cm-activeLineGutter { background: transparent !important; }
+
+/* ==========================================================================
+   4. Fondo personalizado (imagen / degradado / animación) — sin glow
+   ========================================================================== */
+#au-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background-color: var(--au-bg);
+}
+#au-bg > * { position: absolute; inset: 0; }
+.au-bg__image { background-size: cover; background-position: center; filter: blur(var(--au-bg-blur, 0px)); transform: scale(1.04); }
+.au-bg__dim { background: rgba(var(--au-bg-rgb), var(--au-bg-dim, 0.4)); }
+.au-bg__grad { background-size: 300% 300%; }
+.au-bg__grad.is-animated { animation: au-bg-drift 40s ease-in-out infinite alternate; }
+.au-bg__grid {
+  background-image:
+    linear-gradient(rgba(var(--au-fg-rgb), 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--au-fg-rgb), 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.au-bg__grid.is-animated { animation: au-bg-grid 20s linear infinite; }
+.au-bg__dots {
+  background-image: radial-gradient(rgba(var(--au-fg-rgb), 0.13) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+.au-bg__dots.is-animated { animation: au-bg-grid 30s linear infinite; }
+.au-bg__canvas { width: 100%; height: 100%; }
+
+@keyframes au-bg-drift { from { background-position: 0% 30%; } to { background-position: 100% 70%; } }
+@keyframes au-bg-grid { from { background-position: 0 0; } to { background-position: 48px 48px; } }
+
+:root { --au-bg-rgb: 11, 13, 18; --au-fg-rgb: 233, 236, 244; --au-glass: 1; }
+:root[data-theme="light"] { --au-bg-rgb: 247, 248, 251; --au-fg-rgb: 15, 20, 36; }
+:root[data-theme="dark"][data-surface="midnight"] { --au-bg-rgb: 2, 2, 3; }
+:root[data-theme="dark"][data-surface="graphite"] { --au-bg-rgb: 26, 27, 32; }
+
+:root[data-bg="on"] body,
+:root[data-bg="on"] html { background: transparent; }
+:root[data-bg="on"] .aurelius-shell { position: relative; z-index: 1; background: transparent !important; }
+
+:root[data-bg="on"] .aurelius-main,
+:root[data-bg="on"] .aurelius-center-area,
+:root[data-bg="on"] .aurelius-workspace,
+:root[data-bg="on"] .aurelius-page-area,
+:root[data-bg="on"] .aurelius-editor-area,
+:root[data-bg="on"] .au-explorer,
+:root[data-bg="on"] .au-right-ai,
+:root[data-bg="on"] .au-editor,
+:root[data-bg="on"] .au-editor__top,
+:root[data-bg="on"] .au-editor__body,
+:root[data-bg="on"] .aurelius-welcome,
+:root[data-bg="on"] .au-tb,
+:root[data-bg="on"] .au-monitor,
+:root[data-bg="on"] .au-tasks,
+:root[data-bg="on"] .au-toolchain,
+:root[data-bg="on"] .au-search-panel,
+:root[data-bg="on"] .au-git-panel,
+:root[data-bg="on"] .au-bottom-panel,
+:root[data-bg="on"] .aurelius-tabs { background: transparent !important; }
+
+/* Solo las superficies exteriores llevan el "cristal" (evita sumar transparencias) */
+:root[data-bg="on"] .au-topbar,
+:root[data-bg="on"] .au-activity,
+:root[data-bg="on"] .aurelius-side-panel,
+:root[data-bg="on"] .aurelius-right-panel,
+:root[data-bg="on"] .au-statusbar,
+:root[data-bg="on"] .aurelius-center-area__workspace,
+:root[data-bg="on"] .aurelius-center-area__bottom {
+  background: rgba(var(--au-bg-rgb), var(--au-glass)) !important;
+}
+:root[data-bg="on"] .cm-editor,
+:root[data-bg="on"] .cm-scroller { background: transparent !important; }
+:root[data-bg="on"] .au-minimap { background: rgba(var(--au-bg-rgb), var(--au-glass)); }
+
+/* ==========================================================================
+   5. Personalización (overlay con pestañas, paleta, iconos, fondo)
+   ========================================================================== */
+.au-cz__tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--au-border); margin: -4px 0 14px; }
+.au-cz__tab { position: relative; padding: 9px 14px; background: transparent; color: var(--au-muted); font-size: 12.5px; font-weight: 600; box-shadow: none; }
+.au-cz__tab.is-on { color: var(--au-text); }
+.au-cz__tab.is-on::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px; background: var(--au-primary); border-radius: 2px; }
+.au-cz__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.au-cz__card {
+  display: grid; gap: 8px; padding: 10px; text-align: left;
+  border: 1px solid var(--au-border); border-radius: 10px; background: var(--au-bg-panel);
+  color: var(--au-text); font-size: 12px; font-weight: 600; box-shadow: none;
+}
+.au-cz__card:hover { border-color: var(--au-border-strong); }
+.au-cz__card.is-on { border-color: var(--au-primary); box-shadow: 0 0 0 1px var(--au-primary) inset; }
+.au-cz__swatch { display: flex; height: 26px; border-radius: 6px; overflow: hidden; border: 1px solid var(--au-border); }
+.au-cz__swatch i { flex: 1; }
+.au-cz__row { display: flex; align-items: center; gap: 12px; margin: 10px 0; font-size: 12.5px; color: var(--au-muted-strong); flex-wrap: wrap; }
+.au-cz__row > span:first-child { min-width: 110px; }
+.au-cz__row input[type="range"] { flex: 1; min-width: 140px; accent-color: var(--au-primary); }
+.au-cz__row input[type="text"], .au-cz__row input[type="color"] {
+  padding: 6px 9px; border: 1px solid var(--au-border); border-radius: 7px; background: var(--au-bg-input); color: var(--au-text); font-size: 12px; outline: 0; min-width: 0;
+}
+.au-cz__row input[type="color"] { padding: 2px; width: 38px; height: 30px; cursor: pointer; }
+.au-cz__preview { height: 120px; border-radius: 10px; border: 1px solid var(--au-border); background-size: cover; background-position: center; margin: 8px 0 12px; }
+.au-cz__icons { display: grid; gap: 4px; padding: 10px; border: 1px solid var(--au-border); border-radius: 10px; background: var(--au-bg-panel); }
+.au-cz__icons div { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--au-muted-strong); }
+.au-cz__icons i { width: 7px; height: 7px; border-radius: 2px; background: var(--c); display: inline-block; }
+
+/* Búsqueda en terminal */
+.au-term-search { position: absolute; top: 8px; right: 18px; z-index: 30; display: flex; gap: 4px; padding: 5px; border: 1px solid var(--au-border-strong); border-radius: 8px; background: var(--au-bg-elevated); box-shadow: var(--au-shadow); }
+.au-term-search input { width: 190px; padding: 4px 8px; border: 1px solid var(--au-border); border-radius: 6px; background: var(--au-bg-input); color: var(--au-text); font-size: 12px; outline: 0; }
+.au-term-search button { width: 26px; border-radius: 6px; background: var(--au-button-bg); color: var(--au-muted-strong); font-size: 12px; box-shadow: none; padding: 0; }
+.au-term-search button:hover { background: var(--au-button-bg-hover); color: var(--au-text); }
+.au-editor__crumb { flex: 0 0 auto !important; max-width: none !important; }
+.au-editor__crumb b { max-width: 240px !important; }
+.au-editor__identity, .au-editor__file-copy, .au-editor__breadcrumbs { min-width: 0; flex: 1 1 auto; }
+.au-editor__identity { display: flex !important; align-items: center; }
+.au-editor__file-copy { display: flex !important; }
+/* Ajustes: el footer sticky va pegado al borde inferior y no deja hueco por donde asome el contenido */
+.au-settings { padding-bottom: 0 !important; }
+.au-settings__content { padding-bottom: 0; }
+.au-settings__footer { bottom: 0 !important; margin-bottom: 0 !important; border-radius: 10px 10px 0 0 !important; border-bottom: 0 !important; }

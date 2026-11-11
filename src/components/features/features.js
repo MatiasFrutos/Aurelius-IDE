@@ -5,6 +5,7 @@ import { t } from "../../app/i18n.js";
 import { toastError, toastInfo, toastSuccess } from "../ui/toast.js";
 import { refreshIcons } from "../../app/app-icons.js";
 import { EditorView } from "@codemirror/view";
+import { openPersonalizePanel } from "./personalize.js";
 import { jumpToBookmark, listBookmarks, toggleBookmarkAtCursor } from "../../editor/extras.js";
 
 /* ====================================================================== */
@@ -56,7 +57,8 @@ export const ACCENTS = {
 const SURFACES = ["obsidian", "midnight", "graphite"];
 const APPEARANCE_KEY = "aurelius.appearance.v2";
 const appearance = {
-  accent: "azure",
+  accent: "auto",
+  customAccent: "#4d8dff",
   surface: "obsidian",
   motion: true,
   minimap: true,
@@ -74,13 +76,35 @@ function luminance([r, g, b]) {
   return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
 }
 
+function hexToRgb(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || "").trim());
+  return m ? [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16)) : null;
+}
+
 export function applyAppearance() {
-  const accent = ACCENTS[appearance.accent] ? appearance.accent : "azure";
-  root.dataset.accent = accent;
-  root.style.setProperty("--au-accent-rgb", ACCENTS[accent].join(", "));
+  let accent = appearance.accent;
+  let rgb = null;
+
+  if (accent === "custom") {
+    rgb = hexToRgb(appearance.customAccent);
+  } else if (ACCENTS[accent]) {
+    rgb = ACCENTS[accent];
+  }
+
+  // "auto": el acento lo define la paleta (o el valor por defecto del tema).
+  if (rgb) {
+    root.dataset.accent = accent;
+    root.style.setProperty("--au-accent-rgb", rgb.join(", "));
+  } else {
+    root.dataset.accent = "auto";
+    root.style.removeProperty("--au-accent-rgb");
+    const computed = getComputedStyle(root).getPropertyValue("--au-accent-rgb").split(",").map((v) => Number(v.trim()));
+    rgb = computed.length === 3 && computed.every(Number.isFinite) ? computed : ACCENTS.azure;
+  }
+
   root.style.setProperty(
     "--au-primary-contrast",
-    root.dataset.theme === "light" || luminance(ACCENTS[accent]) < 0.28 ? "#ffffff" : "#04121c"
+    root.dataset.theme === "light" || luminance(rgb) < 0.28 ? "#ffffff" : "#04121c"
   );
   root.dataset.surface = SURFACES.includes(appearance.surface) ? appearance.surface : "obsidian";
   root.dataset.motion = appearance.motion ? "on" : "off";
@@ -88,6 +112,10 @@ export function applyAppearance() {
   root.dataset.swatches = appearance.swatches ? "on" : "off";
   root.dataset.rainbow = appearance.rainbow ? "on" : "off";
   root.dataset.wrap = appearance.wrap ? "on" : "off";
+}
+
+export function getAppearance() {
+  return { ...appearance };
 }
 
 export function setAppearance(patch) {
@@ -98,7 +126,7 @@ export function setAppearance(patch) {
 
 export function cycleAccent() {
   const keys = Object.keys(ACCENTS);
-  const next = keys[(keys.indexOf(appearance.accent) + 1) % keys.length];
+  const next = keys[(keys.indexOf(appearance.accent) + 1 + keys.length) % keys.length] || keys[0];
   setAppearance({ accent: next });
   toastInfo(next, t("Color de acento", "Accent color"));
 }
@@ -174,95 +202,7 @@ export function openOverlay({ title, icon, width = 560, body, onMount }) {
 /* ====================================================================== */
 
 export function openAppearancePanel() {
-  const toggles = [
-    ["motion", t("Animaciones", "Animations")],
-    ["minimap", t("Minimapa", "Minimap")],
-    ["swatches", t("Muestras de color en código", "Inline color swatches")],
-    ["rainbow", t("Paréntesis arcoíris", "Rainbow brackets")],
-    ["wrap", t("Ajuste de línea", "Word wrap")]
-  ];
-
-  const render = () => `
-    <section class="au-fx-section">
-      <h4>${t("Tema", "Theme")}</h4>
-      <div class="au-fx-seg">
-        ${["dark", "light"]
-          .map(
-            (theme) => `<button type="button" data-theme-set="${theme}" class="${appState.settings.theme === theme ? "is-on" : ""}">
-              ${theme === "dark" ? t("Oscuro", "Dark") : t("Claro", "Light")}</button>`
-          )
-          .join("")}
-      </div>
-    </section>
-    <section class="au-fx-section">
-      <h4>${t("Superficie (modo oscuro)", "Surface (dark mode)")}</h4>
-      <div class="au-fx-seg">
-        ${SURFACES.map(
-          (surface) => `<button type="button" data-surface="${surface}" class="${appearance.surface === surface ? "is-on" : ""}">
-            ${{ obsidian: "Obsidian", midnight: "Midnight · AMOLED", graphite: "Graphite" }[surface]}</button>`
-        ).join("")}
-      </div>
-    </section>
-    <section class="au-fx-section">
-      <h4>${t("Color de acento", "Accent color")}</h4>
-      <div class="au-fx-swatches">
-        ${Object.entries(ACCENTS)
-          .map(
-            ([name, rgb]) => `<button type="button" data-accent-set="${name}" title="${name}"
-              class="${appearance.accent === name ? "is-on" : ""}" style="--c:rgb(${rgb.join(",")})"></button>`
-          )
-          .join("")}
-      </div>
-    </section>
-    <section class="au-fx-section">
-      <h4>${t("Editor y movimiento", "Editor & motion")}</h4>
-      ${toggles
-        .map(
-          ([key, label]) => `<label class="au-fx-switch">
-            <span>${label}</span>
-            <input type="checkbox" data-toggle="${key}" ${appearance[key] ? "checked" : ""} />
-            <i></i>
-          </label>`
-        )
-        .join("")}
-    </section>`;
-
-  openOverlay({
-    title: t("Apariencia", "Appearance"),
-    icon: "palette",
-    width: 460,
-    body: `<div id="au-fx-appearance">${render()}</div>`,
-    onMount: (el) => {
-      const host = el.querySelector("#au-fx-appearance");
-
-      host.addEventListener("click", async (event) => {
-        const button = event.target.closest("button");
-        if (!button) return;
-
-        if (button.dataset.accentSet) setAppearance({ accent: button.dataset.accentSet });
-        if (button.dataset.surface) setAppearance({ surface: button.dataset.surface });
-
-        if (button.dataset.themeSet) {
-          updateSetting("theme", button.dataset.themeSet);
-          applyAppearance();
-
-          try {
-            const { persistSettings } = await import("../../app/app-settings.js");
-            await persistSettings();
-          } catch (error) {
-            console.error(error);
-          }
-        }
-
-        host.innerHTML = render();
-      });
-
-      host.addEventListener("change", (event) => {
-        const input = event.target.closest("[data-toggle]");
-        if (input) setAppearance({ [input.dataset.toggle]: input.checked });
-      });
-    }
-  });
+  openPersonalizePanel();
 }
 
 /* ====================================================================== */
@@ -986,25 +926,6 @@ export function createFeatureCommands() {
       shortcut: "Alt+Z",
       keywords: ["zen", "focus", "foco", "fullscreen"],
       run: () => toggleZen()
-    },
-    {
-      id: "fx-appearance",
-      title: t("Apariencia…", "Appearance…"),
-      description: t("Tema, superficie, color de acento y animaciones.", "Theme, surface, accent color and animations."),
-      group,
-      icon: "palette",
-      shortcut: "Alt+A",
-      keywords: ["theme", "tema", "accent", "acento", "color", "amoled", "apariencia"],
-      run: openAppearancePanel
-    },
-    {
-      id: "fx-accent",
-      title: t("Siguiente color de acento", "Next accent color"),
-      description: t("Rota entre los colores de acento.", "Cycle through accent colors."),
-      group,
-      icon: "palette",
-      keywords: ["accent", "acento", "color"],
-      run: cycleAccent
     },
     {
       id: "fx-history",
