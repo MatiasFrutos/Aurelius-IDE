@@ -78,7 +78,7 @@
   align-items: center;
   gap: 6px;
   color: var(--au-primary-strong);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -93,7 +93,7 @@
 .au-right-ai__header strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.6px;
+  font-size: 13.5px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -182,7 +182,7 @@
   display: block;
   margin-bottom: 3px;
   color: var(--au-muted);
-  font-size: 8.4px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.072em;
   text-transform: uppercase;
@@ -192,7 +192,7 @@
   display: block;
   min-width: 0;
   color: var(--au-text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -204,7 +204,7 @@
   min-width: 0;
   margin-top: 2px;
   color: var(--au-muted);
-  font-size: 9.4px;
+  font-size: 11px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -243,7 +243,7 @@
 
 .au-right-ai__context span {
   color: var(--au-muted);
-  font-size: 8.4px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.074em;
   text-transform: uppercase;
@@ -252,7 +252,7 @@
 .au-right-ai__context strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 10.6px;
+  font-size: 12.5px;
   font-weight: 860;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -300,7 +300,7 @@
 
 .au-right-ai__empty small {
   color: var(--au-primary-strong);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -308,7 +308,7 @@
 
 .au-right-ai__empty strong {
   color: var(--au-text);
-  font-size: 12.4px;
+  font-size: 13.5px;
   font-weight: 920;
 }
 
@@ -316,7 +316,7 @@
   max-width: 250px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 10.6px;
+  font-size: 12.5px;
   line-height: 1.42;
 }
 
@@ -339,7 +339,7 @@
   border-radius: 9px;
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
-  font-size: 10.6px;
+  font-size: 12.5px;
   font-weight: 820;
   cursor: pointer;
   transition:
@@ -465,7 +465,7 @@
 .au-right-ai__message header strong {
   min-width: 0;
   color: inherit;
-  font-size: 10.6px;
+  font-size: 12.5px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -475,7 +475,7 @@
 .au-right-ai__message header small {
   flex: 0 0 auto;
   color: var(--au-muted);
-  font-size: 9.1px;
+  font-size: 10.5px;
   font-weight: 720;
 }
 
@@ -484,7 +484,7 @@
   white-space: pre-wrap;
   word-break: break-word;
   color: var(--au-text);
-  font-size: 10.8px;
+  font-size: 12.5px;
   line-height: 1.46;
   font-family: var(--au-editor-font-family, "JetBrains Mono"), ui-monospace, monospace;
 }
@@ -542,7 +542,7 @@
   gap: 6px;
   margin-bottom: 6px;
   color: var(--au-muted);
-  font-size: 10.4px;
+  font-size: 12.5px;
   font-weight: 680;
 }
 
@@ -577,7 +577,7 @@
   padding: 7px;
   outline: 0;
   font: inherit;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.42;
   transition:
     border-color var(--au-transition-fast),
@@ -614,7 +614,7 @@
   border-color: rgba(var(--au-accent-rgb), 0.32);
   background: var(--au-primary-soft);
   color: var(--au-primary-strong);
-  font-size: 10.8px;
+  font-size: 12.5px;
   font-weight: 900;
   box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.04) inset;
 }
@@ -707,11 +707,11 @@
   }
 
   .au-right-ai__header span {
-    font-size: 8px;
+    font-size: 10.5px;
   }
 
   .au-right-ai__header strong {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .au-right-ai__status,
@@ -738,7 +738,7 @@
   }
 
   .au-right-ai__empty p {
-    font-size: 10.2px;
+    font-size: 12px;
   }
 }
 

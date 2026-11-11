@@ -134,7 +134,7 @@
 .au-command-palette__brand-copy small {
   min-width: 0;
   color: var(--au-primary-strong);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.095em;
   text-transform: uppercase;
@@ -238,7 +238,7 @@
   outline: 0;
   background: transparent;
   color: var(--au-text);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 720;
   letter-spacing: -0.01em;
 }
@@ -258,7 +258,7 @@
   border-radius: 999px;
   background: var(--au-bg-card);
   color: var(--au-muted);
-  font-size: 8.8px;
+  font-size: 10.5px;
   font-weight: 860;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -269,7 +269,7 @@
 .au-command-palette__hint {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 10.2px;
+  font-size: 12px;
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -316,7 +316,7 @@
   display: block;
   min-width: 0;
   color: var(--au-muted);
-  font-size: 8.5px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -330,7 +330,7 @@
   min-width: 0;
   margin-top: 4px;
   color: var(--au-text);
-  font-size: 11.6px;
+  font-size: 13.5px;
   font-weight: 920;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -477,7 +477,7 @@
 .au-command-palette__item-copy strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 860;
   letter-spacing: -0.008em;
   overflow: hidden;
@@ -493,7 +493,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 900;
   line-height: 1.3;
   overflow: hidden;
@@ -504,7 +504,7 @@
 .au-command-palette__item-copy small {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -537,7 +537,7 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.052), transparent),
     var(--au-bg-card);
   color: var(--au-muted-strong);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 820;
   font-family: inherit;
   letter-spacing: 0;
@@ -584,7 +584,7 @@
 
 .au-command-palette__empty small {
   color: var(--au-primary-strong);
-  font-size: 8.8px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.095em;
   text-transform: uppercase;
@@ -592,7 +592,7 @@
 
 .au-command-palette__empty strong {
   color: var(--au-text);
-  font-size: 12.4px;
+  font-size: 13.5px;
   font-weight: 920;
 }
 
@@ -600,7 +600,7 @@
   max-width: 300px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 10.8px;
+  font-size: 12.5px;
   line-height: 1.42;
 }
 
@@ -627,7 +627,7 @@
 .au-command-palette__footer > span {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 10.2px;
+  font-size: 12px;
   font-weight: 740;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -646,7 +646,7 @@
   align-items: center;
   gap: 4px;
   color: var(--au-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 /* ==========================================================================
@@ -671,7 +671,7 @@
   }
 
   .au-command-palette__brand-copy strong {
-    font-size: 13.8px;
+    font-size: 15px;
   }
 
   .au-command-palette__icon {
@@ -699,7 +699,7 @@
 
   .au-command-palette__search input {
     height: 29px;
-    font-size: 11.5px;
+    font-size: 13.5px;
   }
 
   .au-command-palette__search-key,

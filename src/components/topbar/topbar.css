@@ -131,7 +131,7 @@
   max-width: 86px;
   overflow: hidden;
   color: var(--au-text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 920;
   letter-spacing: -0.01em;
   line-height: 1;
@@ -141,7 +141,7 @@
 
 .au-topbar__brand small {
   color: var(--au-muted);
-  font-size: 7.8px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.095em;
   line-height: 1;
@@ -172,7 +172,7 @@
   border-radius: 7px;
   background: transparent;
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 760;
   line-height: 1;
   white-space: nowrap;
@@ -276,7 +276,7 @@
   background: transparent;
   color: var(--au-text);
   font: inherit;
-  font-size: 10.4px;
+  font-size: 12.5px;
   font-weight: 660;
   line-height: 1;
 }
@@ -390,7 +390,7 @@
   .au-topbar__menu-item {
     max-width: 78px;
     padding: 0 5px;
-    font-size: 9.6px;
+    font-size: 11.5px;
   }
 
   .au-topbar__search {
@@ -478,7 +478,7 @@
 
   .au-topbar__search-input {
     height: 24px;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .au-topbar__search-icon {
@@ -559,7 +559,7 @@
 @media (max-height: 820px) {
   .au-topbar__menu-item {
     height: 23px;
-    font-size: 9.4px;
+    font-size: 11px;
   }
 
   .au-topbar__search {
@@ -581,7 +581,7 @@
 @media (max-height: 700px) {
   .au-topbar__menu-item {
     height: 22px;
-    font-size: 9.2px;
+    font-size: 11px;
   }
 
   .au-topbar__search {

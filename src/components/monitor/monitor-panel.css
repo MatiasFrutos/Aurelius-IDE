@@ -111,7 +111,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -146,7 +146,7 @@
   min-width: 0;
   margin: 5px 0 0;
   color: var(--au-muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.42;
   overflow-wrap: anywhere;
 }
@@ -202,7 +202,7 @@
   position: relative;
   z-index: 1;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 950;
   letter-spacing: -0.035em;
 }
@@ -216,7 +216,7 @@
 .au-monitor__summary-copy span {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -228,7 +228,7 @@
 .au-monitor__summary-copy strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 920;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -256,7 +256,7 @@
   border-radius: 10px;
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 880;
   white-space: nowrap;
   cursor: pointer;
@@ -376,7 +376,7 @@
 .au-monitor-card__label {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 920;
   letter-spacing: 0.072em;
   text-transform: uppercase;
@@ -392,7 +392,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.09);
   color: var(--au-primary-strong);
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 920;
   text-align: center;
 }
@@ -422,7 +422,7 @@
   min-width: 0;
   margin: -1px 0 0;
   color: var(--au-muted);
-  font-size: 10.8px;
+  font-size: 12.5px;
   line-height: 1.35;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -489,7 +489,7 @@
 
 .au-monitor__section-head span {
   color: var(--au-muted);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 920;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -498,7 +498,7 @@
 .au-monitor__section-head strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 880;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -509,7 +509,7 @@
   flex: 0 0 auto;
   max-width: 92px;
   color: var(--au-primary-strong);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 820;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -542,7 +542,7 @@
   align-items: center;
   gap: 6px;
   color: var(--au-muted);
-  font-size: 11px;
+  font-size: 13px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -560,7 +560,7 @@
   min-width: 0;
   max-width: 120px;
   color: var(--au-muted-strong);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 820;
   text-align: right;
   overflow: hidden;
@@ -628,7 +628,7 @@
 
   .au-monitor__eyebrow {
     max-width: 100%;
-    font-size: 8.5px;
+    font-size: 10.5px;
   }
 
   .au-monitor__header h2 {
@@ -636,7 +636,7 @@
   }
 
   .au-monitor__header p {
-    font-size: 10.4px;
+    font-size: 12.5px;
   }
 
   .au-monitor__summary {
@@ -650,7 +650,7 @@
   }
 
   .au-monitor__summary-ring strong {
-    font-size: 10.8px;
+    font-size: 12.5px;
   }
 
   .au-monitor-card {
@@ -682,15 +682,15 @@
   }
 
   .au-monitor-card__label {
-    font-size: 9.2px;
+    font-size: 11px;
   }
 
   .au-monitor-card__value {
-    font-size: 13.2px;
+    font-size: 14px;
   }
 
   .au-monitor-card__description {
-    font-size: 10.2px;
+    font-size: 12px;
   }
 
   .au-monitor-row {
@@ -734,7 +734,7 @@
   }
 
   .au-monitor-card__value {
-    font-size: 12.8px;
+    font-size: 13.5px;
   }
 
   .au-monitor__section-head {

@@ -1001,3 +1001,8 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - **Funciones nuevas:** archivos recientes (`Ctrl+E`), snippets con campos editables (`Alt+S`, gestor incluido), vista previa Markdown (`Alt+M`), reemplazar en todo el proyecto (panel Búsqueda; omite archivos con cambios sin guardar), menú contextual con copiar ruta / ruta relativa / mostrar en el gestor de archivos.
 - **Toolbox:** +7 herramientas (Markdown, Números y px↔rem, URL, chmod, Cron, HTTP, TODOs del proyecto).
 - **Correcciones:** el editor conserva el foco y el scroll al guardar; el Explorer, Búsqueda y Git ya no se descuadran con las barras de herramientas.
+
+### v2.5
+
+- **Aspecto empresarial:** tipografía más legible (se eliminaron los tamaños de 7–10 px), acento azul sobrio por defecto, esquinas y tarjetas consistentes, títulos y etiquetas discretos, IA con acciones rápidas en rejilla.
+- **Toolbox (+7):** JSON→TypeScript, CSV⇄JSON, JSON⇄YAML, constructor de commits (Conventional Commits), plantillas de proyecto (.gitignore, LICENSE, README, CI de GitHub Actions, Dockerfile, SECURITY… con *Crear en el proyecto*), zonas horarias y analizador del proyecto (archivos y líneas por lenguaje).

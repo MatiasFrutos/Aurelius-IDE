@@ -80,7 +80,7 @@
   align-items: center;
   gap: 5px;
   color: var(--au-muted);
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.085em;
   text-transform: uppercase;
@@ -105,7 +105,7 @@
   min-width: 0;
   max-width: 150px;
   color: var(--au-text);
-  font-size: 10.4px;
+  font-size: 12.5px;
   font-weight: 860;
   letter-spacing: -0.008em;
   overflow: hidden;
@@ -124,7 +124,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.07);
   color: var(--au-primary-strong);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 920;
 }
 
@@ -147,7 +147,7 @@
   display: block;
   margin-bottom: 5px;
   color: var(--au-muted);
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.085em;
   text-transform: uppercase;
@@ -195,7 +195,7 @@
   outline: 0;
   background: transparent;
   color: var(--au-text);
-  font-size: 10.6px;
+  font-size: 12.5px;
   font-weight: 680;
 }
 
@@ -213,7 +213,7 @@
   border-radius: 999px;
   background: rgba(148, 163, 184, 0.1);
   color: var(--au-muted-strong);
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 900;
 }
 
@@ -229,7 +229,7 @@
   border-radius: 9px;
   background: rgba(var(--au-accent-rgb), 0.085);
   color: var(--au-primary-strong);
-  font-size: 10.4px;
+  font-size: 12.5px;
   font-weight: 900;
   cursor: pointer;
   box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.03) inset;
@@ -309,7 +309,7 @@
   display: block;
   min-width: 0;
   color: var(--au-muted);
-  font-size: 7.8px;
+  font-size: 10.5px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.065em;
@@ -323,7 +323,7 @@
   min-width: 0;
   margin-top: 3px;
   color: var(--au-text);
-  font-size: 10.8px;
+  font-size: 12.5px;
   font-weight: 920;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -367,7 +367,7 @@
 .au-search__content-head span {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -376,7 +376,7 @@
 .au-search__content-head strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 860;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -394,7 +394,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.055);
   color: var(--au-primary-strong);
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 850;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -440,7 +440,7 @@
 
 .au-search__empty strong {
   color: var(--au-text);
-  font-size: 11.2px;
+  font-size: 13px;
   font-weight: 900;
 }
 
@@ -448,7 +448,7 @@
   max-width: 210px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.4;
 }
 
@@ -578,7 +578,7 @@
 .au-search__result-name {
   min-width: 0;
   color: var(--au-text);
-  font-size: 10.7px;
+  font-size: 12.5px;
   font-weight: 880;
   line-height: 1.18;
   overflow: hidden;
@@ -595,7 +595,7 @@
     "Fira Code",
     ui-monospace,
     monospace;
-  font-size: 8.7px;
+  font-size: 10.5px;
   line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -619,7 +619,7 @@
   padding: 0 5px;
   border-radius: 999px;
   font-style: normal;
-  font-size: 7.6px;
+  font-size: 10.5px;
   font-weight: 850;
   line-height: 1;
   overflow: hidden;
@@ -678,11 +678,11 @@
   }
 
   .au-search__title span {
-    font-size: 7.8px;
+    font-size: 10.5px;
   }
 
   .au-search__title strong {
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .au-search__form {
@@ -695,12 +695,12 @@
   }
 
   .au-search__control input {
-    font-size: 10.2px;
+    font-size: 12px;
   }
 
   .au-search__submit {
     min-height: 27px;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .au-search__summary {
@@ -747,12 +747,12 @@
   }
 
   .au-search__result-name {
-    font-size: 10.2px;
+    font-size: 12px;
   }
 
   .au-search__result-preview,
   .au-search__result-path {
-    font-size: 8.4px;
+    font-size: 10.5px;
   }
 
   .au-search__result-meta {
@@ -767,7 +767,7 @@
   .au-search__result-meta small {
     height: 16px;
     max-width: 100px;
-    font-size: 7.4px;
+    font-size: 10.5px;
   }
 }
 
@@ -996,7 +996,7 @@
 
 .au-search__result-name {
   min-width: 0;
-  font-size: 10.8px;
+  font-size: 12.5px;
   line-height: 1.22;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1006,7 +1006,7 @@
 .au-search__result-preview,
 .au-search__result-path {
   min-width: 0;
-  font-size: 8.8px;
+  font-size: 10.5px;
   line-height: 1.35;
   color: var(--au-muted);
   overflow: hidden;
@@ -1043,12 +1043,12 @@
   }
 
   .au-search__result-name {
-    font-size: 10.6px;
+    font-size: 12.5px;
   }
 
   .au-search__result-preview,
   .au-search__result-path {
-    font-size: 8.7px;
+    font-size: 10.5px;
     line-height: 1.35;
   }
 }

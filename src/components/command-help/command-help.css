@@ -114,7 +114,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.07);
   color: var(--au-primary-strong);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -140,7 +140,7 @@
   max-width: 590px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 11.2px;
+  font-size: 13px;
   line-height: 1.38;
   overflow-wrap: anywhere;
 }
@@ -230,7 +230,7 @@
   background: transparent;
   color: var(--au-text);
   font: inherit;
-  font-size: 11.6px;
+  font-size: 13.5px;
   font-weight: 620;
 }
 
@@ -247,7 +247,7 @@
   border-radius: 999px;
   background: var(--au-bg-card);
   color: var(--au-muted);
-  font-size: 10.2px;
+  font-size: 12px;
   font-weight: 760;
   white-space: nowrap;
 }
@@ -290,7 +290,7 @@
   gap: 9px;
   margin-bottom: 7px;
   color: var(--au-muted-strong);
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.055em;
   text-transform: uppercase;
@@ -308,7 +308,7 @@
 .au-command-help__group-header small {
   flex: 0 0 auto;
   color: var(--au-muted);
-  font-size: 9.2px;
+  font-size: 11px;
   font-weight: 740;
 }
 
@@ -371,7 +371,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--au-text);
-  font-size: 10.8px;
+  font-size: 12.5px;
   font-weight: 840;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -381,7 +381,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--au-muted);
-  font-size: 9.5px;
+  font-size: 11px;
   line-height: 1.24;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -471,7 +471,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 820;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -481,7 +481,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   line-height: 1.24;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -514,7 +514,7 @@
     var(--au-bg-card);
   color: var(--au-muted-strong);
   font-family: inherit;
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 820;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.14);
 }
@@ -550,12 +550,12 @@
 
 .au-command-help__empty strong {
   color: var(--au-text);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
 }
 
 .au-command-help__empty span {
-  font-size: 10.8px;
+  font-size: 12.5px;
 }
 
 /* ==========================================================================
@@ -573,7 +573,7 @@
   border-top: 1px solid var(--au-border);
   background: rgba(255, 255, 255, 0.016);
   color: var(--au-muted);
-  font-size: 10.2px;
+  font-size: 12px;
 }
 
 .au-command-help__footer span {
@@ -698,7 +698,7 @@
 
   .au-command-help__eyebrow {
     height: 17px;
-    font-size: 8.2px;
+    font-size: 10.5px;
   }
 
   .au-command-help__hero-copy h2 {

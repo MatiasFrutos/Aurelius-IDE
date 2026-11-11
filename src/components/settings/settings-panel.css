@@ -92,7 +92,7 @@
   max-width: 760px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 11.3px;
+  font-size: 13.5px;
   line-height: 1.48;
 }
 
@@ -113,7 +113,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.016);
   color: var(--au-muted-strong);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 820;
 }
 
@@ -167,7 +167,7 @@
 .au-settings__hero-status span {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -176,7 +176,7 @@
 .au-settings__hero-status strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.4px;
+  font-size: 13.5px;
   font-weight: 880;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -281,7 +281,7 @@
 .au-settings__nav-item strong {
   min-width: 0;
   color: inherit;
-  font-size: 11.3px;
+  font-size: 13.5px;
   font-weight: 880;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -291,7 +291,7 @@
 .au-settings__nav-item small {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -318,7 +318,7 @@
 .au-settings__nav-note p {
   margin: 0;
   color: var(--au-muted);
-  font-size: 10.3px;
+  font-size: 12px;
   line-height: 1.42;
 }
 
@@ -387,7 +387,7 @@
   display: block;
   margin-bottom: 2px;
   color: var(--au-primary-strong);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.085em;
   text-transform: uppercase;
@@ -405,7 +405,7 @@
 .au-settings__section-head p {
   margin: 4px 0 0;
   color: var(--au-muted);
-  font-size: 10.8px;
+  font-size: 12.5px;
   line-height: 1.45;
 }
 
@@ -450,13 +450,13 @@
 
 .au-settings__field strong {
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 880;
 }
 
 .au-settings__field small {
   color: var(--au-muted);
-  font-size: 10.2px;
+  font-size: 12px;
   line-height: 1.38;
 }
 
@@ -471,7 +471,7 @@
   color: var(--au-text);
   padding: 0 10px;
   outline: 0;
-  font-size: 11.5px;
+  font-size: 13.5px;
   transition:
     border-color var(--au-transition-fast),
     box-shadow var(--au-transition-fast),
@@ -577,7 +577,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.078);
   color: var(--au-primary-strong);
-  font-size: 10.5px;
+  font-size: 12.5px;
   font-weight: 900;
 }
 
@@ -617,7 +617,7 @@
 
 .au-settings__font-preview span {
   color: var(--au-muted);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -626,7 +626,7 @@
 .au-settings__font-preview strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 780;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -640,7 +640,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.078);
   color: var(--au-primary-strong);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 900;
 }
 
@@ -651,7 +651,7 @@
   border-radius: 10px;
   background: var(--au-bg-input);
   color: var(--au-muted-strong);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.55;
   overflow: hidden;
 }
@@ -680,7 +680,7 @@
 .au-settings__ai-status span {
   display: block;
   color: var(--au-muted);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -691,7 +691,7 @@
   min-width: 0;
   margin-top: 4px;
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -703,7 +703,7 @@
   min-width: 0;
   margin-top: 3px;
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -772,13 +772,13 @@
 
 .au-settings__providers strong {
   color: var(--au-text);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 880;
 }
 
 .au-settings__providers small {
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   line-height: 1.38;
 }
 
@@ -791,7 +791,7 @@
   border-radius: 999px;
   color: var(--au-primary-strong);
   background: rgba(var(--au-accent-rgb), 0.078);
-  font-size: 9.5px;
+  font-size: 11px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -821,13 +821,13 @@
 
 .au-settings__footer strong {
   color: var(--au-text);
-  font-size: 11.8px;
+  font-size: 14px;
   font-weight: 900;
 }
 
 .au-settings__footer small {
   color: var(--au-muted);
-  font-size: 10.3px;
+  font-size: 12px;
 }
 
 .au-settings__footer button {
@@ -840,7 +840,7 @@
   border-radius: 10px;
   background: rgba(var(--au-accent-rgb), 0.14);
   color: var(--au-primary-strong);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 900;
   box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.16) inset;
   transition:

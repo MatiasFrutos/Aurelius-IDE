@@ -80,7 +80,7 @@
   align-items: center;
   gap: 6px;
   color: var(--au-muted);
-  font-size: 8.8px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.095em;
   text-transform: uppercase;
@@ -104,7 +104,7 @@
 .au-git-panel__header strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.4px;
+  font-size: 13.5px;
   font-weight: 860;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -128,7 +128,7 @@
   border-radius: 999px;
   background: var(--au-bg-card);
   color: var(--au-muted-strong);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 900;
 }
 
@@ -278,7 +278,7 @@
 
 .au-git-empty > small:first-of-type {
   color: var(--au-primary-strong);
-  font-size: 8.8px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.095em;
   text-transform: uppercase;
@@ -286,7 +286,7 @@
 
 .au-git-empty strong {
   color: var(--au-text);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
 }
 
@@ -294,14 +294,14 @@
   max-width: 250px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 10.8px;
+  font-size: 12.5px;
   line-height: 1.42;
 }
 
 .au-git-empty__tip {
   max-width: 250px;
   color: var(--au-muted);
-  font-size: 10.2px;
+  font-size: 12px;
   line-height: 1.42;
 }
 
@@ -316,7 +316,7 @@
     "Fira Code",
     ui-monospace,
     monospace;
-  font-size: 9.8px;
+  font-size: 11.5px;
 }
 
 .au-git-empty__button {
@@ -329,7 +329,7 @@
   border-radius: 9px;
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
-  font-size: 10.8px;
+  font-size: 12.5px;
   font-weight: 840;
   cursor: pointer;
   transition:
@@ -435,7 +435,7 @@
 .au-git-summary__copy span {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 8.6px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -447,7 +447,7 @@
 .au-git-summary__copy strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.6px;
+  font-size: 13.5px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -457,7 +457,7 @@
 .au-git-summary__copy small {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 9.6px;
+  font-size: 11.5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -473,7 +473,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.078);
   color: var(--au-primary-strong);
-  font-size: 8.8px;
+  font-size: 10.5px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -513,7 +513,7 @@
 
 .au-git-summary__stats strong {
   color: var(--au-text);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 920;
   text-align: center;
 }
@@ -521,7 +521,7 @@
 .au-git-summary__stats small {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 8.7px;
+  font-size: 10.5px;
   font-weight: 780;
   text-align: center;
   overflow: hidden;
@@ -555,7 +555,7 @@
   align-items: center;
   gap: 6px;
   color: var(--au-muted-strong);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 900;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -582,7 +582,7 @@
   border-radius: 999px;
   background: var(--au-bg-card);
   color: var(--au-muted);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 900;
 }
 
@@ -595,7 +595,7 @@
   border: 1px dashed var(--au-border);
   border-radius: 11px;
   color: var(--au-muted);
-  font-size: 10.8px;
+  font-size: 12.5px;
   line-height: 1.42;
 }
 
@@ -744,7 +744,7 @@
 .au-git-file__content strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.1px;
+  font-size: 13px;
   font-weight: 860;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -755,7 +755,7 @@
 .au-git-file__content em {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 9.6px;
+  font-size: 11.5px;
   font-style: normal;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -776,7 +776,7 @@
   border-radius: 999px;
   background: var(--au-bg-input);
   color: var(--au-muted);
-  font-size: 8.8px;
+  font-size: 10.5px;
   font-weight: 860;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -853,7 +853,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
-  font-size: 9.4px;
+  font-size: 11px;
   font-family:
     var(--au-editor-font-family, "JetBrains Mono"),
     "Fira Code",
@@ -871,7 +871,7 @@
 .au-git-commit span {
   min-width: 0;
   color: var(--au-muted-strong);
-  font-size: 10.4px;
+  font-size: 12.5px;
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -929,7 +929,7 @@
   }
 
   .au-git-panel__header span {
-    font-size: 8.4px;
+    font-size: 10.5px;
   }
 
   .au-git-panel__body {

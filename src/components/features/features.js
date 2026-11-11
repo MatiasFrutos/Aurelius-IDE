@@ -44,6 +44,7 @@ function save(key, value) {
 /* ====================================================================== */
 
 export const ACCENTS = {
+  azure: [77, 141, 255],
   cyan: [56, 189, 248],
   violet: [139, 124, 255],
   emerald: [52, 211, 153],
@@ -55,7 +56,7 @@ export const ACCENTS = {
 const SURFACES = ["obsidian", "midnight", "graphite"];
 const APPEARANCE_KEY = "aurelius.appearance.v2";
 const appearance = {
-  accent: "cyan",
+  accent: "azure",
   surface: "obsidian",
   motion: true,
   minimap: true,
@@ -74,7 +75,7 @@ function luminance([r, g, b]) {
 }
 
 export function applyAppearance() {
-  const accent = ACCENTS[appearance.accent] ? appearance.accent : "cyan";
+  const accent = ACCENTS[appearance.accent] ? appearance.accent : "azure";
   root.dataset.accent = accent;
   root.style.setProperty("--au-accent-rgb", ACCENTS[accent].join(", "));
   root.style.setProperty(

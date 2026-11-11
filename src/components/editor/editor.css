@@ -110,7 +110,7 @@
   align-items: center;
   gap: 4px;
   color: var(--au-primary-strong);
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 900;
   letter-spacing: 0.085em;
   text-transform: uppercase;
@@ -129,7 +129,7 @@
 .au-editor__file-copy strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 11.2px;
+  font-size: 13px;
   font-weight: 900;
   line-height: 1.08;
   letter-spacing: -0.01em;
@@ -145,7 +145,7 @@
   align-items: center;
   gap: 2px;
   color: var(--au-muted);
-  font-size: 9.2px;
+  font-size: 11px;
   line-height: 1.12;
   overflow: hidden;
   white-space: nowrap;
@@ -217,7 +217,7 @@
   border-radius: 999px;
   background: color-mix(in srgb, var(--au-editor-pill-color) 6%, var(--au-button-bg));
   color: var(--au-editor-pill-color);
-  font-size: 9.6px;
+  font-size: 11.5px;
   font-weight: 820;
   line-height: 1;
   white-space: nowrap;
@@ -263,7 +263,7 @@
   border-radius: 999px;
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
-  font-size: 9.6px;
+  font-size: 11.5px;
   font-weight: 850;
   line-height: 1;
   white-space: nowrap;
@@ -628,7 +628,7 @@
   min-width: 34px;
   padding: 0 8px 0 8px;
   color: var(--au-muted) !important;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .cm-activeLine {
@@ -749,7 +749,7 @@
   margin-right: 2px;
   border-right: 1px solid var(--au-border);
   color: var(--au-muted);
-  font-size: 9.2px;
+  font-size: 11px;
   font-weight: 850;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -766,7 +766,7 @@
   gap: 4px;
   margin: 0 !important;
   color: var(--au-muted);
-  font-size: 9.4px;
+  font-size: 11px;
   font-weight: 680;
   white-space: nowrap;
   user-select: none;
@@ -781,7 +781,7 @@
   color: var(--au-text) !important;
   padding: 0 6px !important;
   font: inherit !important;
-  font-size: 10.2px !important;
+  font-size: 12px !important;
   font-weight: 620 !important;
   outline: 0 !important;
   box-shadow: none !important;
@@ -830,7 +830,7 @@
   color: var(--au-muted-strong) !important;
   padding: 0 6px !important;
   font: inherit !important;
-  font-size: 9.4px !important;
+  font-size: 11px !important;
   font-weight: 760 !important;
   line-height: 1;
   white-space: nowrap;
@@ -930,7 +930,7 @@
 
 .cm-search > span {
   color: var(--au-muted);
-  font-size: 9.4px;
+  font-size: 11px;
   font-weight: 680;
 }
 
@@ -1093,7 +1093,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.078);
   color: var(--au-primary-strong);
-  font-size: 9.4px;
+  font-size: 11px;
   font-weight: 900;
 }
 
@@ -1107,7 +1107,7 @@
   border-radius: 999px;
   background: rgba(var(--au-accent-rgb), 0.11);
   color: var(--au-text);
-  font-size: 8.2px;
+  font-size: 10.5px;
   text-transform: uppercase;
   letter-spacing: 0.075em;
 }
@@ -1125,7 +1125,7 @@
   max-width: 660px;
   margin: 0;
   color: var(--au-muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -1146,7 +1146,7 @@
   border-radius: 9px;
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
-  font-size: 10.5px;
+  font-size: 12.5px;
   font-weight: 880;
   cursor: pointer;
   transition:
@@ -1225,13 +1225,13 @@
 
 .aurelius-welcome__system-top strong {
   color: var(--au-text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
 }
 
 .aurelius-welcome__system-top small {
   color: var(--au-muted);
-  font-size: 9.6px;
+  font-size: 11.5px;
 }
 
 .aurelius-welcome__system-grid {
@@ -1267,7 +1267,7 @@
 
 .aurelius-welcome__system-grid span {
   color: var(--au-muted);
-  font-size: 8.2px;
+  font-size: 10.5px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.075em;
@@ -1275,7 +1275,7 @@
 
 .aurelius-welcome__system-grid strong {
   color: var(--au-text);
-  font-size: 10.4px;
+  font-size: 12.5px;
   font-weight: 900;
 }
 
@@ -1341,20 +1341,20 @@
 
 .aurelius-welcome__panel-head strong {
   color: var(--au-text);
-  font-size: 11.2px;
+  font-size: 13px;
   font-weight: 900;
   letter-spacing: -0.006em;
 }
 
 .aurelius-welcome__panel-head small {
   color: var(--au-muted);
-  font-size: 9.2px;
+  font-size: 11px;
 }
 
 .aurelius-welcome__panel-text {
   margin: 0 0 8px;
   color: var(--au-muted);
-  font-size: 10.2px;
+  font-size: 12px;
   line-height: 1.42;
 }
 
@@ -1365,7 +1365,7 @@
   border-radius: 8px;
   background: var(--au-button-bg);
   color: var(--au-muted);
-  font-size: 9.8px;
+  font-size: 11.5px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -1407,14 +1407,14 @@
 
 .aurelius-recent__empty strong {
   color: var(--au-text);
-  font-size: 11.2px;
+  font-size: 13px;
   font-weight: 900;
 }
 
 .aurelius-recent__empty p {
   max-width: 360px;
   margin: 0;
-  font-size: 10.2px;
+  font-size: 12px;
   line-height: 1.42;
 }
 
@@ -1496,7 +1496,7 @@
 .aurelius-recent__content strong {
   min-width: 0;
   color: var(--au-text);
-  font-size: 10.8px;
+  font-size: 12.5px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1506,7 +1506,7 @@
 .aurelius-recent__content small {
   min-width: 0;
   color: var(--au-muted);
-  font-size: 9.6px;
+  font-size: 11.5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1539,7 +1539,7 @@
   min-width: 0;
   flex: 1;
   color: var(--au-muted-strong);
-  font-size: 10.2px;
+  font-size: 12px;
 }
 
 .aurelius-shortcuts kbd {
@@ -1553,7 +1553,7 @@
   border-radius: 6px;
   background: rgba(2, 6, 23, 0.32);
   color: var(--au-text);
-  font-size: 9px;
+  font-size: 10.5px;
   font-family: inherit;
 }
 
@@ -1575,7 +1575,7 @@
   gap: 6px;
   min-width: 0;
   color: var(--au-muted-strong);
-  font-size: 10.2px;
+  font-size: 12px;
 }
 
 .aurelius-welcome__list svg {
@@ -1602,7 +1602,7 @@
   border-radius: 999px;
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
-  font-size: 9.2px;
+  font-size: 11px;
   font-weight: 880;
 }
 
@@ -1753,7 +1753,7 @@
   }
 
   .au-editor__file-copy strong {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .au-editor__breadcrumbs {
@@ -1802,11 +1802,11 @@
   }
 
   .cm-search label {
-    font-size: 9.2px;
+    font-size: 11px;
   }
 
   .cm-search button {
-    font-size: 9.2px !important;
+    font-size: 11px !important;
   }
 }
 
