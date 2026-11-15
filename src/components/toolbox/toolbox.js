@@ -857,6 +857,117 @@ const TOOLS = [
     }
   },
   {
+    id: "sql",
+    icon: "database",
+    title: "SQL",
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "sql-in", label: "SQL", rows: 14, value: val("sql-in", "select u.id,u.name,count(o.id) as pedidos from users u left join orders o on o.user_id=u.id where u.active=1 and o.created_at>'2026-01-01' group by u.id,u.name having count(o.id)>2 order by pedidos desc limit 10") })}
+      ${io({ id: "sql-out", label: t("Resultado", "Result"), readonly: true, rows: 14 })}</div>
+      ${actions([["sql-format", t("Formatear", "Format"), "is-primary"], ["sql-min", t("Minificar", "Minify")], ["copy:sql-out", t("Copiar", "Copy")]])}`,
+    live: ["sql-in"],
+    run(action) {
+      const src = $("sql-in").value;
+      if (action === "sql-min") { $("sql-out").value = src.replace(/--.*$/gm, "").replace(/\s+/g, " ").trim(); save("sql-in"); return; }
+      const KW = ["select", "from", "where", "group by", "order by", "having", "limit", "offset", "left join", "right join", "inner join", "full join", "cross join", "join", "union all", "union", "insert into", "values", "update", "set", "delete from", "on", "and", "or", "as", "in", "not", "null", "is", "like", "between", "distinct", "case", "when", "then", "else", "end", "asc", "desc", "create table", "alter table", "drop table", "returning"];
+      const strings = [];
+      let text = src.replace(/'(?:[^']|'')*'/g, (m) => { strings.push(m); return `\u0000${strings.length - 1}\u0000`; }).replace(/\s+/g, " ").trim();
+      for (const k of [...KW].sort((a, b) => b.length - a.length)) text = text.replace(new RegExp(`\\b${k.replace(" ", "\\s+")}\\b`, "gi"), k.toUpperCase());
+      text = text
+        .replace(/\s*\b(FROM|WHERE|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|UNION ALL|UNION|VALUES|SET|RETURNING)\b/g, "\n$1")
+        .replace(/\s*\b(LEFT JOIN|RIGHT JOIN|INNER JOIN|FULL JOIN|CROSS JOIN|JOIN)\b/g, "\n  $1")
+        .replace(/\s+\b(AND|OR)\b\s+/g, "\n  $1 ")
+        .replace(/^SELECT\s+(.*)$/m, (m, cols) => `SELECT\n  ${cols.split(/,(?![^(]*\))/).map((c) => c.trim()).join(",\n  ")}`);
+      $("sql-out").value = text.replace(/\u0000(\d+)\u0000/g, (_, i) => strings[Number(i)]);
+      save("sql-in");
+    }
+  },
+  {
+    id: "image64",
+    icon: "image",
+    title: t("Imagen ⇄ Base64", "Image ⇄ Base64"),
+    render: () => `
+      <div class="au-tb__row"><label class="au-tb__btn is-primary" style="cursor:pointer">${t("Elegir imagen…", "Choose image…")}<input id="img-file" type="file" accept="image/*" hidden /></label>
+      <span class="au-tb__status" id="img-status"></span></div>
+      <div class="au-tb__cols"><div class="au-tb__field"><span>${t("Vista previa", "Preview")}</span><div class="au-tb__out" style="display:grid;place-items:center;min-height:200px"><img id="img-preview" style="max-width:100%;max-height:260px;border-radius:6px" alt="" /></div></div>
+      ${io({ id: "img-out", label: "Data URL / Base64", rows: 10 })}</div>
+      ${actions([["copy:img-out", t("Copiar", "Copy")], ["img-from", t("Mostrar desde Base64", "Show from Base64")]])}`,
+    run(action) {
+      if (action === "img-from") {
+        const v = $("img-out").value.trim();
+        $("img-preview").src = v.startsWith("data:") ? v : `data:image/png;base64,${v}`;
+      }
+    }
+  },
+  {
+    id: "gradient",
+    icon: "palette",
+    title: t("Gradiente CSS", "CSS gradient"),
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Tipo", "Type")}</span><select id="gr-type" class="au-tb__select"><option value="linear" ${val("gr-type", "linear") === "linear" ? "selected" : ""}>linear</option><option value="radial" ${val("gr-type") === "radial" ? "selected" : ""}>radial</option><option value="conic" ${val("gr-type") === "conic" ? "selected" : ""}>conic</option></select></label>
+        <label class="au-tb__field"><span>${t("Ángulo", "Angle")}</span><input id="gr-angle" type="number" value="${esc(val("gr-angle", "135"))}" style="width:90px" /></label>
+        <label class="au-tb__field"><span>${t("Color 1", "Color 1")}</span><input id="gr-c1" type="color" value="${esc(val("gr-c1", "#4d8dff"))}" style="width:70px;padding:2px" /></label>
+        <label class="au-tb__field"><span>${t("Color 2", "Color 2")}</span><input id="gr-c2" type="color" value="${esc(val("gr-c2", "#a78bfa"))}" style="width:70px;padding:2px" /></label>
+        <label class="au-tb__field"><span>${t("Color 3 (opcional)", "Color 3 (optional)")}</span><input id="gr-c3" type="color" value="${esc(val("gr-c3", "#0b0c10"))}" style="width:70px;padding:2px" /></label>
+        <label class="au-tb__field"><span>3 ${t("colores", "colors")}</span><input id="gr-three" type="checkbox" ${val("gr-three") === "true" ? "checked" : ""} style="width:auto" /></label>
+      </div>
+      <div id="gr-preview" style="height:200px;border-radius:12px;border:1px solid var(--au-border)"></div>
+      ${io({ id: "gr-out", label: "CSS", readonly: true, rows: 3 })}
+      ${actions([["copy:gr-out", t("Copiar", "Copy")]])}`,
+    live: ["gr-type", "gr-angle", "gr-c1", "gr-c2", "gr-c3", "gr-three"],
+    run() {
+      const type = $("gr-type").value;
+      const stops = [$("gr-c1").value, $("gr-c2").value, ...($("gr-three").checked ? [$("gr-c3").value] : [])].join(", ");
+      const css = type === "linear" ? `linear-gradient(${$("gr-angle").value || 0}deg, ${stops})` : type === "radial" ? `radial-gradient(circle, ${stops})` : `conic-gradient(from ${$("gr-angle").value || 0}deg, ${stops})`;
+      $("gr-preview").style.background = css;
+      $("gr-out").value = `background: ${css};`;
+      state.values["gr-three"] = String($("gr-three").checked);
+      save("gr-type", "gr-angle", "gr-c1", "gr-c2", "gr-c3");
+    }
+  },
+  {
+    id: "curl",
+    icon: "terminal",
+    title: t("cURL → fetch", "cURL → fetch"),
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "curl-in", label: "cURL", rows: 12, value: val("curl-in", "curl -X POST https://api.ejemplo.com/v1/pedidos \\\n  -H 'Content-Type: application/json' \\\n  -H 'Authorization: Bearer TOKEN' \\\\\n  -d '{\"sku\":\"PRO-01\",\"qty\":2}'") })}
+      ${io({ id: "curl-out", label: "fetch (JavaScript)", readonly: true, rows: 12 })}</div>
+      ${actions([["copy:curl-out", t("Copiar", "Copy")]])}
+      <p class="au-tb__status" id="curl-status"></p>`,
+    live: ["curl-in"],
+    run() {
+      try {
+        const raw = $("curl-in").value.replace(/\\\r?\n/g, " ").trim();
+        const tokens = [...raw.matchAll(/'([^']*)'|"((?:[^"\\]|\\.)*)"|(\S+)/g)].map((m) => m[1] ?? m[2] ?? m[3]);
+        if (tokens[0] !== "curl") throw new Error(t("Debe empezar con curl.", "Must start with curl."));
+        let method = "";
+        let url = "";
+        let body = "";
+        const headers = {};
+        for (let i = 1; i < tokens.length; i += 1) {
+          const tk = tokens[i];
+          if (tk === "-X" || tk === "--request") method = tokens[++i];
+          else if (tk === "-H" || tk === "--header") { const [k, ...v] = tokens[++i].split(":"); headers[k.trim()] = v.join(":").trim(); }
+          else if (["-d", "--data", "--data-raw", "--data-binary"].includes(tk)) body = tokens[++i];
+          else if (tk === "-u" || tk === "--user") headers.Authorization = `Basic ${btoa(tokens[++i])}`;
+          else if (!tk.startsWith("-") && !url) url = tk;
+        }
+        if (!url) throw new Error(t("No se encontró la URL.", "URL not found."));
+        method = method || (body ? "POST" : "GET");
+        const opts = [`  method: "${method}"`];
+        if (Object.keys(headers).length) opts.push(`  headers: ${JSON.stringify(headers, null, 4).replace(/\n/g, "\n  ")}`);
+        if (body) { let parsed = null; try { parsed = JSON.parse(body); } catch { /* texto */ } opts.push(`  body: ${parsed ? `JSON.stringify(${JSON.stringify(parsed, null, 4).replace(/\n/g, "\n  ")})` : JSON.stringify(body)}`); }
+        $("curl-out").value = `const response = await fetch("${url}", {\n${opts.join(",\n")}\n});\nif (!response.ok) throw new Error(\`HTTP \${response.status}\`);\nconst data = await response.json();`;
+        $("curl-status").textContent = "";
+      } catch (error) {
+        $("curl-out").value = "";
+        $("curl-status").textContent = `✗ ${error.message}`;
+        $("curl-status").className = "au-tb__status is-err";
+      }
+      save("curl-in");
+    }
+  },
+  {
     id: "gen",
     icon: "zap",
     title: t("Generadores", "Generators"),
@@ -1001,6 +1112,19 @@ export function bindToolboxEvents() {
     }
 
     runCurrent(action);
+  });
+
+  document.addEventListener("change", (event) => {
+    if (event.target.id !== "img-file") return;
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      $("img-out").value = String(reader.result);
+      $("img-preview").src = String(reader.result);
+      $("img-status").textContent = `${file.name} · ${(file.size / 1024).toFixed(1)} KB · ${file.type}`;
+    };
+    reader.readAsDataURL(file);
   });
 
   document.addEventListener("input", (event) => {

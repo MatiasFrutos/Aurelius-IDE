@@ -283,3 +283,11 @@
 .au-terminal-list-item__copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; }
 .au-terminal-list-item__delete { opacity: 0; }
 .au-terminal-list-item:hover .au-terminal-list-item__delete { opacity: 1; }
+
+/* ==========================================================================
+   7. Sin glow: ni sombras de texto ni halos de color
+   ========================================================================== */
+*, *::before, *::after { text-shadow: none !important; }
+[class*="glow"], [class*="halo"], [class*="aura"] { box-shadow: none !important; filter: none !important; }
+/* Anillos de foco con halo → borde nítido */
+input:focus, textarea:focus, select:focus { box-shadow: none !important; }

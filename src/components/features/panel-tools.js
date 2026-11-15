@@ -7,6 +7,9 @@ import { toastError, toastInfo, toastSuccess } from "../ui/toast.js";
 import { runCommandInTerminal, openTerminalHere } from "../bottom-panel/bottom-panel.js";
 import { refreshIcons } from "../../app/app-icons.js";
 import { chatWithAi } from "../../services/fs.service.js";
+import { probeToolVersions, readSystemDetails } from "../../services/shell.service.js";
+import pkg from "../../../package.json";
+import { injectWelcomeActions } from "./projects.js";
 import { replaceInProject } from "./labs2.js";
 import { getAiProviderPreset, normalizeAiRuntimeSettings } from "../../app/app-settings.js";
 
@@ -213,7 +216,7 @@ function injectGit() {
 
   header.insertAdjacentHTML(
     "afterend",
-    bar("git", GIT_COMMANDS.map(([id, icon, label]) => btn(id, icon, label)).join(""), "is-wrap")
+    bar("git", btn("git-center", "git-branch", t("Centro de Git", "Git center"), "is-primary") + GIT_COMMANDS.map(([id, icon, label]) => btn(id, icon, label)).join(""), "is-wrap")
   );
 }
 
@@ -420,6 +423,203 @@ function injectAi() {
   );
 }
 
+
+/* ---------------------------------------------------------------- */
+/* Monitor: procesos, discos, red, batería                           */
+/* ---------------------------------------------------------------- */
+
+const fmtBytes = (n) => {
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let v = Number(n) || 0;
+  let i = 0;
+  while (v >= 1024 && i < units.length - 1) { v /= 1024; i += 1; }
+  return `${v.toFixed(v >= 100 || i === 0 ? 0 : 1)} ${units[i]}`;
+};
+
+const fmtUptime = (s) => {
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  return `${d ? `${d}d ` : ""}${h}h ${m}m`;
+};
+
+let lastNet = null;
+
+function renderSystemDetails(details) {
+  const host = document.querySelector("[data-px-sysdetails]");
+  if (!host || !details) return;
+
+  const now = Date.now();
+  const totalRx = details.network.reduce((a, n) => a + n.rx_bytes, 0);
+  const totalTx = details.network.reduce((a, n) => a + n.tx_bytes, 0);
+  let rate = "";
+  if (lastNet && now > lastNet.at) {
+    const secs = (now - lastNet.at) / 1000;
+    rate = `↓ ${fmtBytes(Math.max(0, totalRx - lastNet.rx) / secs)}/s · ↑ ${fmtBytes(Math.max(0, totalTx - lastNet.tx) / secs)}/s`;
+  }
+  lastNet = { at: now, rx: totalRx, tx: totalTx };
+
+  const maxCpu = Math.max(1, ...details.processes.map((p) => p.cpu_percent));
+
+  host.innerHTML = `
+    <div class="au-px__chips">
+      ${details.hostname ? `<span>${esc(details.hostname)}</span>` : ""}
+      ${details.kernel ? `<span>Linux ${esc(details.kernel)}</span>` : ""}
+      <span>${t("Encendido", "Uptime")} ${fmtUptime(details.uptime_seconds)}</span>
+      ${details.battery_percent != null ? `<span>${t("Batería", "Battery")} ${details.battery_percent}% ${esc(details.battery_status || "")}</span>` : ""}
+    </div>
+    <div class="au-px__cols">
+      <section class="au-px__card"><h4>${t("Procesos principales", "Top processes")}</h4>
+        <table class="au-px__table"><thead><tr><th>${t("Proceso", "Process")}</th><th>PID</th><th>CPU</th><th>RAM</th></tr></thead><tbody>
+        ${details.processes.slice(0, 10).map((p) => `<tr><td title="${esc(p.name)}">${esc(p.name)}</td><td>${p.pid}</td><td><span class="au-px__bar"><i style="--w:${Math.min(100, (p.cpu_percent / maxCpu) * 100)}%"></i></span> ${p.cpu_percent.toFixed(1)}%</td><td>${fmtBytes(p.memory_bytes)}</td></tr>`).join("")}
+        </tbody></table></section>
+      <section class="au-px__card"><h4>${t("Discos", "Disks")}</h4>
+        ${details.disks.map((d) => { const pct = d.total_bytes ? (d.used_bytes / d.total_bytes) * 100 : 0; return `<div class="au-px__disk"><header><b>${esc(d.mount)}</b><span>${fmtBytes(d.used_bytes)} / ${fmtBytes(d.total_bytes)} · ${pct.toFixed(0)}%</span></header><span class="au-px__bar ${pct > 90 ? "is-hot" : ""}"><i style="--w:${pct}%"></i></span></div>`; }).join("") || `<p class="au-px__muted">—</p>`}
+        <h4 style="margin-top:14px">${t("Red", "Network")}</h4>
+        <p class="au-px__muted">${rate || t("Midiendo…", "Measuring…")}</p>
+        ${details.network.map((n) => `<div class="au-px__net"><b>${esc(n.interface)}</b><span>↓ ${fmtBytes(n.rx_bytes)} · ↑ ${fmtBytes(n.tx_bytes)}</span></div>`).join("")}
+      </section>
+    </div>`;
+}
+
+let detailsBusy = false;
+
+async function refreshSystemDetails() {
+  if (detailsBusy || !document.querySelector("[data-px-sysdetails]")) return;
+  detailsBusy = true;
+  try {
+    renderSystemDetails(await readSystemDetails());
+  } catch (error) {
+    const host = document.querySelector("[data-px-sysdetails]");
+    if (host) host.innerHTML = `<p class="au-px__muted">${esc(String(error?.message || error))}</p>`;
+  } finally {
+    detailsBusy = false;
+  }
+}
+
+function injectMonitorDetails() {
+  const bar = document.querySelector('[data-px-bar="monitor"]');
+  if (!bar || document.querySelector("[data-px-sysdetails]")) return;
+
+  markInjected();
+  bar.insertAdjacentHTML("afterend", `<div class="au-px au-px--page" data-px-sysdetails><p class="au-px__muted">${t("Leyendo el sistema…", "Reading the system…")}</p></div>`);
+  refreshSystemDetails();
+}
+
+window.addEventListener("au:monitor-refresh", () => refreshSystemDetails());
+
+/* ---------------------------------------------------------------- */
+/* Doctor: herramientas adicionales                                  */
+/* ---------------------------------------------------------------- */
+
+const EXTRA_TOOLS = [
+  ["node", "Node.js"], ["npm", "npm"], ["pnpm", "pnpm"], ["yarn", "Yarn"], ["bun", "Bun"], ["deno", "Deno"],
+  ["python3", "Python 3"], ["pip3", "pip"], ["go", "Go"], ["java", "Java"], ["gcc", "GCC"], ["make", "Make"], ["cmake", "CMake"],
+  ["docker", "Docker"], ["docker-compose", "Docker Compose"], ["kubectl", "kubectl"], ["psql", "PostgreSQL (psql)"], ["sqlite3", "SQLite"],
+  ["ollama", "Ollama"], ["gh", "GitHub CLI"], ["php", "PHP"], ["ruby", "Ruby"], ["dotnet", ".NET"], ["cargo", "Cargo"], ["rustc", "Rust"], ["git", "Git"]
+];
+
+async function runExtraProbe() {
+  const host = document.querySelector("[data-px-probe]");
+  if (!host) return;
+  host.innerHTML = `<p class="au-px__muted">${t("Detectando herramientas…", "Detecting tools…")}</p>`;
+
+  try {
+    const results = await probeToolVersions(EXTRA_TOOLS.map(([id]) => id));
+    const names = Object.fromEntries(EXTRA_TOOLS);
+    const found = results.filter((r) => r.found).length;
+    host.innerHTML = `<p class="au-px__muted">${found} ${t("de", "of")} ${results.length} ${t("herramientas instaladas", "tools installed")}</p>
+      <div class="au-px__tools">${results.map((r) => `<div class="au-px__tool ${r.found ? "is-ok" : "is-missing"}"><i></i><b>${esc(names[r.name] || r.name)}</b><span>${r.found ? esc(r.version) : t("no instalado", "not installed")}</span></div>`).join("")}</div>`;
+    host.dataset.report = results.map((r) => `- [${r.found ? "x" : " "}] ${names[r.name] || r.name}: ${r.found ? r.version : "no instalado"}`).join("\n");
+  } catch (error) {
+    host.innerHTML = `<p class="au-px__muted">${esc(String(error?.message || error))}</p>`;
+  }
+}
+
+function injectDoctorExtras() {
+  const bar = document.querySelector('[data-px-bar="toolchain"]');
+  if (!bar || document.querySelector("[data-px-probe]")) return;
+
+  markInjected();
+  bar.insertAdjacentHTML("afterend", `<section class="au-px au-px--page"><header class="au-px__phead"><h4>${t("Herramientas adicionales", "Additional tools")}</h4>${btn("doc-reprobe", "refresh-cw", t("Volver a detectar", "Detect again"))}${btn("doc-copy-probe", "copy", t("Copiar lista", "Copy list"))}</header><div data-px-probe></div></section>`);
+  runExtraProbe();
+}
+
+/* ---------------------------------------------------------------- */
+/* Búsqueda: historial                                               */
+/* ---------------------------------------------------------------- */
+
+function rememberQuery(value) {
+  const q = String(value || "").trim();
+  if (q.length < 2) return;
+  store.set("search-history", [q, ...store.get("search-history", []).filter((x) => x !== q)].slice(0, 8));
+}
+
+function injectSearchHistory() {
+  const bar = document.querySelector('[data-px-bar="search"]');
+  if (!bar || bar.querySelector("[data-px-hist]")) return;
+
+  const history = store.get("search-history", []);
+  if (!history.length) return;
+
+  markInjected();
+  bar.insertAdjacentHTML("beforeend", `<div class="au-px__recent" data-px-hist>${history.map((q) => `<button type="button" class="au-px__chip" data-px="srch-hist" data-q="${esc(q)}">${esc(q)}</button>`).join("")}${btn("srch-hist-clear", "trash-2", t("Borrar", "Clear"))}</div>`);
+}
+
+/* ---------------------------------------------------------------- */
+/* Tasks: favoritos                                                  */
+/* ---------------------------------------------------------------- */
+
+function parseTask(encoded) {
+  try {
+    return JSON.parse(decodeURIComponent(encoded));
+  } catch {
+    return null;
+  }
+}
+
+function injectTaskFavorites() {
+  const favs = store.get("task-favs", []);
+  const bar = document.querySelector('[data-px-bar="tasks"]');
+
+  if (bar && !bar.querySelector("[data-px-favs]") && favs.length) {
+    markInjected();
+    bar.insertAdjacentHTML("beforeend", `<div class="au-px__recent" data-px-favs><span class="au-px__muted">★</span>${favs.map((f) => `<button type="button" class="au-px__chip is-on" data-px="task-recent" data-cmd="${esc(f.command)}" title="${esc(f.command)}">${esc(f.label)}</button>`).join("")}</div>`);
+  }
+
+  document.querySelectorAll(".au-task-item__actions").forEach((actions) => {
+    if (actions.querySelector("[data-px-star]")) return;
+    const task = parseTask(actions.querySelector("[data-project-task-run]")?.dataset.projectTaskRun || "");
+    if (!task) return;
+
+    const on = favs.some((f) => f.command === task.command);
+    markInjected();
+    actions.insertAdjacentHTML("afterbegin", `<button type="button" class="au-task-item__action ${on ? "is-fav" : ""}" data-px-star data-px="task-star" data-cmd="${esc(task.command)}" data-label="${esc(task.label)}" title="${t("Favorito", "Favorite")}">${on ? "★" : "☆"}</button>`);
+  });
+}
+
+/* ---------------------------------------------------------------- */
+/* Ajustes: acerca de y datos                                        */
+/* ---------------------------------------------------------------- */
+
+function injectAbout() {
+  const bar = document.querySelector('[data-px-bar="settings"]');
+  if (!bar || bar.querySelector("[data-px-about]")) return;
+
+  markInjected();
+  bar.insertAdjacentHTML("beforeend", `
+    <div data-px-about>
+      <h3>${t("Datos y privacidad", "Data & privacy")}</h3>
+      <div class="au-px__row">
+        ${btn("set-clear-ai", "trash-2", t("Borrar conversaciones y skills de IA", "Clear AI chats and skills"))}
+        ${btn("set-clear-key", "lock", t("Olvidar la API Key guardada", "Forget saved API key"))}
+        ${btn("set-diag", "copy", t("Copiar información de diagnóstico", "Copy diagnostics"))}
+      </div>
+      <h3>${t("Acerca de", "About")}</h3>
+      <div class="au-px__about"><b>Aurelius IDE</b> v${esc(pkg.version)} · Rust + Tauri + CodeMirror 6<br/>${t("Sin telemetría. Tus ajustes y conversaciones se guardan solo en este equipo.", "No telemetry. Your settings and chats are stored only on this machine.")}</div>
+    </div>`);
+}
+
 /* ---------------------------------------------------------------- */
 /* Eventos                                                           */
 /* ---------------------------------------------------------------- */
@@ -484,6 +684,38 @@ function handle(action, target) {
     case "srch-copy":
       return copy((appState.search?.results || []).map((r) => `${r.path}:${r.line_number || 1}: ${(r.line_text || "").trim()}`).join("\n"), t("Búsqueda", "Search"));
 
+    case "doc-reprobe":
+      return runExtraProbe();
+    case "doc-copy-probe":
+      return copy(document.querySelector("[data-px-probe]")?.dataset.report || "", "Doctor");
+    case "srch-hist": {
+      const input = document.querySelector(".au-search__form input");
+      if (input) {
+        input.value = target.dataset.q;
+        document.getElementById("search-project-form")?.requestSubmit();
+      }
+      return;
+    }
+    case "srch-hist-clear":
+      store.set("search-history", []);
+      return rerender();
+    case "task-star": {
+      const favs = store.get("task-favs", []);
+      const exists = favs.some((f) => f.command === target.dataset.cmd);
+      store.set("task-favs", exists ? favs.filter((f) => f.command !== target.dataset.cmd) : [...favs, { command: target.dataset.cmd, label: target.dataset.label }].slice(-8));
+      return rerender();
+    }
+    case "set-clear-ai":
+      try { Object.keys(localStorage).filter((k) => /^aurelius\.ai\./.test(k)).forEach((k) => localStorage.removeItem(k)); } catch { /* nada */ }
+      toastSuccess(t("Datos de IA borrados. Recargando…", "AI data cleared. Reloading…"), t("Ajustes", "Settings"));
+      return setTimeout(() => location.reload(), 700);
+    case "set-clear-key":
+      window.dispatchEvent(new CustomEvent("au:import-settings", { detail: { aiApiKey: "" } }));
+      return toastSuccess(t("API Key olvidada.", "API key forgotten."), t("Ajustes", "Settings"));
+    case "set-diag":
+      return copy(JSON.stringify({ app: `Aurelius IDE v${pkg.version}`, userAgent: navigator.userAgent, language: appState.settings.language, theme: appState.settings.theme, aiProvider: appState.settings.aiProvider, aiModel: appState.settings.aiModel, project: Boolean(appState.projectPath), time: new Date().toISOString() }, null, 2), t("Diagnóstico", "Diagnostics"));
+    case "git-center":
+      return window.dispatchEvent(new CustomEvent("au:open-git-center"));
     case "mon-copy":
       return copy(JSON.stringify(appState.monitor, null, 2), "Monitor");
     case "mon-reset":
@@ -630,6 +862,14 @@ export function initPanelTools() {
   });
 
   document.addEventListener("submit", (event) => {
+    if (event.target.matches("#search-project-form")) {
+      rememberQuery(event.target.querySelector("input")?.value);
+      return;
+    }
+    if (event.target.matches("#topbar-search-form")) {
+      rememberQuery(event.target.querySelector("input")?.value);
+      return;
+    }
     if (!event.target.matches("[data-px-cmd-form]")) return;
     event.preventDefault();
     const input = event.target.querySelector("[data-px-cmd]");
@@ -656,6 +896,12 @@ export function initPanelTools() {
     injectTasks();
     injectToolchain();
     injectSettings();
+    if (injectWelcomeActions()) window.__auPxInjected = true;
+    injectAbout();
+    injectMonitorDetails();
+    injectDoctorExtras();
+    injectSearchHistory();
+    injectTaskFavorites();
     applySearchFilters();
 
     // Solo refrescamos iconos si realmente inyectamos algo nuevo (createIcons recorre todo el DOM).

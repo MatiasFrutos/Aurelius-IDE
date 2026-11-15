@@ -48,8 +48,7 @@
   color: var(--au-text);
   box-shadow:
     0 20px 58px rgba(0, 0, 0, 0.32),
-    0 0 0 1px rgba(255, 255, 255, 0.022) inset,
-    0 0 22px color-mix(in srgb, var(--au-toast-color) 6%, transparent);
+    0 0 0 1px rgba(255, 255, 255, 0.022) inset;
   opacity: 0;
   transform: translate3d(12px, 7px, 0) scale(0.978);
   transition:
@@ -65,8 +64,7 @@
     rgba(255, 255, 255, 0.98);
   box-shadow:
     0 20px 50px rgba(15, 23, 42, 0.14),
-    0 0 0 1px rgba(255, 255, 255, 0.72) inset,
-    0 0 20px color-mix(in srgb, var(--au-toast-color) 5%, transparent);
+    0 0 0 1px rgba(255, 255, 255, 0.72) inset;
 }
 
 .au-toast::before {
@@ -98,7 +96,6 @@
   width: 2px;
   border-radius: 0 999px 999px 0;
   background: var(--au-toast-color);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--au-toast-color) 42%, transparent);
 }
 
 .au-toast__icon,

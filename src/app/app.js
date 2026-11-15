@@ -92,6 +92,8 @@ import { afterMount as toolboxAfterMount } from "../components/toolbox/toolbox.j
 import { initPanelTools } from "../components/features/panel-tools.js";
 import { initLabs2 } from "../components/features/labs2.js";
 import { initBranchWatcher } from "../components/features/labs3.js";
+import { initGitCenter } from "../components/git-pro/git-pro.js";
+import { initProjects } from "../components/features/projects.js";
 import { afterAppRender as aiAfterRender, initAiChat } from "../ai/ai-chat.js";
 import { applyPersonalization } from "../components/features/personalize.js";
 import { initFeatures, applyAppearance, openAppearancePanel } from "../components/features/features.js";
@@ -1979,9 +1981,11 @@ export async function initAureliusApp() {
   initLabs2();
   initAiChat();
   initBranchWatcher();
+  initGitCenter();
+  initProjects();
 
   window.addEventListener("au:open-git-panel", () => {
-    handleOpenGitPanel();
+    window.dispatchEvent(new CustomEvent("au:open-git-center"));
   });
 
   window.addEventListener("au:open-settings-panel", () => {
