@@ -198,8 +198,10 @@ export function renderAiChat() {
     <form class="au-ai2__composer" id="au-ai-form">
       <div class="au-ai2__slash" id="au-ai-slash" hidden></div>
       <div class="au-ai2__chips">
-        <label class="au-ai2__skillpick" title="${t("Skill activa", "Active skill")}"><i data-lucide="${esc(skill.icon || "sparkles")}"></i>
-          <select data-ai-skill>${listSkills().map((s) => `<option value="${s.id}" ${s.id === skill.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>
+        <div class="au-dd" data-dd>
+          <button type="button" class="au-dd__trigger" data-ai="dd-toggle" aria-haspopup="listbox" aria-expanded="false" title="${t("Skill activa", "Active skill")}"><i data-lucide="${esc(skill.icon || "sparkles")}"></i><span>${esc(skill.name)}</span><i data-lucide="chevron-down" class="au-dd__caret"></i></button>
+          <div class="au-dd__menu" role="listbox" hidden>${listSkills().map((s) => `<button type="button" role="option" class="au-dd__item ${s.id === skill.id ? "is-on" : ""}" data-ai="dd-pick" data-skill="${s.id}"><i data-lucide="${esc(s.icon || "sparkles")}"></i><span><b>${esc(s.name)}</b><small>/${esc(s.slash)}</small></span>${s.id === skill.id ? '<i data-lucide="check" class="au-dd__check"></i>' : ""}</button>`).join("")}</div>
+        </div>
         ${[["file", t("Archivo", "File")], ["selection", t("Selección", "Selection")], ["tabs", t("Pestañas", "Tabs")], ["tree", t("Proyecto", "Project")]].map(([k, l]) => `<button type="button" class="au-ai2__chip ${flags[k] ? "is-on" : ""}" data-ai="ctx" data-ctx="${k}" title="${t("Incluir como contexto", "Include as context")}">${l}</button>`).join("")}
       </div>
       <div class="au-ai2__inputrow">
@@ -607,7 +609,14 @@ export function initAiChat() {
     repaintPanel({ keepFocus: true });
   });
 
+  const closeDropdowns = () => document.querySelectorAll("[data-dd]").forEach((dd) => {
+    dd.querySelector(".au-dd__menu")?.setAttribute("hidden", "");
+    dd.querySelector("[data-ai=dd-toggle]")?.setAttribute("aria-expanded", "false");
+  });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDropdowns(); });
+
   document.addEventListener("click", async (event) => {
+    if (!event.target.closest("[data-dd]")) closeDropdowns();
     const button = event.target.closest("[data-ai]");
     if (!button || !button.closest(".au-ai2, .au-fx-overlay")) return;
 
@@ -632,6 +641,22 @@ export function initAiChat() {
         break;
       case "open-settings":
         window.dispatchEvent(new CustomEvent("au:open-ai-settings"));
+        break;
+      case "dd-toggle": {
+        const dd = button.closest("[data-dd]");
+        const menu = dd.querySelector(".au-dd__menu");
+        const open = menu.hasAttribute("hidden");
+        closeDropdowns();
+        if (open) {
+          menu.removeAttribute("hidden");
+          button.setAttribute("aria-expanded", "true");
+        }
+        break;
+      }
+      case "dd-pick":
+        chat.skillId = button.dataset.skill;
+        touchChats();
+        repaintPanel({ keepFocus: true });
         break;
       case "pick-skill":
         chat.skillId = button.dataset.skill;
