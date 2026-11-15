@@ -3,6 +3,8 @@ import { Terminal as XtermTerminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { SearchAddon } from "@xterm/addon-search";
+import { WebglAddon } from "@xterm/addon-webgl";
+import { Unicode11Addon } from "@xterm/addon-unicode11";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
 import { appState } from "../../app/state.js";
@@ -499,7 +501,7 @@ function getTerminalTheme() {
   const isLight = document.documentElement.dataset.theme === "light";
   const accentRgb = readCssVar("--au-accent-rgb", "56, 189, 248");
   const accent = `rgb(${accentRgb})`;
-  const background = readCssVar("--au-bg-editor", isLight ? "#ffffff" : "#0b0d12");
+  const background = readCssVar("--au-bg-panel", isLight ? "#ffffff" : "#111319");
 
   if (isLight) {
     return {
@@ -624,6 +626,34 @@ function watchTerminalTheme() {
     attributes: true,
     attributeFilter: ["data-theme", "data-accent", "data-surface", "data-palette", "style"]
   });
+}
+
+const WEBGL_KEY = "aurelius.terminal.webgl";
+
+function isTerminalWebglEnabled() {
+  try {
+    return localStorage.getItem(WEBGL_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function toggleTerminalWebgl() {
+  const next = !isTerminalWebglEnabled();
+
+  try {
+    localStorage.setItem(WEBGL_KEY, next ? "1" : "0");
+  } catch {
+    // sin almacenamiento
+  }
+
+  addOutput(
+    "info",
+    "Terminal",
+    next
+      ? t("Renderer WebGL activado: se aplica a las terminales nuevas.", "WebGL renderer enabled: applies to new terminals.")
+      : t("Renderer WebGL desactivado: se aplica a las terminales nuevas.", "WebGL renderer disabled: applies to new terminals.")
+  );
 }
 
 function getTerminalFontFamily() {
@@ -1163,6 +1193,8 @@ function disposeTerminalView(record, { preserveBuffer = true } = {}) {
     preserveTerminalText(record);
   }
 
+  record.pendingWrite = "";
+
   if (record.resizeObserver) {
     record.resizeObserver.disconnect();
     record.resizeObserver = null;
@@ -1196,10 +1228,32 @@ function disposeAllTerminalViews(options = {}) {
 const earlyTerminalOutput = new Map();
 const EARLY_OUTPUT_LIMIT = 200000;
 
+// Agrupa la salida en un solo write por frame: mucho más fluido con salidas masivas (builds, logs).
 function writeToTerminalView(record, data) {
-  const terminal = record?.terminal;
+  if (!record?.terminal) {
+    return;
+  }
 
-  if (!terminal) {
+  record.pendingWrite = (record.pendingWrite || "") + data;
+
+  if (record.writeScheduled) {
+    return;
+  }
+
+  record.writeScheduled = true;
+  requestAnimationFrame(() => {
+    record.writeScheduled = false;
+    flushTerminalWrite(record);
+  });
+}
+
+function flushTerminalWrite(record) {
+  const terminal = record?.terminal;
+  const data = record?.pendingWrite;
+
+  record.pendingWrite = "";
+
+  if (!terminal || !data) {
     return;
   }
 
@@ -1400,11 +1454,17 @@ function createTerminalView(record, container) {
   record.terminal = new XtermTerminal({
     cursorBlink: true,
     cursorStyle: "bar",
+    cursorWidth: 2,
+    cursorInactiveStyle: "outline",
+    minimumContrastRatio: 4.5,
+    drawBoldTextInBrightColors: false,
+    fastScrollModifier: "alt",
+    fastScrollSensitivity: 5,
     fontFamily: getTerminalFontFamily(),
     fontSize: Number(appState.settings.editorFontSize || 13),
     lineHeight: 1.18,
     letterSpacing: 0,
-    scrollback: 10000,
+    scrollback: 8000,
     smoothScrollDuration: 90,
     allowProposedApi: true,
     macOptionIsMeta: true,
@@ -1469,9 +1529,26 @@ function createTerminalView(record, container) {
   );
   record.searchAddon = new SearchAddon();
   record.terminal.loadAddon(record.searchAddon);
+  record.terminal.loadAddon(new Unicode11Addon());
+  record.terminal.unicode.activeVersion = "11";
   watchTerminalTheme();
   record.terminal.open(container);
   record.mounted = true;
+
+  // Renderer WebGL (opcional): más rápido en equipos con buena GPU; por defecto se usa el renderer estable.
+  try {
+    if (!isTerminalWebglEnabled()) {
+      throw new Error("webgl desactivado");
+    }
+
+    const webgl = new WebglAddon();
+
+    webgl.onContextLoss(() => webgl.dispose());
+    record.terminal.loadAddon(webgl);
+    record.webglAddon = webgl;
+  } catch {
+    record.webglAddon = null;
+  }
 
   fitTerminalStable(record);
 

@@ -1055,3 +1055,9 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 
 - **Toolbox (+5):** SemVer (bump, comparar, rangos `^ ~ >= <`), Referencia HTTP (códigos y puertos con búsqueda y copiado), `.gitignore` (12 plantillas, crear/anexar en el proyecto), Datos de prueba (JSON/CSV/SQL INSERT) y chuleta de Git con comandos copiables.
 - **Editor:** JSON ordenar claves, líneas ⇄ array JSON, envolver en `console.log`, insertar comentario TODO.
+
+## v3.2 — Terminal más limpia y rápida
+
+- Salida agrupada en un solo `write` por frame (fluido con builds y logs masivos), Unicode 11 (CJK, emojis), contraste mínimo WCAG, cursor fino con contorno al perder foco, scroll rápido con Alt.
+- Fondo del terminal unificado con el panel; cabecera y lista de sesiones planas, sin degradados ni halos; scrollbar solo al pasar el mouse.
+- Renderer WebGL opcional: comando «Terminal: alternar renderer WebGL (experimental)». Desactivado por defecto porque en algunos entornos (GPU por software) no pinta texto.
