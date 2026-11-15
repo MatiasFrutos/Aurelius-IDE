@@ -1278,6 +1278,97 @@ const TOOLS = [
     }
   },
   {
+    id: "dates",
+    icon: "calendar",
+    title: t("Calculadora de fechas", "Date calculator"),
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Desde", "From")}</span><input id="dt-a" type="date" value="${esc(val("dt-a", new Date().toISOString().slice(0, 10)))}" /></label>
+        <label class="au-tb__field"><span>${t("Hasta", "To")}</span><input id="dt-b" type="date" value="${esc(val("dt-b", new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10)))}" /></label>
+        <label class="au-tb__field"><span>${t("Sumar días a «Desde»", "Add days to «From»")}</span><input id="dt-n" type="number" value="${esc(val("dt-n", "90"))}" style="width:110px" /></label>
+      </div>
+      <div class="au-tb__hashes" id="dt-out"></div>`,
+    live: ["dt-a", "dt-b", "dt-n"],
+    run() {
+      const a = new Date(`${$("dt-a").value}T00:00:00`);
+      const b = new Date(`${$("dt-b").value}T00:00:00`);
+      const n = Number($("dt-n").value) || 0;
+      if (isNaN(a) || isNaN(b)) { $("dt-out").innerHTML = ""; return; }
+      const days = Math.round((b - a) / 864e5);
+      let weekdays = 0;
+      for (let i = 0, d = new Date(Math.min(a, b)); i < Math.abs(days); i++, d.setDate(d.getDate() + 1)) if (d.getDay() % 6) weekdays++;
+      const plus = new Date(a); plus.setDate(plus.getDate() + n);
+      const week = (d) => { const t0 = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const dn = t0.getUTCDay() || 7; t0.setUTCDate(t0.getUTCDate() + 4 - dn); return Math.ceil(((t0 - Date.UTC(t0.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
+      const fmt = new Intl.DateTimeFormat(undefined, { dateStyle: "full" });
+      const rows = [[t("Diferencia", "Difference"), `${days} ${t("días", "days")} (${(days / 7).toFixed(1)} ${t("semanas", "weeks")})`], [t("Días hábiles", "Weekdays"), String(weekdays)], [t("Desde + N días", "From + N days"), fmt.format(plus)], [t("Semana ISO de «Desde»", "ISO week of «From»"), String(week(a))], [t("Día del año", "Day of year"), String(Math.floor((a - new Date(a.getFullYear(), 0, 0)) / 864e5))]];
+      $("dt-out").innerHTML = rows.map(([k, v]) => `<div class="au-tb__hash"><b>${esc(k)}</b><code>${esc(v)}</code></div>`).join("");
+      save("dt-a", "dt-b", "dt-n");
+    }
+  },
+  {
+    id: "bytes",
+    icon: "hard-drive",
+    title: t("Tamaños y transferencia", "Sizes & transfer"),
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Tamaño", "Size")}</span><input id="by-n" type="number" step="any" value="${esc(val("by-n", "250"))}" style="width:130px" /></label>
+        <label class="au-tb__field"><span>${t("Unidad", "Unit")}</span><select id="by-u" class="au-tb__select">${["B", "KB", "MB", "GB", "TB"].map((x) => `<option ${val("by-u", "MB") === x ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+        <label class="au-tb__field"><span>${t("Velocidad (Mbps)", "Speed (Mbps)")}</span><input id="by-s" type="number" step="any" value="${esc(val("by-s", "100"))}" style="width:130px" /></label>
+      </div>
+      <div class="au-tb__hashes" id="by-out"></div>`,
+    live: ["by-n", "by-u", "by-s"],
+    run() {
+      const pow = { B: 0, KB: 1, MB: 2, GB: 3, TB: 4 }[$("by-u").value];
+      const bytes = (Number($("by-n").value) || 0) * 1024 ** pow;
+      const f = (n) => (Math.round(n * 100) / 100).toLocaleString();
+      const dur = (sec) => (sec < 1 ? "< 1 s" : sec < 60 ? `${f(sec)} s` : sec < 3600 ? `${f(sec / 60)} min` : `${f(sec / 3600)} h`);
+      const mbps = Number($("by-s").value) || 0;
+      const rows = [["Bytes", bytes.toLocaleString()], ["KB / KiB", `${f(bytes / 1000)} / ${f(bytes / 1024)}`], ["MB / MiB", `${f(bytes / 1e6)} / ${f(bytes / 1048576)}`], ["GB / GiB", `${f(bytes / 1e9)} / ${f(bytes / 1073741824)}`], ["bits", (bytes * 8).toLocaleString()], [t("Tiempo a la velocidad dada", "Time at given speed"), mbps ? dur((bytes * 8) / (mbps * 1e6)) : "—"]];
+      $("by-out").innerHTML = rows.map(([k, v]) => `<div class="au-tb__hash"><b>${esc(k)}</b><code>${esc(v)}</code></div>`).join("");
+      save("by-n", "by-u", "by-s");
+    }
+  },
+  {
+    id: "jsondiff",
+    icon: "git-compare",
+    title: t("Diff de JSON", "JSON diff"),
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "jd-a", label: "A", rows: 12, value: val("jd-a", '{"name":"app","version":"1.0.0","tags":["a","b"],"cfg":{"debug":true}}') })}
+      ${io({ id: "jd-b", label: "B", rows: 12, value: val("jd-b", '{"name":"app","version":"1.1.0","tags":["a","c"],"cfg":{"debug":false,"port":80}}') })}</div>
+      <div class="au-tb__hashes" id="jd-out"></div>
+      <p class="au-tb__status" id="jd-status"></p>`,
+    live: ["jd-a", "jd-b"],
+    run() {
+      const status = $("jd-status");
+      status.className = "au-tb__status";
+      try {
+        const a = JSON.parse($("jd-a").value);
+        const b = JSON.parse($("jd-b").value);
+        const rows = [];
+        const show = (v) => JSON.stringify(v);
+        const diff = (x, y, path) => {
+          const isObj = (v) => v && typeof v === "object";
+          if (isObj(x) && isObj(y) && Array.isArray(x) === Array.isArray(y)) {
+            for (const k of new Set([...Object.keys(x), ...Object.keys(y)])) {
+              const p = Array.isArray(x) ? `${path}[${k}]` : `${path}.${k}`;
+              if (!(k in y)) rows.push(["−", p, show(x[k])]);
+              else if (!(k in x)) rows.push(["+", p, show(y[k])]);
+              else diff(x[k], y[k], p);
+            }
+          } else if (show(x) !== show(y)) rows.push(["~", path, `${show(x)} → ${show(y)}`]);
+        };
+        diff(a, b, "$");
+        $("jd-out").innerHTML = rows.map(([k, p, v]) => `<div class="au-tb__hash"><b>${k} ${esc(p)}</b><code>${esc(v)}</code></div>`).join("");
+        status.textContent = rows.length ? `${rows.length} ${t("diferencias", "differences")}` : t("✓ Idénticos", "✓ Identical");
+      } catch (error) {
+        $("jd-out").innerHTML = "";
+        status.textContent = `✗ ${error.message}`;
+        status.className = "au-tb__status is-err";
+      }
+      save("jd-a", "jd-b");
+    }
+  },
+  {
     id: "gen",
     icon: "zap",
     title: t("Generadores", "Generators"),

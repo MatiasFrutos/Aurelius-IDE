@@ -109,3 +109,13 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - Salida agrupada en un solo `write` por frame (fluido con builds y logs masivos), Unicode 11 (CJK, emojis), contraste mínimo WCAG, cursor fino con contorno al perder foco, scroll rápido con Alt.
 - Fondo del terminal unificado con el panel; cabecera y lista de sesiones planas, sin degradados ni halos; scrollbar solo al pasar el mouse.
 - Renderer WebGL opcional: comando «Terminal: alternar renderer WebGL (experimental)». Desactivado por defecto porque en algunos entornos (GPU por software) no pinta texto.
+
+## v3.3 — Más funciones en todas las páginas
+
+- **Explorer:** copiar árbol del proyecto (texto) y archivos por extensión.
+- **Búsqueda:** atajos TODO / FIXME / HACK / console.log.
+- **Git:** copiar rama, copiar último commit y abrir el remoto en el navegador.
+- **Ajustes:** buscador que filtra las secciones.
+- **Editor:** copiar como bloque Markdown, copiar con números de línea, duplicar selección.
+- **IA:** copiar última respuesta y estimar tokens de la conversación.
+- **Toolbox (+3):** calculadora de fechas, tamaños y transferencia, diff de JSON.

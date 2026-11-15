@@ -230,6 +230,34 @@ export function createEditorToolCommands() {
     mk("array-lines", "Array JSON → líneas", "JSON array → lines", "braces", () => applyTransform("fromArray"), ["array"]),
     mk("console-log", "Envolver en console.log", "Wrap in console.log", "code", () => applyTransform("logSel"), ["debug", "log"]),
     mk("todo", "Insertar comentario TODO", "Insert TODO comment", "code", () => insertText(`TODO(${new Date().toISOString().slice(0, 10)}): `), ["todo", "pendiente"]),
+    mk("copy-md", "Copiar como bloque de código Markdown", "Copy as Markdown code block", "copy", async () => {
+      const view = getView();
+      if (!view) return toastInfo(t("Abrí un archivo primero.", "Open a file first."), t("Sin editor", "No editor"));
+      const sel = view.state.selection.main;
+      const text = sel.empty ? view.state.doc.toString() : view.state.sliceDoc(sel.from, sel.to);
+      const ext = (appState.activeFilePath || "").split(".").pop() || "";
+      await navigator.clipboard.writeText("```" + ext + "\n" + text.replace(/\n$/, "") + "\n```");
+      toastSuccess(t("Bloque Markdown copiado.", "Markdown block copied."), t("Copiar", "Copy"));
+    }, ["markdown", "snippet"]),
+    mk("copy-numbered", "Copiar con números de línea", "Copy with line numbers", "copy", async () => {
+      const view = getView();
+      if (!view) return toastInfo(t("Abrí un archivo primero.", "Open a file first."), t("Sin editor", "No editor"));
+      const sel = view.state.selection.main;
+      const from = sel.empty ? 1 : view.state.doc.lineAt(sel.from).number;
+      const text = sel.empty ? view.state.doc.toString() : view.state.sliceDoc(sel.from, sel.to);
+      const lines = text.split("\n");
+      await navigator.clipboard.writeText(lines.map((l, i) => `${String(from + i).padStart(String(from + lines.length).length, " ")} | ${l}`).join("\n"));
+      toastSuccess(t("Copiado con números de línea.", "Copied with line numbers."), t("Copiar", "Copy"));
+    }, ["lineas", "numbers"]),
+    mk("dup-sel", "Duplicar selección", "Duplicate selection", "copy", () => {
+      const view = getView();
+      if (!view) return;
+      const { from, to, empty } = view.state.selection.main;
+      const text = empty ? view.state.doc.lineAt(from).text + "\n" : view.state.sliceDoc(from, to);
+      const pos = empty ? view.state.doc.lineAt(from).to + 1 : to;
+      view.dispatch({ changes: { from: Math.min(pos, view.state.doc.length), insert: empty ? text : text } });
+      view.focus();
+    }, ["duplicate"]),
     mk("stats", "Estadísticas del texto", "Text statistics", "activity", showSelectionStats, ["count", "contar", "palabras", "words"]),
     mk("uuid", "Insertar UUID", "Insert UUID", "hash", () => insertText(uuid()), ["uuid", "guid"]),
     mk("iso-date", "Insertar fecha ISO", "Insert ISO date", "clock-3", () => insertText(new Date().toISOString()), ["date", "fecha"]),
