@@ -473,3 +473,9 @@
 .au-px__tool.is-missing { opacity: 0.65; }
 .au-px__about { padding: 10px 12px; border: 1px solid var(--au-border); border-radius: 10px; color: var(--au-muted-strong); font-size: 12.5px; line-height: 1.6; }
 .au-task-item__action.is-fav { color: var(--au-warning); }
+
+/* Búsqueda dentro de Ajustes */
+.au-px2__search { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--au-border); border-radius: 10px; background: var(--au-bg-elevated); }
+.au-px2__search:focus-within { border-color: rgba(var(--au-accent-rgb), 0.6); }
+.au-px2__search svg { width: 15px; height: 15px; color: var(--au-muted); flex: none; }
+.au-px2__search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--au-text); font: inherit; font-size: 13px; }

@@ -11,6 +11,7 @@ import { probeToolVersions, readSystemDetails } from "../../services/shell.servi
 import pkg from "../../../package.json";
 import { injectWelcomeActions } from "./projects.js";
 import { replaceInProject } from "./labs2.js";
+import { injectMore, initMoreTools } from "./panel-tools2.js";
 import { getAiProviderPreset, normalizeAiRuntimeSettings } from "../../app/app-settings.js";
 
 const esc = (value) =>
@@ -817,6 +818,7 @@ async function testAiConnection(button) {
 let started = false;
 
 export function initPanelTools() {
+  initMoreTools();
   if (started) return;
   started = true;
 
@@ -902,6 +904,7 @@ export function initPanelTools() {
     injectDoctorExtras();
     injectSearchHistory();
     injectTaskFavorites();
+    if (injectMore()) window.__auPxInjected = true;
     applySearchFilters();
 
     // Solo refrescamos iconos si realmente inyectamos algo nuevo (createIcons recorre todo el DOM).
