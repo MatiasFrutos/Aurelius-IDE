@@ -33,6 +33,7 @@ import "./styles/enterprise.css";
 import "./ai/ai-chat.css";
 import "./styles/windows.css";
 import "./components/git-pro/git-pro.css";
+import "./styles/premium.css";
 
 import { initAureliusApp } from "./app/app.js";
 

@@ -46,8 +46,56 @@ const transforms = {
   b64enc: (s) => btoa(String.fromCharCode(...new TextEncoder().encode(s))),
   b64dec: (s) => new TextDecoder().decode(Uint8Array.from(atob(s.trim()), (c) => c.charCodeAt(0))),
   urlEnc: (s) => encodeURIComponent(s),
-  urlDec: (s) => decodeURIComponent(s)
+  urlDec: (s) => decodeURIComponent(s),
+  sortNum: (s) => s.split("\n").sort((a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0)).join("\n"),
+  noEmpty: (s) => s.split("\n").filter((l) => l.trim() !== "").join("\n"),
+  joinLines: (s) => s.split("\n").map((l) => l.trim()).filter(Boolean).join(" "),
+  numberLines: (s) => s.split("\n").map((l, i, a) => `${String(i + 1).padStart(String(a.length).length, " ")}  ${l}`).join("\n"),
+  title: (s) => s.toLowerCase().replace(/(^|\s)\S/g, (m) => m.toUpperCase()),
+  constant: (s) => words(s).map((w) => w.toUpperCase()).join("_"),
+  quote: (s) => s.split("\n").map((l) => (l ? JSON.stringify(l) : l)).join("\n"),
+  htmlEnc: (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"),
+  htmlDec: (s) => s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&"),
+  tabs2spaces: (s) => s.replace(/\t/g, "  "),
+  spaces2tabs: (s) => s.replace(/^( {2})+/gm, (m) => "\t".repeat(m.length / 2)),
+  indent: (s) => s.split("\n").map((l) => (l ? `  ${l}` : l)).join("\n"),
+  outdent: (s) => s.split("\n").map((l) => l.replace(/^(\t| {1,2})/, "")).join("\n"),
+  shuffle: (s) => {
+    const a = s.split("\n");
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a.join("\n");
+  }
 };
+
+export function textStats(text) {
+  const trimmed = text.trim();
+  return {
+    chars: text.length,
+    bytes: new TextEncoder().encode(text).length,
+    words: trimmed ? trimmed.split(/\s+/).length : 0,
+    lines: text ? text.split("\n").length : 0,
+    readMin: Math.max(1, Math.round((trimmed ? trimmed.split(/\s+/).length : 0) / 220))
+  };
+}
+
+function showSelectionStats() {
+  const view = getView();
+  if (!view) {
+    toastInfo(t("Abrí un archivo primero.", "Open a file first."), t("Sin editor", "No editor"));
+    return;
+  }
+  const { state } = view;
+  const sel = state.selection.ranges.filter((r) => !r.empty).map((r) => state.sliceDoc(r.from, r.to)).join("\n");
+  const scope = sel ? t("selección", "selection") : t("documento", "document");
+  const s = textStats(sel || state.doc.toString());
+  toastInfo(
+    `${s.lines} ${t("líneas", "lines")} · ${s.words} ${t("palabras", "words")} · ${s.chars} ${t("caracteres", "chars")} · ${s.bytes} bytes · ~${s.readMin} min`,
+    `${t("Estadísticas", "Stats")} (${scope})`
+  );
+}
 
 function applyTransform(name) {
   const view = getView();
@@ -156,6 +204,21 @@ export function createEditorToolCommands() {
     mk("b64d", "Base64: decodificar", "Base64: decode", "hash", () => applyTransform("b64dec")),
     mk("urle", "URL: codificar", "URL: encode", "hash", () => applyTransform("urlEnc")),
     mk("urld", "URL: decodificar", "URL: decode", "hash", () => applyTransform("urlDec")),
+    mk("sort-num", "Ordenar líneas numéricamente", "Sort lines numerically", "wand-2", () => applyTransform("sortNum"), ["sort", "numeric"]),
+    mk("no-empty", "Quitar líneas vacías", "Remove empty lines", "wand-2", () => applyTransform("noEmpty"), ["blank", "vacias"]),
+    mk("join", "Unir líneas en una", "Join lines", "wand-2", () => applyTransform("joinLines"), ["join", "unir"]),
+    mk("number-lines", "Numerar líneas", "Number lines", "wand-2", () => applyTransform("numberLines"), ["number", "numerar"]),
+    mk("shuffle", "Mezclar líneas", "Shuffle lines", "wand-2", () => applyTransform("shuffle"), ["random", "mezclar"]),
+    mk("title", "Title Case", "Title Case", "wand-2", () => applyTransform("title"), ["case"]),
+    mk("constant", "CONSTANT_CASE", "CONSTANT_CASE", "wand-2", () => applyTransform("constant"), ["case"]),
+    mk("quote", "Envolver líneas en comillas", "Quote each line", "wand-2", () => applyTransform("quote"), ["quote", "comillas"]),
+    mk("html-enc", "HTML: escapar entidades", "HTML: escape entities", "code", () => applyTransform("htmlEnc"), ["html", "escape"]),
+    mk("html-dec", "HTML: desescapar entidades", "HTML: unescape entities", "code", () => applyTransform("htmlDec"), ["html", "unescape"]),
+    mk("tabs-spaces", "Tabs → espacios", "Tabs → spaces", "wand-2", () => applyTransform("tabs2spaces"), ["indent"]),
+    mk("spaces-tabs", "Espacios → tabs", "Spaces → tabs", "wand-2", () => applyTransform("spaces2tabs"), ["indent"]),
+    mk("indent", "Indentar selección", "Indent selection", "wand-2", () => applyTransform("indent"), ["indent"]),
+    mk("outdent", "Quitar indentación", "Outdent selection", "wand-2", () => applyTransform("outdent"), ["indent"]),
+    mk("stats", "Estadísticas del texto", "Text statistics", "activity", showSelectionStats, ["count", "contar", "palabras", "words"]),
     mk("uuid", "Insertar UUID", "Insert UUID", "hash", () => insertText(uuid()), ["uuid", "guid"]),
     mk("iso-date", "Insertar fecha ISO", "Insert ISO date", "clock-3", () => insertText(new Date().toISOString()), ["date", "fecha"]),
     mk("timestamp", "Insertar timestamp Unix", "Insert Unix timestamp", "clock-3", () => insertText(String(Math.floor(Date.now() / 1000))), ["epoch"]),
