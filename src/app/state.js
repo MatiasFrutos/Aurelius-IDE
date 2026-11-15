@@ -333,11 +333,14 @@ function normalizeFileTree(tree) {
   return tree.map(normalizeFileTreeNode).filter(Boolean);
 }
 
+// Las carpetas pesadas arrancan colapsadas: expandirlas genera miles de nodos y congela la UI.
+const HEAVY_ROOT_FOLDERS = new Set(["node_modules", "target", "dist", "build", ".git", "vendor", ".next", ".nuxt", ".svelte-kit", ".cache", "coverage", "__pycache__", ".venv", "venv"]);
+
 function collectRootExpandedFolders(tree) {
   const folders = new Set();
 
   for (const node of tree) {
-    if (node?.is_dir && node.path) {
+    if (node?.is_dir && node.path && !HEAVY_ROOT_FOLDERS.has(String(node.name || "").toLowerCase())) {
       folders.add(node.path);
     }
   }

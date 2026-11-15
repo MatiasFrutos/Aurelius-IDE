@@ -119,3 +119,9 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - **Editor:** copiar como bloque Markdown, copiar con números de línea, duplicar selección.
 - **IA:** copiar última respuesta y estimar tokens de la conversación.
 - **Toolbox (+3):** calculadora de fechas, tamaños y transferencia, diff de JSON.
+
+## v3.3.1 — Fix: Expandir / Revelar congelaban la app
+
+- «Expandir» ya no abre carpetas pesadas (`node_modules`, `target`, `dist`, `.git`…) y se detiene al llegar a ~500 filas visibles (aviso si el proyecto es grande).
+- Al abrir un proyecto, las carpetas pesadas arrancan colapsadas.
+- «Revelar» valida que el archivo esté dentro del proyecto, limita el recorrido y hace scroll al archivo activo.
