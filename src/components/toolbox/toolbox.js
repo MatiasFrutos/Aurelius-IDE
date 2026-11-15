@@ -968,6 +968,135 @@ const TOOLS = [
     }
   },
   {
+    id: "units",
+    icon: "ruler",
+    title: t("Unidades CSS", "CSS units"),
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>px</span><input id="un-px" type="number" step="any" value="${esc(val("un-px", "16"))}" style="width:110px" /></label>
+        <label class="au-tb__field"><span>${t("Base (px)", "Base (px)")}</span><input id="un-base" type="number" step="any" value="${esc(val("un-base", "16"))}" style="width:110px" /></label>
+        <label class="au-tb__field"><span>${t("Viewport (px)", "Viewport (px)")}</span><input id="un-vw" type="number" step="any" value="${esc(val("un-vw", "1440"))}" style="width:120px" /></label>
+      </div>
+      <div class="au-tb__hashes" id="un-out"></div>`,
+    live: ["un-px", "un-base", "un-vw"],
+    run() {
+      const px = Number($("un-px").value);
+      const base = Number($("un-base").value) || 16;
+      const vw = Number($("un-vw").value) || 1440;
+      const f = (n) => String(Math.round(n * 10000) / 10000);
+      const rows = [["rem / em", `${f(px / base)}rem`], ["pt", `${f(px * 0.75)}pt`], ["vw", `${f((px / vw) * 100)}vw`], ["%", `${f((px / base) * 100)}%`], ["cm", `${f(px / 37.7953)}cm`], ["mm", `${f(px / 3.77953)}mm`], ["in", `${f(px / 96)}in`]];
+      $("un-out").innerHTML = Number.isFinite(px) ? rows.map(([k, v]) => `<div class="au-tb__hash"><b>${k}</b><code>${esc(v)}</code></div>`).join("") : "";
+      save("un-px", "un-base", "un-vw");
+    }
+  },
+  {
+    id: "contrast",
+    icon: "contrast",
+    title: t("Contraste WCAG", "WCAG contrast"),
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Texto", "Foreground")}</span><input id="ct-fg" value="${esc(val("ct-fg", "#e6e8ee"))}" style="width:130px" spellcheck="false" /></label>
+        <label class="au-tb__field"><span>${t("Fondo", "Background")}</span><input id="ct-bg" value="${esc(val("ct-bg", "#0e1015"))}" style="width:130px" spellcheck="false" /></label>
+      </div>
+      <div class="au-tb__hashes" id="ct-out"></div>
+      <div id="ct-sample" style="margin-top:10px;padding:16px;border-radius:10px;border:1px solid var(--au-border,#2a2d36)">Aa — ${t("Texto de muestra para validar legibilidad", "Sample text to check readability")}</div>`,
+    live: ["ct-fg", "ct-bg"],
+    run() {
+      const parse = (v) => {
+        let h = v.trim().replace(/^#/, "");
+        if (h.length === 3) h = [...h].map((c) => c + c).join("");
+        if (!/^[0-9a-f]{6}$/i.test(h)) return null;
+        return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+      };
+      const lum = ([r, g, b]) => {
+        const c = [r, g, b].map((x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; });
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+      };
+      const fg = parse($("ct-fg").value);
+      const bg = parse($("ct-bg").value);
+      if (!fg || !bg) {
+        $("ct-out").innerHTML = `<div class="au-tb__hash"><b>—</b><code>${t("Usá colores hex (#fff o #ffffff)", "Use hex colors (#fff or #ffffff)")}</code></div>`;
+        return;
+      }
+      const [a, b] = [lum(fg), lum(bg)].sort((x, y) => y - x);
+      const ratio = (a + 0.05) / (b + 0.05);
+      const ok = (min) => (ratio >= min ? "✓" : "✗");
+      $("ct-out").innerHTML = [["Ratio", `${ratio.toFixed(2)} : 1`], [t("AA texto normal (4.5)", "AA normal text (4.5)"), ok(4.5)], [t("AA texto grande (3)", "AA large text (3)"), ok(3)], [t("AAA texto normal (7)", "AAA normal text (7)"), ok(7)], [t("AAA texto grande (4.5)", "AAA large text (4.5)"), ok(4.5)]].map(([k, v]) => `<div class="au-tb__hash"><b>${k}</b><code>${v}</code></div>`).join("");
+      const sample = $("ct-sample");
+      sample.style.color = $("ct-fg").value;
+      sample.style.background = $("ct-bg").value;
+      save("ct-fg", "ct-bg");
+    }
+  },
+  {
+    id: "dotenv",
+    icon: "key-round",
+    title: ".env ⇄ JSON",
+    render: () => `
+      <div class="au-tb__cols">${io({ id: "env-in", label: ".env / JSON", rows: 16, value: val("env-in", "PORT=3000\nDEBUG=true\nAPI_URL=\"https://api.example.com\"\n# comentario\nEMPTY=") })}
+      ${io({ id: "env-out", label: t("Resultado", "Result"), readonly: true, rows: 16 })}</div>
+      ${actions([["copy:env-out", t("Copiar", "Copy")]])}
+      <p class="au-tb__status" id="env-status"></p>`,
+    live: ["env-in"],
+    run() {
+      const src = $("env-in").value;
+      const status = $("env-status");
+      status.className = "au-tb__status";
+      try {
+        if (src.trim().startsWith("{")) {
+          const obj = JSON.parse(src);
+          $("env-out").value = Object.entries(obj).map(([k, v]) => `${k}=${/[\s#"']/.test(String(v)) ? JSON.stringify(String(v)) : v ?? ""}`).join("\n");
+          status.textContent = "JSON → .env";
+        } else {
+          const obj = {};
+          for (const line of src.split("\n")) {
+            const m = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+            if (!m) continue;
+            let v = m[2].trim();
+            if (/^(["']).*\1$/.test(v)) v = v.slice(1, -1);
+            obj[m[1]] = v;
+          }
+          $("env-out").value = JSON.stringify(obj, null, 2);
+          status.textContent = `.env → JSON · ${Object.keys(obj).length} ${t("variables", "variables")}`;
+        }
+      } catch (error) {
+        $("env-out").value = "";
+        status.textContent = `✗ ${error.message}`;
+        status.className = "au-tb__status is-err";
+      }
+      save("env-in");
+    }
+  },
+  {
+    id: "escape",
+    icon: "shield",
+    title: t("Escapar texto", "Escape text"),
+    render: () => `
+      ${io({ id: "esc-in", label: t("Texto", "Text"), rows: 8, value: val("esc-in", 'Hola "mundo" <b>& co</b>\nlinea 2') })}
+      ${actions([["esc-json", "JSON string", "is-primary"], ["esc-html", "HTML"], ["esc-regex", "RegExp"], ["esc-sql", "SQL"], ["esc-shell", "Shell"], ["esc-unjson", t("Desescapar JSON", "Unescape JSON")], ["copy:esc-out", t("Copiar", "Copy")]])}
+      ${io({ id: "esc-out", label: t("Resultado", "Result"), readonly: true, rows: 8 })}
+      <p class="au-tb__status" id="esc-status"></p>`,
+    run(action) {
+      const v = $("esc-in").value;
+      const status = $("esc-status");
+      status.textContent = "";
+      const map = {
+        "esc-json": () => JSON.stringify(v),
+        "esc-html": () => v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"),
+        "esc-regex": () => v.replace(/[.*+?^${}()|[\]\\\/]/g, "\\$&"),
+        "esc-sql": () => `'${v.replace(/'/g, "''")}'`,
+        "esc-shell": () => `'${v.replace(/'/g, `'\\''`)}'`,
+        "esc-unjson": () => JSON.parse(v.trim().startsWith('"') ? v.trim() : `"${v.trim()}"`)
+      };
+      try {
+        if (map[action]) $("esc-out").value = map[action]();
+      } catch (error) {
+        status.textContent = `✗ ${error.message}`;
+      }
+      save("esc-in");
+    }
+  },
+  {
     id: "gen",
     icon: "zap",
     title: t("Generadores", "Generators"),

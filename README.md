@@ -1044,3 +1044,9 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - **Toolbox**: SQL (formatear/minificar), Imagen⇄Base64, Gradiente CSS, cURL→fetch.
 - **Ajustes**: datos y privacidad (borrar chats de IA, olvidar API Key, copiar diagnóstico) y Acerca de.
 - **Sin glow**: se eliminan los halos de color de modales y avisos y las sombras de texto.
+
+## v3.0 — Más herramientas y pulido premium
+
+- **Editor (paleta de comandos):** 15 transformaciones nuevas — ordenar numéricamente, quitar líneas vacías, unir/numerar/mezclar líneas, Title Case, CONSTANT_CASE, comillas, escapar/desescapar HTML, tabs↔espacios, indentar/desindentar y **Estadísticas del texto** (líneas, palabras, caracteres, bytes, tiempo de lectura).
+- **Toolbox (+4):** Unidades CSS (px/rem/pt/vw/cm…), Contraste WCAG (AA/AAA), `.env` ⇄ JSON y Escapar texto (JSON, HTML, RegExp, SQL, Shell).
+- **Pulido visual:** foco nítido sin halos, scrollbars finas, chips de teclas, microinteracciones y animación de entrada de overlays (`src/styles/premium.css`). Sin glow.

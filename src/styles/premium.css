@@ -1,0 +1,67 @@
+/* src/styles/premium.css — pulido final: tipografía, foco, scroll y microinteracciones. Sin glow. */
+
+:root {
+  font-feature-settings: "cv11", "ss01", "tnum";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Foco accesible y sobrio: contorno nítido, sin halo difuso */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 1.5px solid rgba(var(--au-accent-rgb), 0.85);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+/* Scrollbars finas y discretas */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.22) transparent;
+}
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.38); background-clip: padding-box; border: 2px solid transparent; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* Selección de texto coherente con el acento */
+::selection { background: rgba(var(--au-accent-rgb), 0.28); }
+
+/* Teclas y atajos como chips */
+kbd, .au-kbd {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 1px 6px;
+  border: 1px solid var(--au-border-strong);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--au-bg-card);
+  color: var(--au-muted-strong);
+  font: 600 10.5px/1.4 var(--au-font-mono);
+}
+
+/* Microinteracciones: botones con respuesta táctil sutil */
+button:not(:disabled) { transition: background var(--au-dur-fast) var(--au-ease), border-color var(--au-dur-fast) var(--au-ease), color var(--au-dur-fast) var(--au-ease), transform var(--au-dur-fast) var(--au-ease); }
+button:not(:disabled):active { transform: translateY(0.5px) scale(0.99); }
+
+/* Tarjetas del Toolbox y paneles: borde fino y elevación suave */
+.au-tb__hash {
+  border: 1px solid var(--au-border);
+  border-radius: 10px;
+  background: var(--au-bg-card);
+  transition: border-color var(--au-dur) var(--au-ease), background var(--au-dur) var(--au-ease);
+}
+.au-tb__hash:hover { border-color: var(--au-border-strong); background: var(--au-bg-card-hover); }
+
+/* Aparición suave de overlays */
+@keyframes auRise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.au-fx-overlay > *, .au-gc > * { animation: auRise var(--au-dur-slow) var(--au-ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
