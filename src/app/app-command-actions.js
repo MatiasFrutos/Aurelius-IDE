@@ -1,6 +1,7 @@
 // src/app/app-command-actions.js
 import { appState } from "./state.js";
 import { t } from "./i18n.js";
+import { toggleTerminalWebgl } from "../components/bottom-panel/bottom-panel.js";
 import { createFeatureCommands } from "../components/features/features.js";
 import { createEditorToolCommands } from "./editor-tools.js";
 import { createLabs2Commands } from "../components/features/labs2.js";
@@ -320,6 +321,15 @@ export function createCommandActions({
           document.getElementById("terminal-new-btn")?.click();
         });
       }
+    },
+    {
+      id: "terminal-webgl",
+      title: t("Terminal: alternar renderer WebGL (experimental)", "Terminal: toggle WebGL renderer (experimental)"),
+      description: t("Más velocidad con buena GPU. Se aplica a las terminales nuevas.", "Faster with a good GPU. Applies to new terminals."),
+      group: "Terminal",
+      icon: "terminal",
+      keywords: ["terminal", "webgl", "gpu", "rendimiento", "performance"],
+      run: () => toggleTerminalWebgl()
     },
     {
       id: "restart-terminal",
