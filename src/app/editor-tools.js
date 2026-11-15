@@ -60,6 +60,13 @@ const transforms = {
   spaces2tabs: (s) => s.replace(/^( {2})+/gm, (m) => "\t".repeat(m.length / 2)),
   indent: (s) => s.split("\n").map((l) => (l ? `  ${l}` : l)).join("\n"),
   outdent: (s) => s.split("\n").map((l) => l.replace(/^(\t| {1,2})/, "")).join("\n"),
+  sortKeys: (s) => {
+    const sort = (v) => Array.isArray(v) ? v.map(sort) : v && typeof v === "object" ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, sort(v[k])])) : v;
+    return JSON.stringify(sort(JSON.parse(s)), null, 2);
+  },
+  toArray: (s) => JSON.stringify(s.split("\n").map((l) => l.trim()).filter(Boolean)),
+  fromArray: (s) => JSON.parse(s).map(String).join("\n"),
+  logSel: (s) => `console.log(${JSON.stringify(s.trim() + ":")}, ${s.trim()});`,
   shuffle: (s) => {
     const a = s.split("\n");
     for (let i = a.length - 1; i > 0; i--) {
@@ -218,6 +225,11 @@ export function createEditorToolCommands() {
     mk("spaces-tabs", "Espacios → tabs", "Spaces → tabs", "wand-2", () => applyTransform("spaces2tabs"), ["indent"]),
     mk("indent", "Indentar selección", "Indent selection", "wand-2", () => applyTransform("indent"), ["indent"]),
     mk("outdent", "Quitar indentación", "Outdent selection", "wand-2", () => applyTransform("outdent"), ["indent"]),
+    mk("json-sortkeys", "JSON: ordenar claves", "JSON: sort keys", "braces", () => applyTransform("sortKeys"), ["json", "sort"]),
+    mk("lines-array", "Líneas → array JSON", "Lines → JSON array", "braces", () => applyTransform("toArray"), ["array"]),
+    mk("array-lines", "Array JSON → líneas", "JSON array → lines", "braces", () => applyTransform("fromArray"), ["array"]),
+    mk("console-log", "Envolver en console.log", "Wrap in console.log", "code", () => applyTransform("logSel"), ["debug", "log"]),
+    mk("todo", "Insertar comentario TODO", "Insert TODO comment", "code", () => insertText(`TODO(${new Date().toISOString().slice(0, 10)}): `), ["todo", "pendiente"]),
     mk("stats", "Estadísticas del texto", "Text statistics", "activity", showSelectionStats, ["count", "contar", "palabras", "words"]),
     mk("uuid", "Insertar UUID", "Insert UUID", "hash", () => insertText(uuid()), ["uuid", "guid"]),
     mk("iso-date", "Insertar fecha ISO", "Insert ISO date", "clock-3", () => insertText(new Date().toISOString()), ["date", "fecha"]),

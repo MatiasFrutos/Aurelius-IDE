@@ -1097,6 +1097,187 @@ const TOOLS = [
     }
   },
   {
+    id: "semver",
+    icon: "git-branch",
+    title: "SemVer",
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Versión", "Version")}</span><input id="sv-a" value="${esc(val("sv-a", "1.4.2"))}" spellcheck="false" style="width:150px" /></label>
+        <label class="au-tb__field"><span>${t("Comparar con", "Compare with")}</span><input id="sv-b" value="${esc(val("sv-b", "1.10.0"))}" spellcheck="false" style="width:150px" /></label>
+        <label class="au-tb__field"><span>${t("Rango (^ ~ >= < =)", "Range (^ ~ >= < =)")}</span><input id="sv-r" value="${esc(val("sv-r", "^1.4.0"))}" spellcheck="false" style="width:150px" /></label>
+      </div>
+      <div class="au-tb__hashes" id="sv-out"></div>`,
+    live: ["sv-a", "sv-b", "sv-r"],
+    run() {
+      const parse = (v) => {
+        const m = String(v).trim().replace(/^v/, "").match(/^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?(?:\+.*)?$/);
+        return m ? { n: [+m[1], +m[2], +m[3]], pre: m[4] || "" } : null;
+      };
+      const cmp = (x, y) => {
+        for (let i = 0; i < 3; i++) if (x.n[i] !== y.n[i]) return x.n[i] > y.n[i] ? 1 : -1;
+        if (x.pre === y.pre) return 0;
+        if (!x.pre) return 1;
+        if (!y.pre) return -1;
+        return x.pre > y.pre ? 1 : -1;
+      };
+      const satisfies = (v, range) => range.trim().split(/\s*\|\|\s*/).some((part) => part.split(/\s+/).filter(Boolean).every((c) => {
+        const m = c.match(/^(\^|~|>=|<=|>|<|=)?v?(\d+(?:\.\d+){0,2}.*)$/);
+        if (!m) return false;
+        const full = m[2].split(".").length < 3 ? `${m[2]}${".0".repeat(3 - m[2].split(".").length)}` : m[2];
+        const base = parse(full);
+        if (!base) return false;
+        const op = m[1] || "=";
+        const [a, b, c2] = base.n;
+        if (op === "^") return cmp(v, base) >= 0 && cmp(v, { n: a > 0 ? [a + 1, 0, 0] : b > 0 ? [0, b + 1, 0] : [0, 0, c2 + 1], pre: "" }) < 0;
+        if (op === "~") return cmp(v, base) >= 0 && cmp(v, { n: [a, b + 1, 0], pre: "" }) < 0;
+        const r = cmp(v, base);
+        return { ">=": r >= 0, "<=": r <= 0, ">": r > 0, "<": r < 0, "=": r === 0 }[op];
+      }));
+      const a = parse($("sv-a").value);
+      const b = parse($("sv-b").value);
+      const rows = [];
+      if (!a) rows.push([t("Versión", "Version"), t("✗ inválida", "✗ invalid")]);
+      else {
+        rows.push(["major", `${a.n[0]}.0.0`], ["minor", `${a.n[0]}.${a.n[1] + 1}.0`], ["patch", `${a.n.join(".")}`.replace(/\d+$/, a.n[2] + 1)], ["premajor", `${a.n[0] + 1}.0.0-0`]);
+        if (b) rows.push([t("Comparación", "Comparison"), `${$("sv-a").value} ${["<", "=", ">"][cmp(a, b) + 1]} ${$("sv-b").value}`]);
+        rows.push([t("Cumple el rango", "Satisfies range"), satisfies(a, $("sv-r").value) ? "✓ sí" : "✗ no"]);
+      }
+      $("sv-out").innerHTML = rows.map(([k, v]) => `<div class="au-tb__hash"><b>${esc(k)}</b><code>${esc(v)}</code></div>`).join("");
+      save("sv-a", "sv-b", "sv-r");
+    }
+  },
+  {
+    id: "httpref",
+    icon: "globe-2",
+    title: t("Referencia HTTP", "HTTP reference"),
+    render: () => `
+      <label class="au-tb__field"><span>${t("Buscar (código, nombre, puerto)", "Search (code, name, port)")}</span><input id="hr-q" value="${esc(val("hr-q"))}" spellcheck="false" placeholder="404 · redirect · 5432 · postgres" /></label>
+      <div class="au-tb__hashes" id="hr-out"></div>`,
+    live: ["hr-q"],
+    run() {
+      const status = [[100, "Continue"], [101, "Switching Protocols"], [200, "OK"], [201, "Created"], [202, "Accepted"], [204, "No Content"], [206, "Partial Content"], [301, "Moved Permanently"], [302, "Found"], [303, "See Other"], [304, "Not Modified"], [307, "Temporary Redirect"], [308, "Permanent Redirect"], [400, "Bad Request"], [401, "Unauthorized"], [403, "Forbidden"], [404, "Not Found"], [405, "Method Not Allowed"], [408, "Request Timeout"], [409, "Conflict"], [410, "Gone"], [413, "Payload Too Large"], [415, "Unsupported Media Type"], [418, "I'm a teapot"], [422, "Unprocessable Entity"], [429, "Too Many Requests"], [500, "Internal Server Error"], [501, "Not Implemented"], [502, "Bad Gateway"], [503, "Service Unavailable"], [504, "Gateway Timeout"]].map(([c, n]) => ["HTTP", String(c), n]);
+      const ports = [[21, "FTP"], [22, "SSH"], [25, "SMTP"], [53, "DNS"], [80, "HTTP"], [110, "POP3"], [143, "IMAP"], [443, "HTTPS"], [465, "SMTPS"], [587, "SMTP submission"], [993, "IMAPS"], [1433, "SQL Server"], [3000, "Dev server (Node/React)"], [3306, "MySQL / MariaDB"], [4200, "Angular dev"], [5173, "Vite dev"], [5432, "PostgreSQL"], [6379, "Redis"], [8080, "HTTP alterno"], [9200, "Elasticsearch"], [27017, "MongoDB"]].map(([p, n]) => [t("Puerto", "Port"), String(p), n]);
+      const q = $("hr-q").value.trim().toLowerCase();
+      const rows = [...status, ...ports].filter(([, c, n]) => !q || c.includes(q) || n.toLowerCase().includes(q));
+      $("hr-out").innerHTML = rows.length
+        ? rows.map(([k, c, n]) => `<button type="button" class="au-tb__hash" data-tb-copy="${esc(`${c} ${n}`)}" style="text-align:left;cursor:pointer"><b>${esc(k)} ${esc(c)}</b><code>${esc(n)}</code></button>`).join("")
+        : `<p class="au-tb__status">${t("Sin resultados", "No results")}</p>`;
+      save("hr-q");
+    }
+  },
+  {
+    id: "gitignore",
+    icon: "file-code",
+    title: ".gitignore",
+    render: () => `
+      <div class="au-tb__row" id="gi-pick">${["node", "python", "rust", "go", "java", "macos", "linux", "windows", "vscode", "jetbrains", "env", "docker"].map((k) => `<label class="au-tb__field" style="flex-direction:row;gap:5px;align-items:center"><input type="checkbox" data-gi="${k}" ${val("gi-" + k) === "1" || (!state.values["gi-init"] && ["node", "env"].includes(k)) ? "checked" : ""} style="width:auto" /><span>${k}</span></label>`).join("")}</div>
+      ${actions([["gi-copy", t("Copiar", "Copy")], ["gi-create", t("Crear/anexar en el proyecto", "Create/append in project"), "is-primary"]])}
+      ${io({ id: "gi-out", label: ".gitignore", readonly: true, rows: 18 })}
+      <p class="au-tb__status" id="gi-status"></p>`,
+    live: [],
+    async run(action) {
+      const T = {
+        node: "node_modules/\ndist/\nbuild/\n.next/\n.cache/\ncoverage/\n*.log\nnpm-debug.log*\n.npm/",
+        python: "__pycache__/\n*.py[cod]\n.venv/\nvenv/\n*.egg-info/\n.pytest_cache/\n.mypy_cache/",
+        rust: "target/\n**/*.rs.bk\nCargo.lock",
+        go: "bin/\n*.exe\n*.test\n*.out\nvendor/",
+        java: "*.class\n*.jar\ntarget/\nbuild/\n.gradle/\nout/",
+        macos: ".DS_Store\n.AppleDouble\n.LSOverride",
+        linux: "*~\n.directory\n.Trash-*",
+        windows: "Thumbs.db\nehthumbs.db\nDesktop.ini\n$RECYCLE.BIN/",
+        vscode: ".vscode/*\n!.vscode/settings.json\n!.vscode/extensions.json",
+        jetbrains: ".idea/\n*.iml",
+        env: ".env\n.env.*\n!.env.example",
+        docker: ".dockerignore.local\ndocker-compose.override.yml"
+      };
+      const picked = [...document.querySelectorAll("[data-gi]")].filter((c) => c.checked).map((c) => c.dataset.gi);
+      document.querySelectorAll("[data-gi]").forEach((c) => { state.values["gi-" + c.dataset.gi] = c.checked ? "1" : "0"; });
+      state.values["gi-init"] = "1";
+      const text = picked.map((k) => `# ${k}\n${T[k]}`).join("\n\n") + (picked.length ? "\n" : "");
+      $("gi-out").value = text;
+      if (action === "gi-copy") {
+        await navigator.clipboard.writeText(text);
+        toastSuccess(t("Copiado al portapapeles.", "Copied to clipboard."), "Toolbox");
+      }
+      if (action === "gi-create") {
+        if (!appState.projectPath) {
+          $("gi-status").textContent = t("Abrí un proyecto primero.", "Open a project first.");
+          return;
+        }
+        const path = `${appState.projectPath}/.gitignore`;
+        let existing = "";
+        try { existing = await readFile(path); } catch { /* no existe */ }
+        await writeFile(path, existing ? `${existing.replace(/\n*$/, "\n")}\n${text}` : text);
+        $("gi-status").textContent = t("✓ .gitignore actualizado.", "✓ .gitignore updated.");
+      }
+    }
+  },
+  {
+    id: "mock",
+    icon: "database",
+    title: t("Datos de prueba", "Mock data"),
+    render: () => `
+      <div class="au-tb__row">
+        <label class="au-tb__field"><span>${t("Filas", "Rows")}</span><input id="mk-n" type="number" min="1" max="500" value="${esc(val("mk-n", "5"))}" style="width:90px" /></label>
+        <label class="au-tb__field"><span>${t("Formato", "Format")}</span><select id="mk-fmt" class="au-tb__select">${["JSON", "CSV", "SQL INSERT"].map((x) => `<option ${val("mk-fmt", "JSON") === x ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+      </div>
+      ${actions([["mk-run", t("Generar", "Generate"), "is-primary"], ["copy:mk-out", t("Copiar", "Copy")]])}
+      ${io({ id: "mk-out", label: t("Resultado", "Result"), readonly: true, rows: 16 })}`,
+    run() {
+      const names = ["Ana", "Luis", "Marta", "Pedro", "Sofía", "Diego", "Lucía", "Carlos", "Elena", "Javier"];
+      const last = ["García", "Pérez", "López", "Ruiz", "Torres", "Díaz", "Mora", "Vega"];
+      const pick = (a) => a[Math.floor(Math.random() * a.length)];
+      const n = Math.min(500, Math.max(1, Number($("mk-n").value) || 1));
+      const rows = Array.from({ length: n }, (_, i) => {
+        const first = pick(names);
+        const ln = pick(last);
+        return { id: i + 1, uuid: crypto.randomUUID(), name: `${first} ${ln}`, email: `${first}.${ln}${i + 1}@example.com`.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""), age: 18 + Math.floor(Math.random() * 50), active: Math.random() > 0.3, createdAt: new Date(Date.now() - Math.floor(Math.random() * 3e10)).toISOString() };
+      });
+      const fmt = $("mk-fmt").value;
+      const keys = Object.keys(rows[0]);
+      const q = (v) => (typeof v === "string" ? `'${v.replace(/'/g, "''")}'` : String(v));
+      $("mk-out").value = fmt === "JSON" ? JSON.stringify(rows, null, 2)
+        : fmt === "CSV" ? [keys.join(","), ...rows.map((r) => keys.map((k) => (typeof r[k] === "string" && /[,"]/.test(r[k]) ? JSON.stringify(r[k]) : r[k])).join(","))].join("\n")
+        : rows.map((r) => `INSERT INTO users (${keys.join(", ")}) VALUES (${keys.map((k) => q(r[k])).join(", ")});`).join("\n");
+      save("mk-n", "mk-fmt");
+    }
+  },
+  {
+    id: "gitcheat",
+    icon: "git-branch",
+    title: t("Git: chuleta", "Git cheatsheet"),
+    render: () => {
+      const C = [
+        [t("Deshacer último commit (conserva cambios)", "Undo last commit (keep changes)"), "git reset --soft HEAD~1"],
+        [t("Descartar todos los cambios locales", "Discard all local changes"), "git restore . && git clean -fd"],
+        [t("Cambiar mensaje del último commit", "Amend last commit message"), "git commit --amend"],
+        [t("Guardar cambios temporalmente", "Stash changes"), "git stash push -u -m \"wip\""],
+        [t("Ver historial en una línea", "One-line log"), "git log --oneline --graph --decorate -20"],
+        [t("Ramas ya fusionadas", "Merged branches"), "git branch --merged"],
+        [t("Borrar rama local", "Delete local branch"), "git branch -d nombre"],
+        [t("Borrar rama remota", "Delete remote branch"), "git push origin --delete nombre"],
+        [t("Quién cambió cada línea", "Who changed each line"), "git blame -L 1,40 archivo"],
+        [t("Buscar commit que introdujo texto", "Find commit that added text"), "git log -S\"texto\" --oneline"],
+        [t("Traer un commit a otra rama", "Cherry-pick a commit"), "git cherry-pick <hash>"],
+        [t("Rebase interactivo (últimos 3)", "Interactive rebase (last 3)"), "git rebase -i HEAD~3"],
+        [t("Ver cambios en staging", "Staged diff"), "git diff --staged"],
+        [t("Recuperar commits perdidos", "Recover lost commits"), "git reflog"],
+        [t("Actualizar remoto de forma segura", "Safe force push"), "git push --force-with-lease"],
+        [t("Tamaño del repositorio", "Repository size"), "git count-objects -vH"]
+      ];
+      return `<label class="au-tb__field"><span>${t("Filtrar", "Filter")}</span><input id="gc-q" value="${esc(val("gc-q"))}" spellcheck="false" /></label>
+        <div class="au-tb__hashes" id="gc-out" data-all="${esc(JSON.stringify(C))}"></div>`;
+    },
+    live: ["gc-q"],
+    run() {
+      const all = JSON.parse($("gc-out").dataset.all);
+      const q = $("gc-q").value.trim().toLowerCase();
+      $("gc-out").innerHTML = all.filter(([d, c]) => !q || d.toLowerCase().includes(q) || c.toLowerCase().includes(q))
+        .map(([d, c]) => `<button type="button" class="au-tb__hash" data-tb-copy="${esc(c)}" style="text-align:left;cursor:pointer"><b>${esc(d)}</b><code>${esc(c)}</code></button>`).join("");
+      save("gc-q");
+    }
+  },
+  {
     id: "gen",
     icon: "zap",
     title: t("Generadores", "Generators"),
@@ -1225,6 +1406,17 @@ export function bindToolboxEvents() {
       return;
     }
 
+    const copyEl = event.target.closest("[data-tb-copy]");
+    if (copyEl && $("au-toolbox")) {
+      try {
+        await navigator.clipboard.writeText(copyEl.dataset.tbCopy);
+        toastSuccess(copyEl.dataset.tbCopy.slice(0, 60), t("Copiado", "Copied"));
+      } catch (error) {
+        toastError(String(error), "Toolbox");
+      }
+      return;
+    }
+
     const button = event.target.closest("[data-tb-action]");
     if (!button || !$("au-toolbox")) return;
 
@@ -1244,6 +1436,10 @@ export function bindToolboxEvents() {
   });
 
   document.addEventListener("change", (event) => {
+    if (event.target.matches?.("[data-gi]") && $("au-toolbox")) {
+      runCurrent("live");
+      return;
+    }
     if (event.target.id !== "img-file") return;
     const file = event.target.files?.[0];
     if (!file) return;
