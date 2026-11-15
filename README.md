@@ -1033,3 +1033,14 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - **Menú contextual** compacto de una línea por acción, con peligro en rojo y separadores finos.
 - **Modales** limpios (icono, título, mensaje, campo y botones), **avisos** centrados abajo y compactos (ya no tapan el chat), overlays con la misma familia visual. Sin `backdrop-filter` ni glow.
 - **Barra derecha (asistente)**: composer como una sola tarjeta con chips integrados, burbujas sobrias, cabecera más limpia; **barra de actividad** con indicador lateral.
+
+### v2.9 — Centro de Git y herramientas en todas las páginas
+
+- **Centro de Git** (`Ctrl+Shift+G`, botón en el panel Git o clic en la rama de la barra de estado): cambios con diff en color, *stage/unstage/descartar* por archivo o todos, **commit con mensaje generado por IA**, commit + push, amend, historial con diff de cada commit, ramas (crear, cambiar, borrar), stash (guardar, aplicar, pop, borrar), fetch/pull/push con ahead/behind. Backend Rust `git_run` con **lista blanca** de subcomandos, tiempo límite y tope de salida.
+- **Monitor**: procesos principales (CPU/RAM), discos con alerta al 90 %, red con velocidad, batería, uptime, host y kernel.
+- **Doctor**: detecta 26 herramientas adicionales (Node, pnpm, Python, Go, Docker, Compose, kubectl, Ollama, gh…) con su versión y copia el informe.
+- **Tasks**: comandos favoritos (★) con acceso rápido. **Búsqueda**: historial de consultas.
+- **Inicio**: *Nuevo proyecto desde plantilla* (Vite, React, Vue, Node, Rust, Python, Go, HTML) y *Clonar repositorio*.
+- **Toolbox**: SQL (formatear/minificar), Imagen⇄Base64, Gradiente CSS, cURL→fetch.
+- **Ajustes**: datos y privacidad (borrar chats de IA, olvidar API Key, copiar diagnóstico) y Acerca de.
+- **Sin glow**: se eliminan los halos de color de modales y avisos y las sombras de texto.

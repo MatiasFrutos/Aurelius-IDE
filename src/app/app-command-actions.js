@@ -7,6 +7,8 @@ import { createLabs2Commands } from "../components/features/labs2.js";
 import { createPersonalizeCommands } from "../components/features/personalize.js";
 import { createLabs3Commands } from "../components/features/labs3.js";
 import { createAiCommands } from "../ai/ai-chat.js";
+import { createGitCenterCommands } from "../components/git-pro/git-pro.js";
+import { createProjectCommands } from "../components/features/projects.js";
 
 // Cierra la paleta (re-render) y ejecuta el comando cuando el editor ya está montado.
 function deferAfterRender(commands, renderApp) {
@@ -375,6 +377,6 @@ export function createCommandActions({
       keywords: ["toolbox", "json", "regex", "base64", "hash", "jwt", "uuid", "herramientas", "tools"],
       run: () => handleActivityPanel("toolbox")
     },
-    ...deferAfterRender([...createFeatureCommands(), ...createLabs2Commands(), ...createPersonalizeCommands(), ...createLabs3Commands(), ...createAiCommands(), ...createEditorToolCommands()], renderApp)
+    ...deferAfterRender([...createFeatureCommands(), ...createLabs2Commands(), ...createPersonalizeCommands(), ...createLabs3Commands(), ...createAiCommands(), ...createGitCenterCommands(), ...createProjectCommands(), ...createEditorToolCommands()], renderApp)
   ];
 }

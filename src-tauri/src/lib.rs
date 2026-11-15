@@ -51,6 +51,12 @@ use commands::session_commands::{
     write_ui_session,
 };
 
+use commands::shell_commands::{
+    git_run,
+    probe_tool_versions,
+    read_system_details_snapshot,
+};
+
 use commands::system_commands::{
     read_monitor_snapshot,
 };
@@ -92,6 +98,9 @@ pub fn run() {
             search_project,
             chat_with_ai,
             chat_with_ai_stream,
+            git_run,
+            probe_tool_versions,
+            read_system_details_snapshot,
             ai_cancel,
             terminal_spawn,
             terminal_write,
