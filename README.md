@@ -1050,3 +1050,8 @@ Un IDE personal, liviano, transparente y Linux-first para trabajar código con m
 - **Editor (paleta de comandos):** 15 transformaciones nuevas — ordenar numéricamente, quitar líneas vacías, unir/numerar/mezclar líneas, Title Case, CONSTANT_CASE, comillas, escapar/desescapar HTML, tabs↔espacios, indentar/desindentar y **Estadísticas del texto** (líneas, palabras, caracteres, bytes, tiempo de lectura).
 - **Toolbox (+4):** Unidades CSS (px/rem/pt/vw/cm…), Contraste WCAG (AA/AAA), `.env` ⇄ JSON y Escapar texto (JSON, HTML, RegExp, SQL, Shell).
 - **Pulido visual:** foco nítido sin halos, scrollbars finas, chips de teclas, microinteracciones y animación de entrada de overlays (`src/styles/premium.css`). Sin glow.
+
+## v3.1 — Herramientas para programadores
+
+- **Toolbox (+5):** SemVer (bump, comparar, rangos `^ ~ >= <`), Referencia HTTP (códigos y puertos con búsqueda y copiado), `.gitignore` (12 plantillas, crear/anexar en el proyecto), Datos de prueba (JSON/CSV/SQL INSERT) y chuleta de Git con comandos copiables.
+- **Editor:** JSON ordenar claves, líneas ⇄ array JSON, envolver en `console.log`, insertar comentario TODO.
