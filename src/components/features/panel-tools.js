@@ -81,14 +81,35 @@ function bar(name, inner, extraClass = "") {
 /* Explorer                                                          */
 /* ---------------------------------------------------------------- */
 
-function collectDirs(nodes, out = []) {
-  for (const node of nodes || []) {
-    if (node.is_dir || node.isDir) {
+const HEAVY_DIRS = new Set(["node_modules", "target", "dist", "build", ".git", "vendor", ".next", ".nuxt", ".svelte-kit", ".astro", ".cache", ".tauri", "coverage", "__pycache__", ".venv", "venv", ".idea", ".gradle"]);
+const EXPAND_ROW_BUDGET = 500;
+
+// Expande por niveles (BFS) sin tocar carpetas pesadas y con un tope de filas visibles,
+// para no generar miles de nodos DOM (eso congelaba la interfaz).
+function collectDirs(nodes) {
+  const out = [];
+  let rows = (nodes || []).length;
+  let level = (nodes || []).filter((n) => n.is_dir || n.isDir);
+
+  for (let depth = 0; level.length && depth < 8; depth += 1) {
+    const next = [];
+
+    for (const node of level) {
+      if (HEAVY_DIRS.has(String(node.name || "").toLowerCase())) continue;
+
+      const children = node.children || [];
+
+      if (rows + children.length > EXPAND_ROW_BUDGET) return { dirs: out, truncated: true };
+
+      rows += children.length;
       out.push(node.path);
-      collectDirs(node.children, out);
+      next.push(...children.filter((c) => c.is_dir || c.isDir));
     }
+
+    level = next;
   }
-  return out;
+
+  return { dirs: out, truncated: false };
 }
 
 function injectExplorer() {
@@ -639,18 +660,26 @@ function handle(action, target) {
       appState.expandedFolders.clear();
       return rerender();
     case "exp-expand":
-      collectDirs(appState.fileTree).forEach((p) => appState.expandedFolders.add(p));
+    {
+      const { dirs, truncated } = collectDirs(appState.fileTree);
+      dirs.forEach((p) => appState.expandedFolders.add(p));
+      if (truncated) toastInfo(t("Se expandieron las primeras carpetas (proyecto grande). Abrí el resto manualmente.", "Expanded the first folders (large project). Open the rest manually."), "Explorer");
       return rerender();
+    }
     case "exp-reveal": {
       const file = appState.activeFilePath;
       if (!file || !root) return toastInfo(t("No hay archivo activo.", "No active file."), "Explorer");
+      const base = root.replace(/\/+$/, "");
+      if (!file.startsWith(`${base}/`)) return toastInfo(t("El archivo activo está fuera del proyecto.", "The active file is outside the project."), "Explorer");
       let cursor = file;
-      while (cursor.length > root.length) {
-        cursor = cursor.slice(0, cursor.lastIndexOf("/"));
+      for (let guard = 0; guard < 64; guard += 1) {
+        const cut = cursor.lastIndexOf("/");
+        if (cut <= base.length) break;
+        cursor = cursor.slice(0, cut);
         appState.expandedFolders.add(cursor);
       }
       rerender();
-      return setTimeout(() => document.querySelector(".au-tree__row.is-active, [data-tree-active]")?.scrollIntoView?.({ block: "center" }), 120);
+      return setTimeout(() => document.querySelector("[data-active-file-row='true']")?.scrollIntoView?.({ block: "center" }), 150);
     }
     case "exp-terminal":
       return root ? (appState.layout.bottomPanelVisible || ((appState.layout.bottomPanelVisible = true), rerender()), setTimeout(() => openTerminalHere(root), 80)) : toastInfo(t("Abrí un proyecto primero.", "Open a project first."), "Explorer");
