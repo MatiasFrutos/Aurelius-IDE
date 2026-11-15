@@ -1,1063 +1,237 @@
-# 🟢 Aurelius IDE
+<div align="center">
 
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=34&duration=2600&pause=900&color=16A34A&center=true&vCenter=true&width=1000&height=70&lines=Aurelius+IDE;Linux-first+code+editor;Rust+%2B+Tauri+%2B+CodeMirror;Fast%2C+lightweight%2C+native;Built+for+personal+Linux+workflow" alt="Aurelius IDE animated typing" />
-</p>
+<img src="public/icons/aurelius-icon.svg" width="112" alt="Aurelius IDE" />
 
-<p align="center">
-  <strong>⚔️ Un IDE personal, liviano, nativo y Linux-first para editar código sin peso innecesario.</strong>
-</p>
+# Aurelius IDE
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Status-Functional%20Experimental-16A34A?style=for-the-badge&logo=checkmarx&logoColor=white" />
-  <img src="https://img.shields.io/badge/Linux-First-111827?style=for-the-badge&logo=linux&logoColor=white" />
-  <img src="https://img.shields.io/badge/No-Electron-DC2626?style=for-the-badge&logo=electron&logoColor=white" />
-  <img src="https://img.shields.io/badge/Rust-Native-B7410E?style=for-the-badge&logo=rust&logoColor=white" />
-  <img src="https://img.shields.io/badge/Tauri-Desktop-24C8DB?style=for-the-badge&logo=tauri&logoColor=white" />
-  <img src="https://img.shields.io/badge/CodeMirror-Editor-22C55E?style=for-the-badge&logo=codemirror&logoColor=white" />
-</p>
+**Un IDE nativo, rápido y minimalista para Linux.**
+Editor, terminal real, Git, IA con skills y más de 30 herramientas de desarrollo — en una sola ventana, sin Electron.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Terminal-xterm.js-0F172A?style=flat-square&logo=gnometerminal&logoColor=white" />
-  <img src="https://img.shields.io/badge/Frontend-HTML%20%2B%20CSS%20%2B%20JS-F59E0B?style=flat-square&logo=javascript&logoColor=black" />
-  <img src="https://img.shields.io/badge/AI-Ollama%20%7C%20OpenAI%20%7C%20OpenRouter%20%7C%20Claude-16A34A?style=flat-square&logo=openai&logoColor=white" />
-  <img src="https://img.shields.io/badge/Use-Personal-64748B?style=flat-square&logo=github&logoColor=white" />
-</p>
+![Estado](https://img.shields.io/badge/estado-experimental%20funcional-16a34a?style=flat-square)
+![Plataforma](https://img.shields.io/badge/plataforma-Linux-111827?style=flat-square&logo=linux&logoColor=white)
+![Tauri](https://img.shields.io/badge/Tauri-2-24c8db?style=flat-square&logo=tauri&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-backend-b7410e?style=flat-square&logo=rust&logoColor=white)
+![CodeMirror](https://img.shields.io/badge/CodeMirror-6-22c55e?style=flat-square)
+![Licencia](https://img.shields.io/badge/licencia-source--available-64748b?style=flat-square)
 
----
+[Características](#-características) ·
+[Instalación](#-instalación) ·
+[Atajos](#-atajos) ·
+[IA](#-asistente-de-ia) ·
+[Arquitectura](#-arquitectura) ·
+[Contribuir](#-contribuir) ·
+[Changelog](CHANGELOG.md)
 
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:052e16,50:16a34a,100:052e16&height=130&section=header&text=Aurelius%20IDE&fontColor=ffffff&fontSize=42&animation=fadeIn&fontAlignY=36&desc=Lightweight%20native%20editor%20for%20Linux&descAlignY=62&descSize=15" />
-</p>
+<br />
+
+<img src="docs/store/screenshots/01-editor-ia-terminal.jpg" alt="Aurelius IDE: editor, terminal y asistente de IA" width="920" />
+
+</div>
 
 ---
 
-## 🧭 Índice
-
-* [🟢 Qué es Aurelius IDE](#-qué-es-aurelius-ide)
-* [⚔️ Por qué lo construí](#️-por-qué-lo-construí)
-* [🚧 Estado actual](#-estado-actual)
-* [✨ Características principales](#-características-principales)
-* [🧱 Tecnologías utilizadas](#-tecnologías-utilizadas)
-* [🏗️ Cómo está construido](#️-cómo-está-construido)
-* [🧠 IA integrada](#-ia-integrada)
-* [🖥️ Terminal y Problems](#️-terminal-y-problems)
-* [📦 Instalación para desarrollo](#-instalación-para-desarrollo)
-* [🔥 Compilar la aplicación](#-compilar-la-aplicación)
-* [🐧 Instalar en Linux](#-instalar-en-linux)
-* [🤝 Colaboradores](#-colaboradores)
-* [🔒 Licencia y transparencia](#-licencia-y-transparencia)
-* [🗺️ Roadmap](#️-roadmap)
-* [⚠️ Aviso importante](#️-aviso-importante)
-
----
-
-## 🟢 Qué es Aurelius IDE
-
-**Aurelius IDE** es un editor/IDE de código creado para **uso personal**, pensado principalmente para **Linux**.
-
-El objetivo es tener una alternativa más liviana, rápida y simple para editar código, sin depender de herramientas pesadas ni de Electron.
-
-Aurelius no intenta ser un IDE gigante. Su enfoque es cubrir lo esencial:
-
-```txt
-abrir proyecto
-abrir archivos
-editar código
-guardar cambios
-usar terminal integrada
-ejecutar comandos del proyecto
-levantar servidor local
-usar IA local o externa
-trabajar rápido en Linux
-```
-
----
-
-## ⚔️ Por qué lo construí
-
-Construí Aurelius porque necesitaba una alternativa para Linux que fuera:
+## ✦ Galería
 
 <table>
   <tr>
-    <td>🐧</td>
-    <td><strong>Linux-first</strong></td>
-    <td>Pensado primero para Linux, no como adaptación secundaria.</td>
+    <td><img src="docs/store/screenshots/02-paleta-de-comandos.jpg" alt="Paleta de comandos" /></td>
+    <td><img src="docs/store/screenshots/05-toolbox.jpg" alt="Toolbox" /></td>
   </tr>
   <tr>
-    <td>⚡</td>
-    <td><strong>Rápido</strong></td>
-    <td>Interfaz simple, directa y sin peso innecesario.</td>
-  </tr>
-  <tr>
-    <td>🪶</td>
-    <td><strong>Liviano</strong></td>
-    <td>Sin Electron, usando Tauri y backend nativo en Rust.</td>
-  </tr>
-  <tr>
-    <td>🧩</td>
-    <td><strong>Básico pero útil</strong></td>
-    <td>Con las funciones reales que necesito para trabajar.</td>
-  </tr>
-  <tr>
-    <td>🔍</td>
-    <td><strong>Transparente</strong></td>
-    <td>Código publicado para que se pueda revisar cómo funciona.</td>
+    <td><img src="docs/store/screenshots/03-personalizacion-paletas.jpg" alt="Paletas y personalización" /></td>
+    <td><img src="docs/store/screenshots/06-tema-claro.jpg" alt="Tema claro" /></td>
   </tr>
 </table>
 
-Mi necesidad no era crear otro editor enorme con marketplace, debugger complejo o integración pesada. Quería una herramienta personal para abrir proyectos, editar archivos, usar terminal, ejecutar comandos y apoyarme con IA cuando haga falta.
+---
+
+## ✦ Por qué Aurelius
+
+| | |
+|---|---|
+| **Nativo y liviano** | Rust + Tauri sobre WebKitGTK. Abre rápido y consume poco; nada de Electron. |
+| **Todo a mano** | Editor, terminal, Git, tareas del proyecto, monitor del sistema y diagnóstico del entorno en la misma ventana. |
+| **IA que controlas** | Ollama local, OpenAI, OpenRouter o Claude, con *skills* propias y respuestas en streaming. Tus claves se quedan en tu equipo. |
+| **Diseño sobrio** | Superficies planas, líneas finas, paletas y packs de iconos configurables. **Sin glow.** |
 
 ---
 
-## 🚧 Estado actual
+## ◆ Características
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Functional-Yes-16A34A?style=for-the-badge&logo=checkmarx&logoColor=white" />
-  <img src="https://img.shields.io/badge/Stable-Not%20Yet-F59E0B?style=for-the-badge&logo=warning&logoColor=white" />
-  <img src="https://img.shields.io/badge/Experimental-Yes-DC2626?style=for-the-badge&logo=flask&logoColor=white" />
-</p>
+### Editor
+- CodeMirror 6 con resaltado para 20+ lenguajes, minimapa, paréntesis arcoíris, muestras de color y marcadores.
+- Ir a símbolo (`Ctrl+Shift+O`), archivos recientes, historial local con diff, snippets, vista previa de Markdown.
+- Buscar y reemplazar en todo el proyecto, comparar pestañas y ver cambios sin guardar.
+- **40+ transformaciones de texto** desde la paleta: casos (camel, snake, kebab, Title…), ordenar/deduplicar/numerar líneas, JSON ⇄ array, escapar HTML, Base64/URL, estadísticas, `console.log` de la selección…
 
-Aurelius IDE **ya está funcionando**.
+### Terminal
+- xterm.js sobre un PTY real, con varias sesiones, búsqueda (`Ctrl+F`), enlaces clicables y Unicode 11.
+- Salida agrupada por frame: fluida incluso con builds y logs masivos.
+- Panel *Problems* que detecta errores de compilación en la salida.
+- Renderer WebGL opcional (comando de paleta) para equipos con buena GPU.
 
-Actualmente permite abrir proyectos, navegar archivos, editar, guardar, usar terminal integrada, ejecutar comandos, levantar Live Server y configurar proveedores de IA.
+### Centro de Git (`Ctrl+Shift+G`)
+- Cambios con *stage / unstage / descartar* por archivo y diff a color.
+- Commit, *amend*, *commit y push* y **mensaje de commit generado con IA**.
+- Historial con detalle de cada commit, ramas, *stash*, fetch / pull / push.
+- Backend en Rust con lista blanca de subcomandos, timeout y límite de salida.
 
-Pero todavía está en etapa temprana.
+### Páginas a ancho completo
+| Página | Qué hace |
+|---|---|
+| **Monitor** | CPU, memoria, procesos, discos, red, batería y uptime; historial y auto-actualización. |
+| **Tasks** | Detecta scripts de Node, Cargo, Make, Docker… con favoritas e historial de comandos. |
+| **Doctor** | Verifica 26+ herramientas del sistema y genera un reporte copiable. |
+| **Toolbox** | 30+ utilidades locales (ver abajo). |
+| **Ajustes** | Tema, paleta, iconos, fondo animado, editor, IA, privacidad, exportar/importar. |
 
-```txt
-Estado: funcional
-Uso principal: personal
-Sistema objetivo: Linux
-Madurez: experimental
-Estabilidad: en desarrollo
-```
+### Toolbox
+JSON · JSONPath · Regex · Codificar · Hash · JWT · Tiempo · Zonas horarias · Color · Contraste WCAG · Diff · Markdown · Números · Unidades CSS · URL · chmod · Cron · HTTP · SemVer · Referencia HTTP · `.gitignore` · Datos de prueba · Chuleta de Git · JSON→TS · CSV · YAML · `.env` · Escapar texto · SQL · Imagen→Base64 · Gradiente CSS · cURL→fetch · Commit · Plantillas · Generadores · Texto · Proyecto.
 
-### ⚠️ Importante
+### Proyectos
+- **Nuevo proyecto** con 9 plantillas (Vite, React, Vue, Node, Rust, Python, Go, HTML) y **clonar repositorio**.
+- Live Server con detección de raíz y *Project Commands* inteligentes.
 
-Todavía:
-
-* 🐛 tiene errores;
-* 🎨 faltan ajustes visuales;
-* 🧱 faltan mejoras de arquitectura;
-* 🧪 faltan pruebas;
-* 🧹 falta limpieza/refactor;
-* 🖥️ faltan ajustes finos de terminal/editor;
-* 📦 falta mejorar empaquetado Linux.
-
-Aun así, el flujo principal ya funciona.
-
----
-
-## ✨ Características principales
-
-### 📁 Proyecto y archivos
-
-* 📂 Abrir carpeta/proyecto.
-* 🌲 Explorar árbol de archivos.
-* 📄 Abrir archivos en pestañas.
-* ❌ Cerrar pestañas.
-* 🧹 Cerrar todos los archivos abiertos.
-* ➕ Crear archivos.
-* 📁 Crear carpetas.
-* ✏️ Renombrar rutas.
-* 🗑️ Eliminar archivos o carpetas.
-* 💾 Guardar cambios.
-* 🟡 Detectar estado modificado/no guardado.
+### Personalización
+Paletas de color, packs de iconos, superficies *Midnight* (AMOLED) y *Graphite*, fondos con animación o imagen propia, modo Zen, Flow timer (Pomodoro) y scratchpad.
 
 ---
 
-### 🧠 Editor
+## ◇ Asistente de IA
 
-* Editor basado en **CodeMirror 6**.
-* Resaltado de sintaxis.
-* Autocompletado básico.
-* Tabs de archivos abiertos.
-* Estado del archivo activo.
-* Indicador de línea y columna.
-* Gutter de problemas.
-* Marcado visual de líneas con errores.
-* Integración con Problems.
+Panel lateral (`Ctrl+I`) con conversaciones, historial y **skills** editables (revisor de código, tests, documentación, refactor, seguridad, commit…). Escribe `/` para invocarlas.
 
----
+| Proveedor | Notas |
+|---|---|
+| **Ollama** | Local, sin clave ni red. |
+| **OpenAI** | Clave propia. |
+| **OpenRouter** | Cualquier modelo; clave propia. |
+| **Claude** | API de Anthropic; clave propia. |
 
-### 🖥️ Terminal integrada
-
-* Terminal real usando PTY.
-* Basada en **xterm.js**.
-* Múltiples terminales.
-* Ejecutar comandos dentro del proyecto.
-* Mantener buffer de salida.
-* Copiar selección.
-* Copiar todo.
-* Reiniciar terminal.
-* Cerrar terminal.
-* Detectar errores tipo `archivo:línea:columna`.
+Puedes incluir como contexto el archivo, la selección, las pestañas o el árbol del proyecto, y aplicar el código de una respuesta con vista previa del diff. Ajustes → IA incluye **Probar conexión**.
 
 ---
 
-### 🧪 Problems
+## ▣ Instalación
 
-Aurelius puede detectar errores desde la terminal y llevarlos al panel **Problems**.
-
-Ejemplos de formatos detectables:
-
-```txt
-src/app/app.js:120:15
-src/components/App.tsx(25,10): error
---> src/main.rs:18:5
-at file:///home/user/project/src/main.js:55:12
-```
-
-Flujo:
-
-```txt
-terminal imprime error
-↓
-Aurelius detecta archivo, línea y columna
-↓
-Problems muestra el problema
-↓
-click en Problems
-↓
-abre archivo
-↓
-salta a línea exacta
-↓
-editor marca visualmente la línea
-```
-
----
-
-### 🚀 Project Commands
-
-Permite detectar y ejecutar scripts/comandos del proyecto:
+### Requisitos (Arch / Omarchy)
 
 ```bash
-npm run dev
-npm run build
-npm test
-cargo check
-cargo run
-```
-
----
-
-### 🌐 Live Server
-
-* Levantar servidor local.
-* Abrir URL del proyecto.
-* Detener servidor.
-* Ver estado del servidor.
-
----
-
-### 🤖 IA integrada
-
-Soporte para:
-
-```txt
-Ollama
-OpenAI
-OpenRouter
-Claude
-```
-
-La idea es poder usar IA local o remota directamente desde el IDE.
-
----
-
-## 🧱 Tecnologías utilizadas
-
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=rust,tauri,js,html,css,vite,linux,git,github,nodejs" />
-</p>
-
-| Tecnología          | Uso                                                        |
-| ------------------- | ---------------------------------------------------------- |
-| 🦀 Rust             | Backend nativo, comandos del sistema, terminal, filesystem |
-| 🪶 Tauri            | Aplicación desktop nativa y liviana                        |
-| 🟨 JavaScript       | Lógica principal del frontend                              |
-| 🧱 HTML             | Estructura de la interfaz                                  |
-| 🎨 CSS              | Diseño visual, responsive, animaciones                     |
-| 🧠 CodeMirror 6     | Editor de código                                           |
-| 🖥️ xterm.js        | Terminal integrada                                         |
-| 🔌 portable-pty     | Terminal real mediante PTY                                 |
-| ⚡ Vite              | Desarrollo frontend rápido                                 |
-| 🧩 Lucide           | Iconos de interfaz                                         |
-| 🤖 Ollama / APIs IA | Asistencia de código                                       |
-
----
-
-## 🏗️ Cómo está construido
-
-Aurelius está separado en dos grandes partes:
-
-```txt
-Frontend
-Backend nativo
-```
-
----
-
-### 🎨 Frontend
-
-El frontend usa:
-
-```txt
-HTML
-CSS
-JavaScript
-CodeMirror
-xterm.js
-Lucide
-```
-
-Se encarga de:
-
-* renderizar la interfaz;
-* mostrar Explorer;
-* montar el editor;
-* manejar pestañas;
-* montar terminal;
-* mostrar paneles;
-* mostrar settings;
-* enviar acciones al backend;
-* recibir resultados;
-* actualizar el estado visual.
-
----
-
-### 🦀 Backend
-
-El backend está hecho en **Rust** usando **Tauri**.
-
-Se encarga de:
-
-* abrir carpetas;
-* leer archivos;
-* escribir archivos;
-* crear archivos;
-* crear carpetas;
-* renombrar;
-* eliminar;
-* manejar terminal real;
-* ejecutar comandos;
-* levantar Live Server;
-* leer y guardar settings;
-* comunicarse con el sistema operativo.
-
----
-
-## 🧬 Arquitectura general
-
-```txt
-aurelius-ide/
-├── src/
-│   ├── app/
-│   │   ├── app.js
-│   │   ├── app-file-actions.js
-│   │   ├── app-project-actions.js
-│   │   ├── app-settings.js
-│   │   ├── app-ai-actions.js
-│   │   ├── app-live-server.js
-│   │   ├── app-project-tools.js
-│   │   ├── app-render.js
-│   │   ├── state.js
-│   │   └── i18n.js
-│   │
-│   ├── components/
-│   │   ├── activity-bar/
-│   │   ├── bottom-panel/
-│   │   ├── command-help/
-│   │   ├── command-palette/
-│   │   ├── context-menu/
-│   │   ├── editor/
-│   │   ├── explorer/
-│   │   ├── git/
-│   │   ├── monitor/
-│   │   ├── right-ai-panel/
-│   │   ├── settings/
-│   │   ├── statusbar/
-│   │   ├── topbar/
-│   │   └── ui/
-│   │
-│   ├── editor/
-│   │   └── codemirror.js
-│   │
-│   ├── services/
-│   │   ├── fs.service.js
-│   │   ├── terminal.service.js
-│   │   ├── tasks.service.js
-│   │   ├── live-server.service.js
-│   │   └── project-tools.service.js
-│   │
-│   └── styles/
-│
-├── src-tauri/
-│   ├── src/
-│   │   ├── commands/
-│   │   │   ├── fs_commands.rs
-│   │   │   ├── terminal_commands.rs
-│   │   │   ├── task_commands.rs
-│   │   │   ├── live_server_commands.rs
-│   │   │   ├── session_commands.rs
-│   │   │   └── system_commands.rs
-│   │   │
-│   │   ├── services/
-│   │   │   ├── fs.rs
-│   │   │   ├── session.rs
-│   │   │   ├── project_tools.rs
-│   │   │   └── system.rs
-│   │   │
-│   │   ├── lib.rs
-│   │   └── main.rs
-│   │
-│   ├── Cargo.toml
-│   └── tauri.conf.json
-│
-├── package.json
-├── vite.config.js
-└── README.md
-```
-
----
-
-## 🔄 Flujo interno
-
-### Abrir archivo
-
-```txt
-Click en Explorer
-↓
-app-file-actions.js
-↓
-fs.service.js
-↓
-Tauri invoke()
-↓
-Rust lee archivo
-↓
-Frontend recibe contenido
-↓
-CodeMirror monta editor
-↓
-Aurelius actualiza tabs/statusbar
-```
-
----
-
-### Ejecutar comando
-
-```txt
-Project Commands / Terminal
-↓
-Frontend crea terminal
-↓
-Tauri abre PTY real
-↓
-Shell ejecuta comando
-↓
-xterm.js muestra salida
-↓
-Aurelius detecta errores si hay archivo:línea:columna
-↓
-Problems muestra errores
-```
-
----
-
-### Usar IA
-
-```txt
-Prompt del usuario
-↓
-app-ai-actions.js arma contexto
-↓
-fs.service.js llama proveedor
-↓
-IA responde
-↓
-Panel Aurelius AI muestra respuesta
-↓
-Usuario copia, inserta o reemplaza código
-```
-
----
-
-## 🧠 IA integrada
-
-### 🟢 Ollama
-
-Para IA local:
-
-```txt
-Proveedor: Ollama
-Base URL: http://localhost:11434
-Modelo: llama3.2
-API Key: vacía
-```
-
----
-
-### ✨ OpenAI
-
-```txt
-Proveedor: OpenAI
-Base URL: https://api.openai.com/v1
-Modelo: gpt-4o-mini
-API Key: requerida
-```
-
----
-
-### 🚀 OpenRouter
-
-```txt
-Proveedor: OpenRouter
-Base URL: https://openrouter.ai/api/v1
-Modelo: openai/gpt-4o-mini
-API Key: requerida
-```
-
-También se puede usar:
-
-```txt
-qwen/qwen3.7-plus
-```
-
----
-
-### 🤖 Claude
-
-```txt
-Proveedor: Claude
-Base URL: https://api.anthropic.com/v1
-Modelo: claude-3-5-sonnet
-API Key: requerida
-```
-
----
-
-## 🖥️ Terminal y Problems
-
-Aurelius tiene una terminal integrada real.
-
-```txt
-xterm.js
-+
-portable-pty
-+
-Tauri events
-```
-
-La terminal puede detectar errores impresos por herramientas como:
-
-* Vite;
-* Node;
-* TypeScript;
-* Rust;
-* Cargo;
-* Stack traces;
-* CSS/PostCSS;
-* builds frontend.
-
-Ejemplo:
-
-```txt
-src/app/app.js:120:15
-```
-
-Aurelius puede convertir eso en:
-
-```txt
-Archivo: src/app/app.js
-Línea: 120
-Columna: 15
-```
-
-Luego permite abrir directamente el archivo desde **Problems**.
-
----
-
-## 📦 Requisitos
-
-Para desarrollo:
-
-```txt
-Linux
-Node.js
-npm
-Rust
-Cargo
-Dependencias Tauri
-WebKitGTK
-GTK
-```
-
-En Arch Linux / derivados:
-
-```bash
-sudo pacman -S --needed \
-  base-devel \
-  curl \
-  wget \
-  file \
-  openssl \
-  appmenu-gtk-module \
-  gtk3 \
-  webkit2gtk-4.1 \
-  librsvg \
-  nodejs \
-  npm
-```
-
-Instalar Rust:
-
-```bash
+sudo pacman -S --needed base-devel curl wget file openssl appmenu-gtk-module \
+  gtk3 webkit2gtk-4.1 librsvg nodejs npm
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-Activar Rust:
+En Debian/Ubuntu instala los equivalentes de Tauri 2 (`libwebkit2gtk-4.1-dev`, `libgtk-3-dev`, `librsvg2-dev`, `build-essential`, `curl`, `wget`, `file`).
 
-```bash
-source "$HOME/.cargo/env"
-```
-
-Verificar:
-
-```bash
-node -v
-npm -v
-rustc --version
-cargo --version
-```
-
----
-
-## 📦 Instalación para desarrollo
-
-Clonar el proyecto:
+### Desarrollo
 
 ```bash
 git clone https://github.com/MatiasFrutos/Aurelius-IDE.git
-```
-
-Entrar al directorio:
-
-```bash
 cd Aurelius-IDE
-```
-
-Instalar dependencias:
-
-```bash
 npm install
-```
-
-Ejecutar en modo desarrollo:
-
-```bash
 npm run tauri dev
 ```
 
----
-
-## 🔥 Compilar la aplicación
-
-Para generar una build de producción:
+### Compilar e instalar
 
 ```bash
 npm run tauri build
 ```
 
-Tauri compila:
-
-```txt
-Frontend Vite
-Backend Rust
-Aplicación desktop
-Paquetes Linux
-```
-
-Los archivos generados suelen quedar en:
-
-```txt
-src-tauri/target/release/
-src-tauri/target/release/bundle/
-```
-
----
-
-## 🐧 Instalar en Linux
-
-Revisar bundles generados:
+Los paquetes quedan en `src-tauri/target/release/bundle/`:
 
 ```bash
-ls src-tauri/target/release/bundle/
-```
+# AppImage
+chmod +x src-tauri/target/release/bundle/appimage/*.AppImage
+./src-tauri/target/release/bundle/appimage/*.AppImage
 
-Según la configuración, Tauri puede generar:
+# Debian / Ubuntu
+sudo dpkg -i src-tauri/target/release/bundle/deb/*.deb && sudo apt install -f
 
-```txt
-AppImage
-.deb
-.rpm
-```
-
----
-
-### Ejecutar binario directo
-
-```bash
+# Binario directo
 ./src-tauri/target/release/aurelius-ide
 ```
 
+Para Arch hay un `PKGBUILD` en [`packaging/arch`](packaging/arch).
+
 ---
 
-### Ejecutar AppImage
+## ⌘ Atajos
 
-Dar permisos:
+| Acción | Atajo |
+|---|---|
+| Abrir proyecto · Guardar · Nuevo archivo | `Ctrl+O` · `Ctrl+S` · `Ctrl+N` |
+| Quick Open · Paleta de comandos | `Ctrl+P` · `Ctrl+Shift+P` |
+| Ir a símbolo · Ir a línea | `Ctrl+Shift+O` · `Ctrl+Alt+G` |
+| Explorer · Terminal · Panel IA | `Ctrl+B` · `Ctrl+J` · `Ctrl+I` |
+| **Centro de Git** | `Ctrl+Shift+G` |
+| Ayuda de comandos | `Ctrl+K` |
+| Cerrar pestaña | `Ctrl+W` |
+| Modo Zen · Apariencia | `Alt+Z` · `Alt+A` |
+| Historial local · Scratchpad · Flow timer | `Alt+H` · `Alt+J` · `Alt+T` |
+| Marcador · Ajuste de línea · Diff sin guardar | `Alt+B` · `Alt+W` · `Alt+D` |
+| Terminal: buscar · limpiar | `Ctrl+F` · `Ctrl+Shift+K` |
 
-```bash
-chmod +x src-tauri/target/release/bundle/appimage/*.AppImage
+---
+
+## ▤ Arquitectura
+
+```text
+┌───────────────────────── Frontend (Vite · JS · CSS) ─────────────────────────┐
+│  Editor (CodeMirror 6) · Terminal (xterm.js) · Centro de Git · Toolbox · IA   │
+│  services/*.js  ──────────────  invoke() / listen()  ─────────────┐           │
+└────────────────────────────────────────────────────────────────────┼──────────┘
+                                                                     ▼
+┌───────────────────────────── Backend (Rust · Tauri 2) ──────────────────────┐
+│  fs · terminal (PTY) · git/shell (lista blanca) · tareas · monitor · IA SSE   │
+└───────────────────────────────────────────────────────────────────────────────┘
 ```
 
-Ejecutar:
-
-```bash
-./src-tauri/target/release/bundle/appimage/*.AppImage
+```text
+src/               frontend (app/, components/, ai/, services/, styles/)
+src-tauri/src/     backend (commands/ expone Tauri commands; core/ contiene la lógica)
+packaging/arch/    PKGBUILD para Arch Linux
+docs/store/        ficha y capturas para publicación
 ```
 
----
-
-### Instalar `.deb`
-
-```bash
-sudo dpkg -i src-tauri/target/release/bundle/deb/*.deb
-```
-
-Si faltan dependencias:
-
-```bash
-sudo apt install -f
-```
+Principios: el frontend nunca ejecuta comandos arbitrarios; todo pasa por *commands* de Rust con validación, lista blanca, timeouts y límites de salida.
 
 ---
 
-## 🎮 Uso básico
+## ✓ Calidad
 
-```txt
-1. Abrir Aurelius
-2. Abrir proyecto
-3. Seleccionar carpeta
-4. Abrir archivo desde Explorer
-5. Editar código
-6. Guardar con Ctrl + S
-7. Abrir terminal integrada
-8. Ejecutar npm run dev o el comando necesario
-9. Usar IA si está configurada
-```
+El frontend se prueba con suites e2e de Playwright (Tauri simulado y `git` real en repositorios temporales); el backend de shell/Git se valida con tests de Rust. `npm run build` debe pasar antes de cada PR.
 
 ---
 
-## ⌨️ Atajos principales
+## ➜ Roadmap
 
-| Acción                      | Atajo              |
-| --------------------------- | ------------------ |
-| 📂 Abrir proyecto           | `Ctrl + O`         |
-| 💾 Guardar archivo          | `Ctrl + S`         |
-| 📄 Crear archivo            | `Ctrl + N`         |
-| 📁 Crear carpeta            | `Ctrl + Shift + N` |
-| ❌ Cerrar pestaña            | `Ctrl + W`         |
-| 🌲 Explorer                 | `Ctrl + B`         |
-| 🖥️ Terminal / Bottom Panel | `Ctrl + J`         |
-| 🤖 Panel IA                 | `Ctrl + I`         |
-| 🔎 Quick Open               | `Ctrl + P`         |
-| ⚡ Command Palette           | `Ctrl + Shift + P` |
-| ⌨️ Ayuda de comandos        | `Ctrl + K`         |
+- [x] Editor, terminal, Git, IA con skills, Toolbox, Monitor, Doctor
+- [x] Centro de Git, nuevo proyecto / clonar, personalización completa
+- [ ] Estabilidad y pruebas en más distribuciones Linux
+- [ ] Panel *Problems* y Git más profundos
+- [ ] Empaquetado y publicación de instaladores
+- [ ] Mejor guardado/restauración de sesión
 
 ---
 
-## 🤝 Colaboradores
+## ◈ Contribuir
 
-Estoy buscando colaboradores para mejorar Aurelius IDE.
-
-El proyecto ya funciona, pero todavía necesita mucho trabajo.
-
-Áreas donde se necesita ayuda:
-
-```txt
-estabilidad
-refactor
-UI/UX
-rendimiento
-detección de errores
-terminal
-integración IA
-builds Linux
-documentación
-testing
-mejoras del editor
-Git integration
-Problems panel
-CodeMirror
-Tauri commands
-```
-
-Podés colaborar con:
-
-* 🐛 corrección de bugs;
-* 🎨 mejoras visuales;
-* 🧱 refactor de arquitectura;
-* ⚡ optimización;
-* 🐧 pruebas en distintas distros Linux;
-* 📦 empaquetado;
-* 🧠 integración IA;
-* 🖥️ mejoras de terminal;
-* 📚 documentación;
-* 🔍 revisión de código.
+El proyecto funciona pero aún necesita trabajo. Se agradece ayuda en: **estabilidad, UI/UX, rendimiento, terminal, integración de IA, builds y pruebas en distintas distros, documentación y revisión de código**. Abre un *issue* o un *pull request*; describe qué cambia y cómo lo probaste.
 
 ---
 
-## 🔒 Licencia y transparencia
+## ⚖ Licencia y transparencia
 
-Aurelius IDE **no es open source** en el sentido de licencia libre para reutilización, redistribución o explotación comercial sin permiso.
+Aurelius IDE **no es open source** en el sentido de licencia libre: el código se publica para que sea **legible, auditable y revisable**, pero no se otorgan permisos automáticos de uso comercial, redistribución o copia como proyecto propio sin autorización.
 
-Pero el código estará publicado para que el proyecto sea transparente.
-
-Eso significa:
-
-```txt
-El código se puede leer.
-El funcionamiento se puede revisar.
-La arquitectura se puede auditar.
-El desarrollo será visible.
-Pero no se otorgan permisos automáticos de uso comercial,
-redistribución o copia como proyecto propio.
-```
-
-La publicación del código busca:
-
-* transparencia;
-* aprendizaje;
-* revisión;
-* colaboración controlada;
-* confianza técnica.
+> Aurelius es una herramienta personal en evolución, ofrecida *tal cual*: haz copias de seguridad de tu trabajo.
 
 ---
 
-## 🗺️ Roadmap
+<div align="center">
 
-### ✅ Estado actual
+Hecho con Rust, Tauri y CodeMirror · [Historial de cambios](CHANGELOG.md)
 
-```txt
-Versión experimental funcional
-Editor funcionando
-Terminal funcionando
-Settings funcionando
-IA configurable
-Live Server funcionando
-Project Commands funcionando
-Problems básico funcionando
-```
-
----
-
-### 🔜 Próximas mejoras
-
-* Mejorar estabilidad general.
-* Mejorar detección de errores en terminal.
-* Mejorar marcado visual en editor.
-* Mejorar Problems Panel.
-* Mejorar Git Panel.
-* Mejorar empaquetado Linux.
-* Agregar validaciones IA más claras.
-* Mejorar guardado/restauración de sesión.
-* Reducir bugs visuales.
-* Mejorar rendimiento en notebooks.
-* Pulir responsive y escala automática.
-* Mejorar instalación como app Linux.
-
----
-
-### ⏳ Próxima actualización grande
-
-La próxima actualización grande está planificada para dentro de aproximadamente:
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Next%20Major%20Update-200%20days-16A34A?style=for-the-badge&logo=calendar&logoColor=white" />
-</p>
-
-Ese tiempo se usará para:
-
-```txt
-probar
-corregir
-limpiar arquitectura
-mejorar estabilidad
-preparar una versión más sólida
-```
-
----
-
-## ⚠️ Aviso importante
-
-Aurelius IDE es un proyecto personal en desarrollo.
-
-Aunque ya funciona, todavía puede tener errores.
-
-No se recomienda usarlo como única herramienta para proyectos críticos hasta que esté más probado.
-
-Usalo con:
-
-* Git;
-* commits frecuentes;
-* backups;
-* control de versiones;
-* cuidado en proyectos importantes.
-
-```txt
-Estado: funcional pero experimental
-Objetivo: editor personal Linux-first
-Prioridad: liviano, rápido y simple
-Filosofía: menos peso, más control
-```
-
----
-
-## 🧬 Filosofía del proyecto
-
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=22&pause=900&color=22C55E&center=true&vCenter=true&width=850&lines=Abrir.;Editar.;Guardar.;Ejecutar.;Crear.;Pensar.;Controlar+tu+entorno." alt="Aurelius philosophy animation" />
-</p>
-
-Aurelius IDE no busca ser enorme.
-
-Busca ser útil.
-
-```txt
-Abrir.
-Editar.
-Guardar.
-Ejecutar.
-Pensar.
-Crear.
-```
-
-Un IDE personal, liviano, transparente y Linux-first para trabajar código con más control.
-
----
-
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:052e16,50:16a34a,100:052e16&height=110&section=footer" />
-</p>
-
----
-
-## Aurelius v2 — rediseño visual y nuevas funciones
-
-**Diseño:** nueva paleta *Obsidian* (plana, sin glow), tokens de acento configurables (`--au-accent-rgb`), superficies *Midnight* (AMOLED) y *Graphite*, animaciones cortas (≤ 200 ms) desactivables, nuevo icono y logo vectorial.
-
-**Atajos nuevos**
-
-| Atajo | Acción |
-| --- | --- |
-| `Alt+Z` | Modo Zen (solo editor; `Esc` para salir) |
-| `Alt+A` | Apariencia: tema, superficie, acento, minimapa, animaciones |
-| `Alt+H` | Historial local del archivo (se guarda una versión en cada `Ctrl+S`; diff + restaurar) |
-| `Alt+J` | Scratchpad flotante con autoguardado |
-| `Alt+T` | Flow timer (Pomodoro 25/5) en la barra de estado; clic derecho = reiniciar |
-| `Ctrl+rueda` | Zoom de fuente en el editor |
-| `Ctrl+Shift+K` (terminal) | Limpiar terminal |
-
-**Editor:** minimapa con arrastre, muestras de color inline (clic en `#rrggbb` abre el selector nativo), `TODO/FIXME/HACK/NOTE` resaltados, paréntesis arcoíris.
-
-**Herramientas de texto (paleta de comandos):** JSON formatear/minificar, camel/Pascal/snake/kebab, ordenar y deduplicar líneas, Base64/URL, insertar UUID / fecha ISO / timestamp, copiar ruta.
-
-**Terminal — correcciones:** la salida inicial del shell ya no se pierde (carrera entre `spawn` y el listener); caracteres UTF-8 multibyte ya no se corrompen entre lecturas del PTY; el auto-scroll respeta si el usuario subió en el historial; `Ctrl+C` copia solo con selección (si no, SIGINT); `Ctrl+V` pega; enlaces clicables con `Ctrl+clic`; el tema sigue al tema/acento de la app; se recogen los procesos hijos al cerrar.
-
-### v2.1
-
-- Ventana sin barra de título nativa: controles propios (minimizar/maximizar/cerrar) en el topbar, que además arrastra la ventana.
-- Interfaz sin degradados, halos ni orbes: superficies sólidas y líneas finas.
-- Nuevos atajos: `Ctrl+Shift+O` ir a símbolo (funciones, clases, títulos, TODOs), `Alt+B` marcador (`Alt+.` / `Alt+,` navegar; clic en el margen), `Alt+W` ajuste de línea, `Alt+D` diff de cambios sin guardar.
-- Paleta de comandos: ir a línea, duplicar/mover/eliminar línea, comentar, plegar/desplegar todo, seleccionar coincidencias.
-
-### v2.2
-
-- **Páginas a ancho completo:** Monitor, Tasks, Doctor, Ajustes y la nueva **Toolbox** ocupan todo el ancho (el sidebar se oculta en esas páginas; al abrir un archivo se vuelve al editor).
-- **Toolbox (nueva página):** JSON, Regex, Codificar (Base64/URL/HTML/Hex/Unicode), Hash (SHA), JWT, Tiempo, Color (+contraste), Diff, Generadores (UUID/contraseñas/lorem) y Texto. Todo local.
-- **Más herramientas en los paneles existentes:** Explorer (colapsar/expandir/revelar/terminal aquí/copiar ruta), Búsqueda (mayúsculas/palabra/regex/filtro por extensión/copiar), Git (fetch/pull/push/stash/log/diff/ramas/amend), Monitor (gráficas de historial, auto-actualización, copiar snapshot), Tasks (ejecutor de comandos con historial), Doctor (reporte Markdown, comandos de instalación), Ajustes (exportar/importar, atajos), IA (6 acciones rápidas nuevas) y barra de estado (selección, cursores, codificación).
-
-### v2.3 — rendimiento e IA
-
-- **Rendimiento:** al cambiar de panel/ajustes ya no se recrean el editor (CodeMirror) ni la terminal: se reutilizan sus vistas. Se quitaron `backdrop-filter` y animaciones que se repetían en cada render (costosas en WebKitGTK); los paréntesis arcoíris se desactivan en archivos muy grandes y el minimapa se espacia.
-- **IA / Claude:** corregida la URL de Claude (`/v1/v1/messages` → 404), modelo por defecto actualizado, mensajes normalizados (Anthropic exige empezar con `user`), timeouts, mensajes de error legibles (401/404/429), OpenRouter con `error` dentro de un 200, y el prompt ya no se envía duplicado.
-- **Ajustes → IA:** botón **Probar conexión**, sugerencias de modelos y migración automática de valores antiguos de Claude.
-
-### v2.4
-
-- **Nuevo logo/icono:** una "A" de trazo continuo (degradado cian→violeta) con travesaño; iconos Tauri regenerados.
-- **Funciones nuevas:** archivos recientes (`Ctrl+E`), snippets con campos editables (`Alt+S`, gestor incluido), vista previa Markdown (`Alt+M`), reemplazar en todo el proyecto (panel Búsqueda; omite archivos con cambios sin guardar), menú contextual con copiar ruta / ruta relativa / mostrar en el gestor de archivos.
-- **Toolbox:** +7 herramientas (Markdown, Números y px↔rem, URL, chmod, Cron, HTTP, TODOs del proyecto).
-- **Correcciones:** el editor conserva el foco y el scroll al guardar; el Explorer, Búsqueda y Git ya no se descuadran con las barras de herramientas.
-
-### v2.5
-
-- **Aspecto empresarial:** tipografía más legible (se eliminaron los tamaños de 7–10 px), acento azul sobrio por defecto, esquinas y tarjetas consistentes, títulos y etiquetas discretos, IA con acciones rápidas en rejilla.
-- **Toolbox (+7):** JSON→TypeScript, CSV⇄JSON, JSON⇄YAML, constructor de commits (Conventional Commits), plantillas de proyecto (.gitignore, LICENSE, README, CI de GitHub Actions, Dockerfile, SECURITY… con *Crear en el proyecto*), zonas horarias y analizador del proyecto (archivos y líneas por lenguaje).
-
-### v2.6 — Personalización y limpieza visual
-
-- **Personalización (`Alt+A`)**: 7 paletas completas (Obsidian, Nord, Dracula, Tokyo Night, Gruvbox, Rosé Pine, Bosque), color de acento libre (selector + hex), 3 paquetes de iconos del Explorer (minimal con puntos, lineal a color, monocromo) y **fondo configurable**: degradados, cuadrícula, puntos, partículas (con animación opcional y pausa si la ventana no está visible) o **imagen propia** (archivo o URL, con oscurecido, desenfoque y opacidad de paneles). Todo se guarda localmente y sin glow.
-- **Editor**: cabecera compacta de una línea (ruta de migas), gutter y línea activa más sobrios.
-- **Nuevas funciones**: búsqueda en la terminal (`Ctrl+F`), cerrar otras/guardadas, reabrir pestaña cerrada, comparar con otra pestaña, historial de notificaciones.
-- **Correcciones**: el footer de Ajustes se superponía al hacer scroll (elementos sticky ahora opacos y sin hueco); el breadcrumb del editor se recortaba.
-
-### v2.7 — Asistente de IA con skills y streaming
-
-- **Respuestas en vivo (streaming)** para Ollama, OpenAI, OpenRouter y Claude, con botón **Detener** (comandos Tauri `chat_with_ai_stream` / `ai_cancel`; modo clásico como respaldo).
-- **Skills configurables**: 10 integradas (Revisor, Tests, Documentador, Explicador, Refactor, Seguridad, Commit, SQL, Traductor…) y las tuyas: nombre, comando `/slash`, icono, instrucciones, temperatura propia y contexto automático. Importar/exportar JSON.
-- **Slash commands**: escribe `/` en el chat para invocar una skill en un mensaje.
-- **Contexto elegible**: archivo activo, selección, pestañas abiertas y estructura del proyecto (se adjunta solo al último mensaje).
-- **Conversaciones**: varias, con historial, nueva, eliminar y exportar a Markdown. Editar y reenviar, regenerar y copiar.
-- **Acciones sobre el código** de cada respuesta: copiar, insertar en el cursor, **aplicar al archivo con vista previa de diff** (deshacible con Ctrl+Z) o guardar como archivo nuevo.
-- **Configuración**: temperatura, máximo de tokens, instrucciones personalizadas globales y contexto por defecto.
-- **Terminal** rediseñada: pestañas de solo texto, iconos sin cajas, lista de terminales plana y barra de estado sin pastillas.
-- **Barra de estado**: rama Git y nº de cambios (clic abre Git). Toolbox: JSONPath y biblioteca de regex.
-- **Corrección**: el indicador "Guardado/Sin guardar" del editor ahora se actualiza al escribir.
-
-### v2.8 — Ventanas y barra derecha
-
-- **Paleta de comandos y Quick Open** estilo *launcher*: solo búsqueda grande + lista compacta (descripción solo en la fila activa, grupo como texto, atajos como teclas), sin tarjetas de resumen ni cabeceras.
-- **Menú contextual** compacto de una línea por acción, con peligro en rojo y separadores finos.
-- **Modales** limpios (icono, título, mensaje, campo y botones), **avisos** centrados abajo y compactos (ya no tapan el chat), overlays con la misma familia visual. Sin `backdrop-filter` ni glow.
-- **Barra derecha (asistente)**: composer como una sola tarjeta con chips integrados, burbujas sobrias, cabecera más limpia; **barra de actividad** con indicador lateral.
-
-### v2.9 — Centro de Git y herramientas en todas las páginas
-
-- **Centro de Git** (`Ctrl+Shift+G`, botón en el panel Git o clic en la rama de la barra de estado): cambios con diff en color, *stage/unstage/descartar* por archivo o todos, **commit con mensaje generado por IA**, commit + push, amend, historial con diff de cada commit, ramas (crear, cambiar, borrar), stash (guardar, aplicar, pop, borrar), fetch/pull/push con ahead/behind. Backend Rust `git_run` con **lista blanca** de subcomandos, tiempo límite y tope de salida.
-- **Monitor**: procesos principales (CPU/RAM), discos con alerta al 90 %, red con velocidad, batería, uptime, host y kernel.
-- **Doctor**: detecta 26 herramientas adicionales (Node, pnpm, Python, Go, Docker, Compose, kubectl, Ollama, gh…) con su versión y copia el informe.
-- **Tasks**: comandos favoritos (★) con acceso rápido. **Búsqueda**: historial de consultas.
-- **Inicio**: *Nuevo proyecto desde plantilla* (Vite, React, Vue, Node, Rust, Python, Go, HTML) y *Clonar repositorio*.
-- **Toolbox**: SQL (formatear/minificar), Imagen⇄Base64, Gradiente CSS, cURL→fetch.
-- **Ajustes**: datos y privacidad (borrar chats de IA, olvidar API Key, copiar diagnóstico) y Acerca de.
-- **Sin glow**: se eliminan los halos de color de modales y avisos y las sombras de texto.
-
-## v3.0 — Más herramientas y pulido premium
-
-- **Editor (paleta de comandos):** 15 transformaciones nuevas — ordenar numéricamente, quitar líneas vacías, unir/numerar/mezclar líneas, Title Case, CONSTANT_CASE, comillas, escapar/desescapar HTML, tabs↔espacios, indentar/desindentar y **Estadísticas del texto** (líneas, palabras, caracteres, bytes, tiempo de lectura).
-- **Toolbox (+4):** Unidades CSS (px/rem/pt/vw/cm…), Contraste WCAG (AA/AAA), `.env` ⇄ JSON y Escapar texto (JSON, HTML, RegExp, SQL, Shell).
-- **Pulido visual:** foco nítido sin halos, scrollbars finas, chips de teclas, microinteracciones y animación de entrada de overlays (`src/styles/premium.css`). Sin glow.
-
-## v3.1 — Herramientas para programadores
-
-- **Toolbox (+5):** SemVer (bump, comparar, rangos `^ ~ >= <`), Referencia HTTP (códigos y puertos con búsqueda y copiado), `.gitignore` (12 plantillas, crear/anexar en el proyecto), Datos de prueba (JSON/CSV/SQL INSERT) y chuleta de Git con comandos copiables.
-- **Editor:** JSON ordenar claves, líneas ⇄ array JSON, envolver en `console.log`, insertar comentario TODO.
-
-## v3.2 — Terminal más limpia y rápida
-
-- Salida agrupada en un solo `write` por frame (fluido con builds y logs masivos), Unicode 11 (CJK, emojis), contraste mínimo WCAG, cursor fino con contorno al perder foco, scroll rápido con Alt.
-- Fondo del terminal unificado con el panel; cabecera y lista de sesiones planas, sin degradados ni halos; scrollbar solo al pasar el mouse.
-- Renderer WebGL opcional: comando «Terminal: alternar renderer WebGL (experimental)». Desactivado por defecto porque en algunos entornos (GPU por software) no pinta texto.
+</div>

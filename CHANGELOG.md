@@ -1,0 +1,111 @@
+# Changelog
+
+Historial de cambios de Aurelius IDE (movido desde el README).
+
+## v2.0 — rediseño visual y nuevas funciones
+
+**Diseño:** nueva paleta *Obsidian* (plana, sin glow), tokens de acento configurables (`--au-accent-rgb`), superficies *Midnight* (AMOLED) y *Graphite*, animaciones cortas (≤ 200 ms) desactivables, nuevo icono y logo vectorial.
+
+**Atajos nuevos**
+
+| Atajo | Acción |
+| --- | --- |
+| `Alt+Z` | Modo Zen (solo editor; `Esc` para salir) |
+| `Alt+A` | Apariencia: tema, superficie, acento, minimapa, animaciones |
+| `Alt+H` | Historial local del archivo (se guarda una versión en cada `Ctrl+S`; diff + restaurar) |
+| `Alt+J` | Scratchpad flotante con autoguardado |
+| `Alt+T` | Flow timer (Pomodoro 25/5) en la barra de estado; clic derecho = reiniciar |
+| `Ctrl+rueda` | Zoom de fuente en el editor |
+| `Ctrl+Shift+K` (terminal) | Limpiar terminal |
+
+**Editor:** minimapa con arrastre, muestras de color inline (clic en `#rrggbb` abre el selector nativo), `TODO/FIXME/HACK/NOTE` resaltados, paréntesis arcoíris.
+
+**Herramientas de texto (paleta de comandos):** JSON formatear/minificar, camel/Pascal/snake/kebab, ordenar y deduplicar líneas, Base64/URL, insertar UUID / fecha ISO / timestamp, copiar ruta.
+
+**Terminal — correcciones:** la salida inicial del shell ya no se pierde (carrera entre `spawn` y el listener); caracteres UTF-8 multibyte ya no se corrompen entre lecturas del PTY; el auto-scroll respeta si el usuario subió en el historial; `Ctrl+C` copia solo con selección (si no, SIGINT); `Ctrl+V` pega; enlaces clicables con `Ctrl+clic`; el tema sigue al tema/acento de la app; se recogen los procesos hijos al cerrar.
+
+## v2.1
+
+- Ventana sin barra de título nativa: controles propios (minimizar/maximizar/cerrar) en el topbar, que además arrastra la ventana.
+- Interfaz sin degradados, halos ni orbes: superficies sólidas y líneas finas.
+- Nuevos atajos: `Ctrl+Shift+O` ir a símbolo (funciones, clases, títulos, TODOs), `Alt+B` marcador (`Alt+.` / `Alt+,` navegar; clic en el margen), `Alt+W` ajuste de línea, `Alt+D` diff de cambios sin guardar.
+- Paleta de comandos: ir a línea, duplicar/mover/eliminar línea, comentar, plegar/desplegar todo, seleccionar coincidencias.
+
+## v2.2
+
+- **Páginas a ancho completo:** Monitor, Tasks, Doctor, Ajustes y la nueva **Toolbox** ocupan todo el ancho (el sidebar se oculta en esas páginas; al abrir un archivo se vuelve al editor).
+- **Toolbox (nueva página):** JSON, Regex, Codificar (Base64/URL/HTML/Hex/Unicode), Hash (SHA), JWT, Tiempo, Color (+contraste), Diff, Generadores (UUID/contraseñas/lorem) y Texto. Todo local.
+- **Más herramientas en los paneles existentes:** Explorer (colapsar/expandir/revelar/terminal aquí/copiar ruta), Búsqueda (mayúsculas/palabra/regex/filtro por extensión/copiar), Git (fetch/pull/push/stash/log/diff/ramas/amend), Monitor (gráficas de historial, auto-actualización, copiar snapshot), Tasks (ejecutor de comandos con historial), Doctor (reporte Markdown, comandos de instalación), Ajustes (exportar/importar, atajos), IA (6 acciones rápidas nuevas) y barra de estado (selección, cursores, codificación).
+
+## v2.3 — rendimiento e IA
+
+- **Rendimiento:** al cambiar de panel/ajustes ya no se recrean el editor (CodeMirror) ni la terminal: se reutilizan sus vistas. Se quitaron `backdrop-filter` y animaciones que se repetían en cada render (costosas en WebKitGTK); los paréntesis arcoíris se desactivan en archivos muy grandes y el minimapa se espacia.
+- **IA / Claude:** corregida la URL de Claude (`/v1/v1/messages` → 404), modelo por defecto actualizado, mensajes normalizados (Anthropic exige empezar con `user`), timeouts, mensajes de error legibles (401/404/429), OpenRouter con `error` dentro de un 200, y el prompt ya no se envía duplicado.
+- **Ajustes → IA:** botón **Probar conexión**, sugerencias de modelos y migración automática de valores antiguos de Claude.
+
+## v2.4
+
+- **Nuevo logo/icono:** una "A" de trazo continuo (degradado cian→violeta) con travesaño; iconos Tauri regenerados.
+- **Funciones nuevas:** archivos recientes (`Ctrl+E`), snippets con campos editables (`Alt+S`, gestor incluido), vista previa Markdown (`Alt+M`), reemplazar en todo el proyecto (panel Búsqueda; omite archivos con cambios sin guardar), menú contextual con copiar ruta / ruta relativa / mostrar en el gestor de archivos.
+- **Toolbox:** +7 herramientas (Markdown, Números y px↔rem, URL, chmod, Cron, HTTP, TODOs del proyecto).
+- **Correcciones:** el editor conserva el foco y el scroll al guardar; el Explorer, Búsqueda y Git ya no se descuadran con las barras de herramientas.
+
+## v2.5
+
+- **Aspecto empresarial:** tipografía más legible (se eliminaron los tamaños de 7–10 px), acento azul sobrio por defecto, esquinas y tarjetas consistentes, títulos y etiquetas discretos, IA con acciones rápidas en rejilla.
+- **Toolbox (+7):** JSON→TypeScript, CSV⇄JSON, JSON⇄YAML, constructor de commits (Conventional Commits), plantillas de proyecto (.gitignore, LICENSE, README, CI de GitHub Actions, Dockerfile, SECURITY… con *Crear en el proyecto*), zonas horarias y analizador del proyecto (archivos y líneas por lenguaje).
+
+## v2.6 — Personalización y limpieza visual
+
+- **Personalización (`Alt+A`)**: 7 paletas completas (Obsidian, Nord, Dracula, Tokyo Night, Gruvbox, Rosé Pine, Bosque), color de acento libre (selector + hex), 3 paquetes de iconos del Explorer (minimal con puntos, lineal a color, monocromo) y **fondo configurable**: degradados, cuadrícula, puntos, partículas (con animación opcional y pausa si la ventana no está visible) o **imagen propia** (archivo o URL, con oscurecido, desenfoque y opacidad de paneles). Todo se guarda localmente y sin glow.
+- **Editor**: cabecera compacta de una línea (ruta de migas), gutter y línea activa más sobrios.
+- **Nuevas funciones**: búsqueda en la terminal (`Ctrl+F`), cerrar otras/guardadas, reabrir pestaña cerrada, comparar con otra pestaña, historial de notificaciones.
+- **Correcciones**: el footer de Ajustes se superponía al hacer scroll (elementos sticky ahora opacos y sin hueco); el breadcrumb del editor se recortaba.
+
+## v2.7 — Asistente de IA con skills y streaming
+
+- **Respuestas en vivo (streaming)** para Ollama, OpenAI, OpenRouter y Claude, con botón **Detener** (comandos Tauri `chat_with_ai_stream` / `ai_cancel`; modo clásico como respaldo).
+- **Skills configurables**: 10 integradas (Revisor, Tests, Documentador, Explicador, Refactor, Seguridad, Commit, SQL, Traductor…) y las tuyas: nombre, comando `/slash`, icono, instrucciones, temperatura propia y contexto automático. Importar/exportar JSON.
+- **Slash commands**: escribe `/` en el chat para invocar una skill en un mensaje.
+- **Contexto elegible**: archivo activo, selección, pestañas abiertas y estructura del proyecto (se adjunta solo al último mensaje).
+- **Conversaciones**: varias, con historial, nueva, eliminar y exportar a Markdown. Editar y reenviar, regenerar y copiar.
+- **Acciones sobre el código** de cada respuesta: copiar, insertar en el cursor, **aplicar al archivo con vista previa de diff** (deshacible con Ctrl+Z) o guardar como archivo nuevo.
+- **Configuración**: temperatura, máximo de tokens, instrucciones personalizadas globales y contexto por defecto.
+- **Terminal** rediseñada: pestañas de solo texto, iconos sin cajas, lista de terminales plana y barra de estado sin pastillas.
+- **Barra de estado**: rama Git y nº de cambios (clic abre Git). Toolbox: JSONPath y biblioteca de regex.
+- **Corrección**: el indicador "Guardado/Sin guardar" del editor ahora se actualiza al escribir.
+
+## v2.8 — Ventanas y barra derecha
+
+- **Paleta de comandos y Quick Open** estilo *launcher*: solo búsqueda grande + lista compacta (descripción solo en la fila activa, grupo como texto, atajos como teclas), sin tarjetas de resumen ni cabeceras.
+- **Menú contextual** compacto de una línea por acción, con peligro en rojo y separadores finos.
+- **Modales** limpios (icono, título, mensaje, campo y botones), **avisos** centrados abajo y compactos (ya no tapan el chat), overlays con la misma familia visual. Sin `backdrop-filter` ni glow.
+- **Barra derecha (asistente)**: composer como una sola tarjeta con chips integrados, burbujas sobrias, cabecera más limpia; **barra de actividad** con indicador lateral.
+
+## v2.9 — Centro de Git y herramientas en todas las páginas
+
+- **Centro de Git** (`Ctrl+Shift+G`, botón en el panel Git o clic en la rama de la barra de estado): cambios con diff en color, *stage/unstage/descartar* por archivo o todos, **commit con mensaje generado por IA**, commit + push, amend, historial con diff de cada commit, ramas (crear, cambiar, borrar), stash (guardar, aplicar, pop, borrar), fetch/pull/push con ahead/behind. Backend Rust `git_run` con **lista blanca** de subcomandos, tiempo límite y tope de salida.
+- **Monitor**: procesos principales (CPU/RAM), discos con alerta al 90 %, red con velocidad, batería, uptime, host y kernel.
+- **Doctor**: detecta 26 herramientas adicionales (Node, pnpm, Python, Go, Docker, Compose, kubectl, Ollama, gh…) con su versión y copia el informe.
+- **Tasks**: comandos favoritos (★) con acceso rápido. **Búsqueda**: historial de consultas.
+- **Inicio**: *Nuevo proyecto desde plantilla* (Vite, React, Vue, Node, Rust, Python, Go, HTML) y *Clonar repositorio*.
+- **Toolbox**: SQL (formatear/minificar), Imagen⇄Base64, Gradiente CSS, cURL→fetch.
+- **Ajustes**: datos y privacidad (borrar chats de IA, olvidar API Key, copiar diagnóstico) y Acerca de.
+- **Sin glow**: se eliminan los halos de color de modales y avisos y las sombras de texto.
+
+## v3.0 — Más herramientas y pulido premium
+
+- **Editor (paleta de comandos):** 15 transformaciones nuevas — ordenar numéricamente, quitar líneas vacías, unir/numerar/mezclar líneas, Title Case, CONSTANT_CASE, comillas, escapar/desescapar HTML, tabs↔espacios, indentar/desindentar y **Estadísticas del texto** (líneas, palabras, caracteres, bytes, tiempo de lectura).
+- **Toolbox (+4):** Unidades CSS (px/rem/pt/vw/cm…), Contraste WCAG (AA/AAA), `.env` ⇄ JSON y Escapar texto (JSON, HTML, RegExp, SQL, Shell).
+- **Pulido visual:** foco nítido sin halos, scrollbars finas, chips de teclas, microinteracciones y animación de entrada de overlays (`src/styles/premium.css`). Sin glow.
+
+## v3.1 — Herramientas para programadores
+
+- **Toolbox (+5):** SemVer (bump, comparar, rangos `^ ~ >= <`), Referencia HTTP (códigos y puertos con búsqueda y copiado), `.gitignore` (12 plantillas, crear/anexar en el proyecto), Datos de prueba (JSON/CSV/SQL INSERT) y chuleta de Git con comandos copiables.
+- **Editor:** JSON ordenar claves, líneas ⇄ array JSON, envolver en `console.log`, insertar comentario TODO.
+
+## v3.2 — Terminal más limpia y rápida
+
+- Salida agrupada en un solo `write` por frame (fluido con builds y logs masivos), Unicode 11 (CJK, emojis), contraste mínimo WCAG, cursor fino con contorno al perder foco, scroll rápido con Alt.
+- Fondo del terminal unificado con el panel; cabecera y lista de sesiones planas, sin degradados ni halos; scrollbar solo al pasar el mouse.
+- Renderer WebGL opcional: comando «Terminal: alternar renderer WebGL (experimental)». Desactivado por defecto porque en algunos entornos (GPU por software) no pinta texto.
