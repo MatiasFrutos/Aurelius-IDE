@@ -984,7 +984,7 @@ export function renderExplorer({
             ? `
               <small>
                 <i data-lucide="info"></i>
-                ${heavyFoldersCount} ${escapeHTML(t("carpetas pesadas detectadas", "heavy folders detected"))}
+                ${heavyFoldersCount} ${escapeHTML(heavyFoldersCount === 1 ? t("carpeta pesada colapsada", "heavy folder collapsed") : t("carpetas pesadas colapsadas", "heavy folders collapsed"))}
               </small>
             `
             : ""

@@ -148,3 +148,11 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - El agente recibe la estructura del proyecto (sin `node_modules`, `target`, etc.), **lee archivos bajo demanda** (`<read/>`, `<list/>`, hasta 8 rondas por consulta) y **propone cambios o archivos nuevos** (`<file path action>`).
 - Cada cambio se **revisa con diff y se aprueba** (individual o «Aplicar todos» con selección). Rutas validadas: sin `..`, sin `.git`, sin `.env`; los archivos abiertos en el editor se modifican en el editor (sin guardar, `Ctrl+Z` deshace).
 - Arranques rápidos: analizar proyecto, buscar bugs, crear tests, mejorar README.
+
+## v3.7 — Explorer y ventanas más limpios + más herramientas
+
+- **Explorer rediseñado:** cabecera sobria, contadores en una línea, barra de herramientas **solo con iconos** (tooltips), filtro fino, filas de 26 px con selección plana y contadores solo al pasar el mouse.
+- **Ventanas:** overlays, modales, paleta de comandos y avisos unificados (borde fino, radio 14, cabeceras limpias, sin degradados ni resplandores, fondo atenuado sin blur).
+- **Explorer:** mostrar en el gestor de archivos, copiar ruta relativa. **Búsqueda:** copiar rutas de los resultados. **Git:** ranking de autores. **Monitor:** alertas de RAM > 90 %. **Doctor:** copiar JSON. **Tasks:** copiar como Markdown.
+- **IA (paleta):** explicar / arreglar / documentar / simplificar la selección.
+- **Editor (paleta):** copiar ruta relativa.
