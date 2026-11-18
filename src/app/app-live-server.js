@@ -92,7 +92,7 @@ export async function startLiveServer({
     }
 
     toastSuccess(
-      status.url
+      status?.url
         ? `${t("Live Server iniciado en", "Live Server started at")} ${status.url}`
         : t("Live Server iniciado.", "Live Server started."),
       "Live Server"
