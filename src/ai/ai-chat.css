@@ -147,3 +147,37 @@
 select { appearance: none; -webkit-appearance: none; padding: 5px 26px 5px 10px; border: 1px solid var(--au-border); border-radius: 8px; background: var(--au-bg-input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a91a3' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center; color: var(--au-text); font: inherit; cursor: pointer; }
 select:hover { border-color: var(--au-border-strong); }
 select option { background: var(--au-bg-elevated); color: var(--au-text); }
+
+/* ==========================================================================
+   Modo Agente
+   ========================================================================== */
+.au-ag { margin: 8px 0; padding: 10px 12px; border: 1px solid var(--au-border-strong); border-radius: 10px; background: var(--au-bg-card); display: grid; gap: 8px; }
+.au-ag.is-applied { border-color: rgba(var(--au-success-rgb), 0.45); }
+.au-ag header { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.au-ag header svg { width: 14px; height: 14px; color: var(--au-primary-strong); flex: none; }
+.au-ag header b { font: 600 12px var(--au-font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+.au-ag__tag { flex: none; padding: 1px 7px; border: 1px solid var(--au-border-strong); border-radius: 999px; color: var(--au-muted-strong); font-size: 10.5px; }
+.au-ag__row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.au-ag__row small { color: var(--au-muted); font-size: 11px; }
+.au-ag__row button, .au-ag__all button { padding: 4px 11px; border: 1px solid rgba(var(--au-accent-rgb), 0.5); border-radius: 8px; background: var(--au-primary-soft); color: var(--au-primary-strong); font-size: 11.5px; font-weight: 600; cursor: pointer; }
+.au-ag__row button:hover, .au-ag__all button:hover { background: rgba(var(--au-accent-rgb), 0.2); }
+.au-ag__ok { color: var(--au-success-strong); font-size: 11.5px; font-weight: 600; }
+.au-ag__wip { color: var(--au-muted); font-size: 11.5px; }
+.au-ag__all { margin: 6px 0 2px; }
+.au-ag__tool { display: flex; align-items: center; gap: 8px; margin: 6px 0; padding: 5px 10px; border: 1px dashed var(--au-border-strong); border-radius: 8px; color: var(--au-muted); font-size: 11.5px; }
+.au-ag__tool svg { width: 13px; height: 13px; flex: none; }
+.au-ag__tool b { color: var(--au-text); font-family: var(--au-font-mono); font-weight: 600; word-break: break-all; }
+.au-ai2__msg.is-note { justify-content: center; }
+.au-ag__note { display: flex; align-items: center; gap: 8px; padding: 4px 10px; color: var(--au-muted); font-size: 11px; max-width: 100%; }
+.au-ag__note svg { width: 12px; height: 12px; flex: none; }
+.au-ag__note span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.au-ag__picks { display: grid; gap: 6px; max-height: 50vh; overflow: auto; }
+.au-ag__pick { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--au-border); border-radius: 8px; font-size: 12px; }
+.au-ag__pick b { font-family: var(--au-font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.au-ag__pick span { color: var(--au-muted-strong); font-size: 11px; }
+.au-ag__pick small { color: var(--au-muted); }
+.au-ag__pick.is-bad { opacity: 0.55; }
+.au-ai2__chip svg { width: 11px; height: 11px; vertical-align: -1px; }
+.au-ai2__chip { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.au-ag.is-bad { opacity: 0.6; border-style: dashed; }
+.au-ag__bad { color: var(--au-danger, #f87171); font-size: 11.5px; font-weight: 600; }

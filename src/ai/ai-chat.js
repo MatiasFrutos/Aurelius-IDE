@@ -9,6 +9,7 @@ import { toastError, toastInfo, toastSuccess, toastWarning } from "../components
 import { promptModal } from "../components/ui/modal.js";
 import { openOverlay, closeOverlay, openPicker, renderDiff } from "../components/features/features.js";
 import { renderMarkdown } from "../components/features/labs2.js";
+import { MAX_AGENT_ROUNDS, agentPrompt, agentTreeText, applyFile, currentContent, lineStats, parseAgent, resolveTools, safeRelPath } from "./ai-agent.js";
 import {
   activeChat,
   addMessage,
@@ -21,6 +22,7 @@ import {
   listSkills,
   newChat,
   removeChat,
+  saveConfig,
   switchChat,
   touchChats,
   uid
@@ -45,9 +47,13 @@ function fenceFor(path, text) {
   return `\`\`\`${ext}\n${text}\n\`\`\``;
 }
 
+const HEAVY_DIRS = new Set(["node_modules", "target", "dist", "build", ".git", "vendor", ".next", ".cache", "coverage", "__pycache__", ".venv"]);
+
 function flattenTree(nodes, out = []) {
   for (const node of nodes || []) {
-    if (node.is_dir) flattenTree(node.children, out);
+    if (node.is_dir) {
+      if (!HEAVY_DIRS.has(String(node.name).toLowerCase())) flattenTree(node.children, out);
+    }
     else out.push(node.path);
   }
   return out;
@@ -93,7 +99,8 @@ export function buildContextBlock(flags) {
 
 function buildSystemPrompt(skill) {
   const lang = document.documentElement.lang === "en" ? "Reply in English." : "Respondé en español.";
-  return [skill.instructions, config.instructions?.trim() && `Instrucciones del usuario:\n${config.instructions.trim()}`, `${lang} Usá Markdown. El contexto del proyecto, si existe, llega dentro de <contexto>.`].filter(Boolean).join("\n\n");
+  const agent = config.agent ? `${agentPrompt()}\n\nEstructura del proyecto (${appState.projectName || ""}):\n${agentTreeText()}` : "";
+  return [skill.instructions, agent, config.instructions?.trim() && `Instrucciones del usuario:\n${config.instructions.trim()}`, `${lang} Usá Markdown. El contexto del proyecto, si existe, llega dentro de <contexto>.`].filter(Boolean).join("\n\n");
 }
 
 /* ====================================================================== */
@@ -112,7 +119,7 @@ function renderCode(lang, code, index) {
     <pre><code>${esc(code)}</code></pre></div>`;
 }
 
-export function renderAssistantContent(content) {
+function renderTextSegment(content) {
   const out = [];
   const regex = /```([\w+-]*)[^\n]*\n([\s\S]*?)(?:```|$)/g;
   let last = 0;
@@ -131,8 +138,53 @@ export function renderAssistantContent(content) {
   return out.join("");
 }
 
+function renderAgentCard(file, idx, message) {
+  const applied = message?.applied?.[file.path];
+  const lines = file.content ? file.content.split("\n").length : 0;
+  const allowed = Boolean(safeRelPath(file.path));
+  return `<div class="au-ag ${applied ? "is-applied" : ""} ${allowed ? "" : "is-bad"}" data-ag-idx="${idx}">
+    <header><i data-lucide="file-code"></i><b title="${esc(file.path)}">${esc(file.path)}</b><span class="au-ag__tag">${file.action === "create" ? t("Nuevo", "New") : t("Modificar", "Modify")}</span></header>
+    <div class="au-ag__row"><small>${lines} ${lines === 1 ? t("línea", "line") : t("líneas", "lines")}</small>${!allowed ? `<span class="au-ag__bad">${t("Ruta no permitida", "Path not allowed")}</span>` : applied ? `<span class="au-ag__ok">✓ ${t("Aplicado", "Applied")}</span>` : file.complete ? `<button type="button" data-ai="ag-review" data-idx="${idx}">${t("Revisar y aplicar", "Review & apply")}</button>` : `<span class="au-ag__wip">${t("Generando…", "Generating…")}</span>`}</div>
+  </div>`;
+}
+
+export function renderAssistantContent(content, message = null) {
+  if (!config.agent || !/<(file|read|list)\b/.test(content)) return renderTextSegment(content);
+
+  const { files } = parseAgent(content);
+  const out = [];
+  const textWithTools = (segment) => {
+    const parts = [];
+    let last = 0;
+    const re = /<(read|list)\s+path\s*=\s*["']([^"']*)["']\s*\/?>/g;
+    let m;
+    while ((m = re.exec(segment))) {
+      if (m.index > last) parts.push(renderTextSegment(segment.slice(last, m.index)));
+      parts.push(`<div class="au-ag__tool"><i data-lucide="${m[1] === "read" ? "file-search" : "folder-open"}"></i><span>${m[1] === "read" ? t("Leyendo", "Reading") : t("Listando", "Listing")} <b>${esc(m[2] || ".")}</b></span></div>`);
+      last = re.lastIndex;
+    }
+    if (last < segment.length) parts.push(renderTextSegment(segment.slice(last)));
+    return parts.join("");
+  };
+
+  let cursor = 0;
+  files.forEach((file, idx) => {
+    const before = content.slice(cursor, file.start);
+    if (before.trim()) out.push(textWithTools(before));
+    out.push(renderAgentCard(file, idx, message));
+    cursor = file.end;
+  });
+  const rest = content.slice(cursor);
+  if (rest.trim()) out.push(textWithTools(rest));
+  return out.join("");
+}
+
 function renderMessage(message, chat, isLast) {
   const streaming = chatState.streaming?.messageId === message.id;
+
+  if (message.role === "user" && message.hidden) {
+    return `<article class="au-ai2__msg is-note" data-mid="${message.id}"><div class="au-ag__note"><i data-lucide="file-search"></i><span>${t("Archivos enviados al modelo", "Files sent to the model")}: ${esc(message.note || "—")}</span></div></article>`;
+  }
 
   if (message.role === "user") {
     return `<article class="au-ai2__msg is-user" data-mid="${message.id}">
@@ -145,8 +197,9 @@ function renderMessage(message, chat, isLast) {
   return `<article class="au-ai2__msg is-assistant ${message.error ? "is-error" : ""}" data-mid="${message.id}">
     <div class="au-ai2__avatar"><i data-lucide="sparkles"></i></div>
     <div class="au-ai2__body">
-      <div class="au-ai2__md" data-md>${message.content ? renderAssistantContent(message.content) : streaming ? `<div class="au-right-ai__thinking"><span></span><span></span><span></span></div>` : ""}</div>
+      <div class="au-ai2__md" data-md>${message.content ? renderAssistantContent(message.content, message) : streaming ? `<div class="au-right-ai__thinking"><span></span><span></span><span></span></div>` : ""}</div>
       ${message.error ? `<div class="au-ai2__error">${esc(message.error)}</div>` : ""}
+      ${!streaming && config.agent ? renderApplyAll(message) : ""}
       ${!streaming ? `<div class="au-ai2__tools">
         <button type="button" data-ai="copy">${t("Copiar", "Copy")}</button>
         ${isLast ? `<button type="button" data-ai="regen">${t("Regenerar", "Regenerate")}</button>` : ""}
@@ -155,8 +208,34 @@ function renderMessage(message, chat, isLast) {
   </article>`;
 }
 
+function renderApplyAll(message) {
+  const { files } = parseAgent(message.content || "");
+  const pending = files.filter((f) => f.complete && safeRelPath(f.path) && safeApplied(message, f) === false);
+  if (!files.length || !pending.length) return "";
+  return `<div class="au-ag__all"><button type="button" data-ai="ag-all">${t("Revisar y aplicar todos", "Review & apply all")} (${pending.length})</button></div>`;
+}
+
+function safeApplied(message, file) {
+  return Boolean(message.applied?.[file.path]);
+}
+
+const AGENT_STARTERS = [
+  [t("Analizar todo el proyecto", "Analyze the whole project"), "Analizá el proyecto completo: leé los archivos clave (manifiestos, punto de entrada y módulos principales), explicá la arquitectura, detectá bugs y riesgos, y listá mejoras concretas ordenadas por impacto."],
+  [t("Buscar bugs y arreglarlos", "Find and fix bugs"), "Revisá el código del proyecto buscando bugs reales (errores lógicos, null/undefined, condiciones de carrera, manejo de errores). Leé los archivos necesarios y proponé los arreglos como bloques <file>."],
+  [t("Crear tests", "Create tests"), "Detectá el framework de tests del proyecto (o proponé uno liviano), leé los módulos más importantes y creá archivos de test con casos útiles."],
+  [t("Mejorar el README", "Improve the README"), "Leé el proyecto y su README actual y proponé un README mejorado y preciso (instalación, uso, estructura) como bloque <file>."]
+];
+
 function renderEmpty() {
   const skills = listSkills().filter((skill) => skill.id !== "general").slice(0, 6);
+
+  if (config.agent) {
+    return `<div class="au-ai2__empty">
+      <strong>${t("Modo Agente", "Agent mode")}</strong>
+      <p>${t("Lee tu proyecto bajo demanda, propone cambios y crea archivos. Tú revisas el diff y apruebas cada cambio.", "Reads your project on demand, proposes changes and creates files. You review the diff and approve each change.")}</p>
+      <div class="au-ai2__skills">${AGENT_STARTERS.map(([label, prompt], i) => `<button type="button" data-ai="agent-prompt" data-i="${i}"><i data-lucide="sparkles"></i><span><b>${esc(label)}</b></span></button>`).join("")}</div>
+    </div>`;
+  }
 
   return `<div class="au-ai2__empty">
     <strong>${t("¿En qué te ayudo?", "How can I help?")}</strong>
@@ -198,6 +277,7 @@ export function renderAiChat() {
     <form class="au-ai2__composer" id="au-ai-form">
       <div class="au-ai2__slash" id="au-ai-slash" hidden></div>
       <div class="au-ai2__chips">
+        <button type="button" class="au-ai2__chip ${config.agent ? "is-on" : ""}" data-ai="agent" title="${t("Modo Agente: lee el proyecto, propone cambios y crea archivos (con tu aprobación)", "Agent mode: reads the project, proposes changes and creates files (with your approval)")}"><i data-lucide="sparkles"></i> ${t("Agente", "Agent")}</button>
         <div class="au-dd" data-dd>
           <button type="button" class="au-dd__trigger" data-ai="dd-toggle" aria-haspopup="listbox" aria-expanded="false" title="${t("Skill activa", "Active skill")}"><i data-lucide="${esc(skill.icon || "sparkles")}"></i><span>${esc(skill.name)}</span><i data-lucide="chevron-down" class="au-dd__caret"></i></button>
           <div class="au-dd__menu" role="listbox" hidden>${listSkills().map((s) => `<button type="button" role="option" class="au-dd__item ${s.id === skill.id ? "is-on" : ""}" data-ai="dd-pick" data-skill="${s.id}"><i data-lucide="${esc(s.icon || "sparkles")}"></i><span><b>${esc(s.name)}</b><small>/${esc(s.slash)}</small></span>${s.id === skill.id ? '<i data-lucide="check" class="au-dd__check"></i>' : ""}</button>`).join("")}</div>
@@ -205,7 +285,7 @@ export function renderAiChat() {
         ${[["file", t("Archivo", "File")], ["selection", t("Selección", "Selection")], ["tabs", t("Pestañas", "Tabs")], ["tree", t("Proyecto", "Project")]].map(([k, l]) => `<button type="button" class="au-ai2__chip ${flags[k] ? "is-on" : ""}" data-ai="ctx" data-ctx="${k}" title="${t("Incluir como contexto", "Include as context")}">${l}</button>`).join("")}
       </div>
       <div class="au-ai2__inputrow">
-        <textarea id="au-ai-input" rows="1" placeholder="${t("Preguntá o escribí / para skills…", "Ask or type / for skills…")}" spellcheck="false">${esc(chatState.draft)}</textarea>
+        <textarea id="au-ai-input" rows="1" placeholder="${config.agent ? t("Pedile al agente: analizar, arreglar, crear archivos…", "Ask the agent: analyze, fix, create files…") : t("Preguntá o escribí / para skills…", "Ask or type / for skills…")}" spellcheck="false">${esc(chatState.draft)}</textarea>
         ${streaming
           ? `<button type="button" class="au-ai2__send is-stop" data-ai="stop" title="${t("Detener", "Stop")}"><i data-lucide="square"></i></button>`
           : `<button type="submit" class="au-ai2__send" title="${t("Enviar (Enter)", "Send (Enter)")}"><i data-lucide="send"></i></button>`}
@@ -298,7 +378,7 @@ function paintStreamingMessage(messageId) {
 
     const conversation = document.getElementById("au-ai-conversation");
     const atBottom = conversation ? conversation.scrollHeight - conversation.scrollTop - conversation.clientHeight < 60 : false;
-    node.innerHTML = renderAssistantContent(found.message.content);
+    node.innerHTML = renderAssistantContent(found.message.content, found.message);
     if (conversation && atBottom) conversation.scrollTop = conversation.scrollHeight;
   });
 }
@@ -314,6 +394,24 @@ function finishStream(messageId, error = "") {
   }
 
   repaintPanel();
+
+  if (!error && found && config.agent) maybeContinueAgent(found.chat, found.message);
+}
+
+async function maybeContinueAgent(chat, message) {
+  const { tools } = parseAgent(message.content || "");
+  if (!tools.length || chatState.streaming) return;
+
+  if ((chatState.agentRounds || 0) >= MAX_AGENT_ROUNDS) {
+    toastInfo(t("El agente alcanzó el máximo de lecturas por consulta. Pedile que continúe.", "The agent reached the maximum number of reads for this request. Ask it to continue."), "Aurelius AI");
+    return;
+  }
+
+  chatState.agentRounds = (chatState.agentRounds || 0) + 1;
+  const { text, note } = await resolveTools(tools);
+  addMessage(chat, { role: "user", content: text, hidden: true, note });
+  const reply = addMessage(chat, { role: "assistant", content: "" });
+  await streamReply(chat, getSkill(chat.skillId), reply, text, false);
 }
 
 function onStreamEvent({ id, kind, text }) {
@@ -335,10 +433,11 @@ function onStreamEvent({ id, kind, text }) {
 
 function buildPayload(chat, skill, userContent, includeContext = true) {
   const flags = effectiveContext(skill);
+  if (config.agent) flags.tree = false; // en modo agente el árbol va en el system prompt
   const history = chat.messages
     .filter((m) => !m.error && m.content)
     .slice(0, -1) // excluye el mensaje de usuario actual (se agrega aparte, con contexto); el placeholder ya quedó fuera por estar vacío
-    .slice(-12)
+    .slice(config.agent ? -30 : -12)
     .map((m) => ({ role: m.role, content: m.content }));
 
   return [
@@ -377,7 +476,13 @@ export async function sendPrompt(rawPrompt) {
   addMessage(chat, { role: "user", content: prompt, skillId: skill.id });
   const reply = addMessage(chat, { role: "assistant", content: "" });
   chatState.draft = "";
+  chatState.agentRounds = 0;
 
+  await streamReply(chat, skill, reply, prompt, true);
+}
+
+async function streamReply(chat, skill, reply, userContent, includeContext) {
+  const runtime = normalizeAiRuntimeSettings(appState.settings);
   const streamId = uid("s");
   chatState.streaming = { streamId, chatId: chat.id, messageId: reply.id };
   repaintPanel();
@@ -387,9 +492,9 @@ export async function sendPrompt(rawPrompt) {
     baseUrl: runtime.aiBaseUrl,
     apiKey: runtime.aiApiKey,
     model: runtime.aiModel,
-    temperature: skill.temperature ?? config.temperature,
-    maxTokens: config.maxTokens,
-    messages: buildPayload(chat, skill, prompt)
+    temperature: config.agent ? Math.min(skill.temperature ?? config.temperature, 0.3) : skill.temperature ?? config.temperature,
+    maxTokens: config.agent ? Math.max(config.maxTokens, 8192) : config.maxTokens,
+    messages: buildPayload(chat, skill, userContent, includeContext)
   };
 
   try {
@@ -504,6 +609,100 @@ async function newFileFromCode(code) {
   } catch (error) {
     toastError(String(error?.message || error), t("No se pudo crear el archivo", "Could not create file"));
   }
+}
+
+/* ====================================================================== */
+/* Modo agente: revisar y aplicar cambios                                  */
+/* ====================================================================== */
+
+function markApplied(message, paths) {
+  message.applied = { ...(message.applied || {}) };
+  for (const p of paths) message.applied[p] = true;
+  touchChats();
+  repaintPanel({ keepFocus: true });
+  window.dispatchEvent(new CustomEvent("au:refresh-project"));
+}
+
+async function reviewAgentFile(message, idx) {
+  const file = parseAgent(message.content || "").files[idx];
+  if (!file?.complete) return;
+
+  let cur;
+  try {
+    cur = await currentContent(file);
+  } catch (error) {
+    return toastError(String(error?.message || error), "Aurelius AI");
+  }
+
+  openOverlay({
+    title: `${file.path} · ${cur.exists ? t("Modificar", "Modify") : t("Archivo nuevo", "New file")}`,
+    icon: "git-compare",
+    width: 900,
+    body: `<div class="au-hist__view" style="max-height:56vh">${renderDiff(cur.text, file.content)}</div>
+      <div class="au-hist__main"><footer><button type="button" class="au-fx-btn" data-ag-confirm>${t("Aplicar", "Apply")}</button></footer></div>`,
+    onMount: (el) => {
+      el.querySelector("[data-ag-confirm]").addEventListener("click", async () => {
+        try {
+          const result = await applyFile(file);
+          closeOverlay();
+          markApplied(message, [file.path]);
+          toastSuccess(result.mode === "editor" ? t("Aplicado en el editor (sin guardar). Ctrl+Z lo deshace.", "Applied in the editor (unsaved). Ctrl+Z undoes it.") : result.rel, result.mode === "created" ? t("Archivo creado", "File created") : t("Archivo actualizado", "File updated"));
+        } catch (error) {
+          toastError(String(error?.message || error), t("No se pudo aplicar", "Could not apply"));
+        }
+      });
+    }
+  });
+}
+
+async function reviewAllAgentFiles(message) {
+  const files = parseAgent(message.content || "").files.filter((f) => f.complete && !message.applied?.[f.path]);
+  if (!files.length) return;
+
+  const rows = [];
+  for (const file of files) {
+    try {
+      const cur = await currentContent(file);
+      const st = lineStats(cur.text, file.content);
+      rows.push(`<label class="au-ag__pick"><input type="checkbox" checked data-ag-pick="${esc(file.path)}" /><b>${esc(file.path)}</b><span>${cur.exists ? t("Modificar", "Modify") : t("Nuevo", "New")}</span><small>+${st.added} −${st.removed}</small></label>`);
+    } catch {
+      rows.push(`<label class="au-ag__pick is-bad"><input type="checkbox" disabled /><b>${esc(file.path)}</b><span>${t("Ruta no permitida", "Path not allowed")}</span></label>`);
+    }
+  }
+
+  openOverlay({
+    title: t("Aplicar cambios del agente", "Apply agent changes"),
+    icon: "sparkles",
+    width: 640,
+    body: `<div class="au-ag__picks">${rows.join("")}</div>
+      <div class="au-hist__main"><footer><button type="button" class="au-fx-btn" data-ag-confirm-all>${t("Aplicar seleccionados", "Apply selected")}</button></footer></div>`,
+    onMount: (el) => {
+      el.querySelector("[data-ag-confirm-all]").addEventListener("click", async () => {
+        const chosen = new Set([...el.querySelectorAll("[data-ag-pick]:checked")].map((c) => c.dataset.agPick));
+        const done = [];
+        const failed = [];
+        for (const file of files.filter((f) => chosen.has(f.path))) {
+          try {
+            await applyFile(file);
+            done.push(file.path);
+          } catch (error) {
+            failed.push(`${file.path}: ${error?.message || error}`);
+          }
+        }
+        closeOverlay();
+        if (done.length) markApplied(message, done);
+        if (done.length) toastSuccess(`${done.length} ${t("archivo(s) aplicados", "file(s) applied")}`, "Aurelius AI");
+        if (failed.length) toastError(failed.join("\n").slice(0, 300), t("Algunos cambios fallaron", "Some changes failed"));
+      });
+    }
+  });
+}
+
+export function analyzeProjectWithAgent() {
+  config.agent = true;
+  saveConfig();
+  repaintPanel();
+  return sendPrompt(AGENT_STARTERS[0][1]);
 }
 
 /* ====================================================================== */
@@ -672,6 +871,24 @@ export function initAiChat() {
       case "stop":
         stopStream();
         break;
+      case "agent":
+        config.agent = !config.agent;
+        saveConfig();
+        repaintPanel({ keepFocus: true });
+        break;
+      case "agent-prompt":
+        sendPrompt(AGENT_STARTERS[Number(button.dataset.i)]?.[1] || "");
+        break;
+      case "ag-review": {
+        const found = findMessage(messageId);
+        if (found) reviewAgentFile(found.message, Number(button.dataset.idx));
+        break;
+      }
+      case "ag-all": {
+        const found = findMessage(messageId);
+        if (found) reviewAllAgentFiles(found.message);
+        break;
+      }
       case "slash-pick":
         pickSlash(button.dataset.slash);
         break;
@@ -756,6 +973,8 @@ export function createAiCommands() {
     { id: "ai-skills", title: t("IA: gestionar skills", "AI: manage skills"), description: t("Crea, edita, importa y exporta skills.", "Create, edit, import and export skills."), group, icon: "wand-2", keywords: ["ia", "ai", "skills", "habilidades"], run: async () => (await import("./ai-ui.js")).openSkillsManager(() => repaintPanel()) },
     { id: "ai-config", title: t("IA: configuración del asistente", "AI: assistant settings"), description: t("Temperatura, tokens, instrucciones y contexto.", "Temperature, tokens, instructions and context."), group, icon: "settings-2", keywords: ["ia", "ai", "temperatura", "config"], run: async () => (await import("./ai-ui.js")).openAiConfig(() => repaintPanel()) },
     { id: "ai-export", title: t("IA: exportar conversación (.md)", "AI: export conversation (.md)"), description: t("Descarga el chat activo como Markdown.", "Download the active chat as Markdown."), group, icon: "save", keywords: ["ia", "ai", "exportar"], run: exportChat },
+    { id: "ai-agent-toggle", title: t("IA: alternar modo Agente", "AI: toggle Agent mode"), description: t("El agente lee el proyecto, propone cambios y crea archivos (con tu aprobación).", "The agent reads the project, proposes changes and creates files (with your approval)."), group, icon: "sparkles", keywords: ["ia", "ai", "agente", "agent"], run: () => { config.agent = !config.agent; saveConfig(); repaintPanel(); toastInfo(config.agent ? t("Modo Agente activado.", "Agent mode on.") : t("Modo Agente desactivado.", "Agent mode off."), "Aurelius AI"); } },
+    { id: "ai-agent-analyze", title: t("IA: analizar el proyecto completo (Agente)", "AI: analyze the whole project (Agent)"), description: t("El agente lee los archivos clave y propone mejoras.", "The agent reads key files and proposes improvements."), group, icon: "search", keywords: ["ia", "ai", "analizar", "proyecto", "agente"], run: () => analyzeProjectWithAgent() },
     { id: "ai-copy-last", title: t("IA: copiar última respuesta", "AI: copy last response"), description: t("Copia la última respuesta del asistente.", "Copy the assistant's last response."), group, icon: "copy", keywords: ["ia", "ai", "copiar", "copy"], run: async () => { const last = [...activeChat().messages].reverse().find((m) => m.role === "assistant"); if (!last) return toastInfo(t("Aún no hay respuestas.", "No responses yet."), "Aurelius AI"); await navigator.clipboard.writeText(last.content); toastSuccess(t("Respuesta copiada.", "Response copied."), "Aurelius AI"); } },
     { id: "ai-tokens", title: t("IA: estimar tokens de la conversación", "AI: estimate conversation tokens"), description: t("Aproximación (≈ 4 caracteres por token).", "Approximation (≈ 4 chars per token)."), group, icon: "activity", keywords: ["ia", "ai", "tokens", "costo"], run: () => { const chars = activeChat().messages.reduce((n, m) => n + (m.content || "").length, 0); toastInfo(`≈ ${Math.ceil(chars / 4).toLocaleString()} tokens · ${chars.toLocaleString()} ${t("caracteres", "characters")} · ${activeChat().messages.length} ${t("mensajes", "messages")}`, "Aurelius AI"); } },
     { id: "ai-delete", title: t("IA: eliminar conversación actual", "AI: delete current conversation"), description: t("Borra el chat activo.", "Delete the active chat."), group, icon: "trash-2", keywords: ["ia", "ai", "borrar"], run: () => { removeChat(activeChat().id); repaintPanel(); } },
