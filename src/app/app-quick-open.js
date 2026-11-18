@@ -24,7 +24,8 @@ export function getQuickOpenRenderState() {
   return {
     quickOpenOpen,
     quickOpenQuery,
-    quickOpenItems: getQuickOpenItems(),
+    // Solo se calcula con el Quick Open abierto: aplanar todo el árbol en cada render era costoso.
+    quickOpenItems: quickOpenOpen ? getQuickOpenItems() : [],
     quickOpenActiveIndex
   };
 }

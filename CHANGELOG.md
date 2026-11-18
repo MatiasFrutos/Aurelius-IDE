@@ -133,3 +133,11 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - **Tasks:** filtro de tareas. **Doctor:** filtro «Solo problemas».
 - **Editor:** CRLF ⇄ LF, quitar acentos, colapsar espacios.
 - **Visual:** eliminados los halos de foco restantes en Explorer, Editor, paletas y buscadores (foco con borde nítido, sin glow).
+
+## v3.5 — Más fluido y rápido
+
+- **Rendimiento:** el Quick Open ya no aplana el árbol de archivos completo en cada render (solo con el panel abierto, y con caché por árbol); el refresco de iconos del chat ya no se duplica tras cada render.
+- **Modo rápido** (Ajustes o paleta «Rendimiento: alternar modo rápido»): sin animaciones, transiciones, blur ni fondo animado.
+- **Explorer:** «Ocultar .archivos». **Monitor:** copiar tabla de procesos.
+- **Git (paleta):** blame de la línea actual e historial del archivo activo.
+- **Pestañas (paleta):** siguiente / anterior, cerrar a la derecha, cerrar todas las guardadas.

@@ -220,8 +220,8 @@ export function renderAiChat() {
 
 let pendingScroll = null;
 
-function afterPanelPaint() {
-  refreshIcons();
+function afterPanelPaint({ icons = true } = {}) {
+  if (icons) refreshIcons();
   const conversation = document.getElementById("au-ai-conversation");
 
   if (conversation) {
@@ -254,7 +254,8 @@ function repaintPanel({ keepFocus = false } = {}) {
 
 // Llamada desde app.js tras renderApp(): restaura scroll/altura del textarea
 export function afterAppRender() {
-  if (document.querySelector(".au-ai2")) afterPanelPaint();
+  // renderApp() ya refrescó los iconos: aquí solo restauramos scroll y altura.
+  if (document.querySelector(".au-ai2")) afterPanelPaint({ icons: false });
 }
 
 function autosize(textarea) {

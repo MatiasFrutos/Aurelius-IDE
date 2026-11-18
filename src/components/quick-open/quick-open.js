@@ -67,7 +67,15 @@ function getSearchPlaceholder(projectName) {
   return `${t("Buscar archivo en", "Search file in")} ${projectName}...`;
 }
 
+const flattenCache = new WeakMap();
+
 export function flattenQuickOpenFiles(nodes = [], projectPath = "") {
+  const cached = flattenCache.get(nodes);
+
+  if (cached && cached.projectPath === projectPath) {
+    return cached.files;
+  }
+
   const files = [];
 
   function walk(items = []) {
@@ -94,6 +102,10 @@ export function flattenQuickOpenFiles(nodes = [], projectPath = "") {
   }
 
   walk(nodes);
+
+  if (nodes && typeof nodes === "object") {
+    flattenCache.set(nodes, { projectPath, files });
+  }
 
   return files;
 }

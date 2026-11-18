@@ -485,3 +485,7 @@
 .au-px__table th[data-px2-sort]:hover { color: var(--au-text); }
 .au-px__table th[data-dir="asc"]::after { content: " ▲"; font-size: 9px; color: var(--au-primary-strong); }
 .au-px__table th[data-dir="desc"]::after { content: " ▼"; font-size: 9px; color: var(--au-primary-strong); }
+
+/* Explorer: ocultar dotfiles */
+.au-px2-hide-dots [data-dot] { display: none; }
+.au-px__btn.is-on { border-color: rgba(var(--au-accent-rgb), 0.5); color: var(--au-primary-strong); background: var(--au-primary-soft); }
