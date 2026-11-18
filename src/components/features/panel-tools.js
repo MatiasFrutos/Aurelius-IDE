@@ -118,7 +118,7 @@ function injectExplorer() {
 
   markInjected();
   // El Explorer es un grid de filas fijas: añadimos una fila para la barra.
-  anchor.parentElement.style.gridTemplateRows = "48px 30px auto auto minmax(0, 1fr)";
+  anchor.parentElement.style.gridTemplateRows = "auto auto auto auto minmax(0, 1fr)";
 
   anchor.insertAdjacentHTML(
     "afterend",

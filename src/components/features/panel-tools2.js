@@ -6,7 +6,7 @@ import { t } from "../../app/i18n.js";
 import { toastError, toastInfo, toastSuccess } from "../ui/toast.js";
 import { openOverlay } from "./features.js";
 import { gitRun } from "../../services/shell.service.js";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
 
 const esc = (v) => String(v ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -104,6 +104,81 @@ function searchFor(term) {
   input.value = term;
   input.dispatchEvent(new Event("input", { bubbles: true }));
   form.requestSubmit?.();
+}
+
+/* ---------------------------------------------------------------- */
+/* Más herramientas por página                                       */
+/* ---------------------------------------------------------------- */
+
+async function revealProject() {
+  if (!appState.projectPath) return toastInfo(t("Abrí un proyecto primero.", "Open a project first."), "Explorer");
+  try {
+    await revealItemInDir(appState.activeFilePath || appState.projectPath);
+  } catch (error) {
+    toastError(String(error), "Explorer");
+  }
+}
+
+function copyRelativePath() {
+  if (!appState.activeFilePath) return toastInfo(t("No hay archivo activo.", "No active file."), "Explorer");
+  copy(relPath(appState.activeFilePath), "Explorer");
+}
+
+function copySearchPaths() {
+  const paths = [...new Set([...document.querySelectorAll(".au-search__result")].filter((r) => r.style.display !== "none").map((r) => relPath(decodeURIComponent(r.dataset.searchFilePath || ""))).filter(Boolean))];
+  if (!paths.length) return toastInfo(t("No hay resultados.", "No results."), t("Búsqueda", "Search"));
+  copy(paths.join("\n"), `${paths.length} ${t("archivos", "files")}`);
+}
+
+async function showAuthors() {
+  if (!appState.projectPath) return toastInfo(t("Abrí un proyecto primero.", "Open a project first."), "Git");
+  const res = await gitRun(appState.projectPath, ["log", "--pretty=%an", "-n", "2000"]);
+  if (!res.ok) return toastInfo((res.stderr || "").split("\n")[0] || "git log", "Git");
+  const counts = new Map();
+  res.stdout.split("\n").filter(Boolean).forEach((a) => counts.set(a, (counts.get(a) || 0) + 1));
+  const rows = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 15);
+  const max = Math.max(1, ...rows.map((r) => r[1]));
+  openOverlay({
+    title: t("Autores (últimos 2000 commits)", "Authors (last 2000 commits)"),
+    icon: "users",
+    width: 520,
+    body: rows.length ? `<div class="au-tb__hashes">${rows.map(([a, n]) => `<div class="au-tb__bar"><b title="${esc(a)}">${esc(a)}</b><span style="--w:${(n / max) * 100}%"></span><code>${n}</code></div>`).join("")}</div>` : `<p style="color:var(--au-muted)">${t("Sin commits.", "No commits.")}</p>`
+  });
+}
+
+let monitorAlerts = (() => { try { return localStorage.getItem("aurelius.px.mon-alerts") === "1"; } catch { return false; } })();
+let lastAlertAt = 0;
+
+function checkMonitorAlerts() {
+  if (!monitorAlerts) return;
+  const sys = appState.monitor?.system;
+  const total = Number(sys?.totalMemoryBytes) || 0;
+  if (!total || Date.now() - lastAlertAt < 60000) return;
+  const usedPct = ((Number(sys.usedMemoryBytes) || 0) / total) * 100;
+  if (usedPct >= 90) {
+    lastAlertAt = Date.now();
+    toastError(`${usedPct.toFixed(0)}% ${t("de la RAM en uso", "of RAM in use")}`, t("Alerta del Monitor", "Monitor alert"));
+  }
+}
+
+function copyDoctorJson() {
+  const items = [...document.querySelectorAll(".au-toolchain-item")].map((el) => ({
+    name: el.querySelector("strong")?.textContent.trim() || "",
+    ok: el.classList.contains("is-ok"),
+    status: el.querySelector("header span")?.textContent.trim() || ""
+  }));
+  if (!items.length) return toastInfo(t("Aún no hay datos.", "No data yet."), "Doctor");
+  copy(JSON.stringify(items, null, 2), "Doctor");
+}
+
+function copyTasksMarkdown() {
+  const items = [...document.querySelectorAll(".au-task-item")].filter((el) => el.style.display !== "none").map((el) => {
+    const title = el.querySelector("strong")?.textContent.trim() || "";
+    const cmd = el.querySelector("code")?.textContent.trim() || el.querySelector("small, p")?.textContent.trim() || "";
+    return `- **${title}**${cmd ? ` — \`${cmd}\`` : ""}`;
+  });
+  if (!items.length) return toastInfo(t("No hay tareas.", "No tasks."), "Tasks");
+  copy(items.join("\n"), "Tasks");
 }
 
 /* ---------------------------------------------------------------- */
@@ -214,6 +289,7 @@ export function createMoreCommands() {
   const tabs = t("Pestañas", "Tabs");
 
   return [
+    mk("copy-relpath", "Copiar ruta relativa del archivo", "Copy relative file path", "copy", copyRelativePath, t("Editor", "Editor"), ["path", "ruta", "relativa"]),
     mk("perf-fast", "Rendimiento: alternar modo rápido", "Performance: toggle fast mode", "zap", toggleFastMode, t("Rendimiento", "Performance"), ["fast", "rapido", "animaciones", "performance"]),
     mk("git-blame-line", "Git: blame de la línea actual", "Git: blame current line", "git-branch", blameCurrentLine, "Git", ["blame", "autor", "linea"]),
     mk("git-file-history", "Git: historial del archivo activo", "Git: active file history", "history", fileHistory, "Git", ["log", "history", "historial"]),
@@ -311,21 +387,22 @@ export function applyDoctorFilter() {
 export function injectMore() {
   let injected = false;
   injected = addTo('[data-px-bar="settings"]', `<div class="au-px__row">${b2("set-fast", "zap", t("Modo rápido (sin animaciones)", "Fast mode (no animations)")).replace('class="au-px__btn"', `class="au-px__btn ${isFastMode() ? "is-on" : ""}"`)}</div>`) || injected;
-  injected = addTo('[data-px-bar="monitor"]', b2("mon-copy", "copy", t("Copiar procesos", "Copy processes"))) || injected;
+  injected = addTo('[data-px-bar="monitor"]', b2("mon-copy", "copy", t("Copiar procesos", "Copy processes")) + `<button type="button" class="au-px__btn ${monitorAlerts ? "is-on" : ""}" data-px2="mon-alerts" title="${esc(t("Avisar si la RAM supera el 90%", "Warn when RAM exceeds 90%"))}"><i data-lucide="activity"></i><span>${esc(t("Alertas", "Alerts"))}</span></button>`) || injected;
   applyDotfiles();
-  injected = addTo('[data-px-bar="tasks"]', `<input class="au-px__input" data-px2-task-filter placeholder="${esc(t("Filtrar tareas…", "Filter tasks…"))}" spellcheck="false" />`) || injected;
-  injected = addTo('[data-px-bar="toolchain"]', `<button type="button" class="au-px__chip ${onlyProblems ? "is-on" : ""}" data-px2="doc-problems">${esc(t("Solo problemas", "Only problems"))}</button>`) || injected;
+  injected = addTo('[data-px-bar="tasks"]', `<input class="au-px__input" data-px2-task-filter placeholder="${esc(t("Filtrar tareas…", "Filter tasks…"))}" spellcheck="false" />` + b2("task-md", "copy", t("Copiar como Markdown", "Copy as Markdown"))) || injected;
+  injected = addTo('[data-px-bar="toolchain"]', `<button type="button" class="au-px__chip ${onlyProblems ? "is-on" : ""}" data-px2="doc-problems">${esc(t("Solo problemas", "Only problems"))}</button>` + b2("doc-json", "copy", t("Copiar JSON", "Copy JSON"))) || injected;
   applyProcessSort();
   applyDoctorFilter();
-  injected = addTo('[data-px-bar="explorer"]', b2("exp-tree", "folder-tree", t("Copiar árbol", "Copy tree")) + b2("exp-stats", "activity", t("Por extensión", "By extension")) + b2("exp-dots", "eye", t("Ocultar .archivos", "Hide dotfiles"))) || injected;
-  injected = addTo('[data-px-bar="git"]', b2("git-copy-branch", "copy", t("Copiar rama", "Copy branch")) + b2("git-copy-commit", "copy", t("Último commit", "Last commit")) + b2("git-remote", "external-link", t("Abrir remoto", "Open remote"))) || injected;
-  injected = addTo('[data-px-bar="search"]', ["TODO", "FIXME", "HACK", "console.log"].map((w) => `<button type="button" class="au-px__chip" data-px2="srch-term" data-term="${esc(w)}">${esc(w)}</button>`).join("")) || injected;
+  injected = addTo('[data-px-bar="explorer"]', b2("exp-tree", "folder-tree", t("Copiar árbol", "Copy tree")) + b2("exp-stats", "activity", t("Por extensión", "By extension")) + b2("exp-dots", "eye", t("Ocultar .archivos", "Hide dotfiles")) + b2("exp-reveal-fm", "external-link", t("Mostrar en el gestor", "Show in file manager")) + b2("exp-relpath", "copy", t("Ruta relativa", "Relative path"))) || injected;
+  injected = addTo('[data-px-bar="git"]', b2("git-copy-branch", "copy", t("Copiar rama", "Copy branch")) + b2("git-copy-commit", "copy", t("Último commit", "Last commit")) + b2("git-remote", "external-link", t("Abrir remoto", "Open remote")) + b2("git-authors", "users", t("Autores", "Authors"))) || injected;
+  injected = addTo('[data-px-bar="search"]', ["TODO", "FIXME", "HACK", "console.log"].map((w) => `<button type="button" class="au-px__chip" data-px2="srch-term" data-term="${esc(w)}">${esc(w)}</button>`).join("") + b2("srch-paths", "copy", t("Copiar rutas", "Copy paths"))) || injected;
   injected = injectSettingsSearch() || injected;
   return injected;
 }
 
 export function initMoreTools() {
   applyFastMode();
+  window.addEventListener("au:monitor-refresh", () => setTimeout(checkMonitorAlerts, 800));
   document.addEventListener("click", (event) => {
     const th = event.target.closest("th[data-px2-sort]");
     if (th) {
@@ -348,6 +425,23 @@ export function initMoreTools() {
         return copyLastCommit();
       case "git-remote":
         return openRemote();
+      case "exp-reveal-fm":
+        return revealProject();
+      case "exp-relpath":
+        return copyRelativePath();
+      case "srch-paths":
+        return copySearchPaths();
+      case "git-authors":
+        return showAuthors();
+      case "mon-alerts":
+        monitorAlerts = !monitorAlerts;
+        try { localStorage.setItem("aurelius.px.mon-alerts", monitorAlerts ? "1" : "0"); } catch { /* sin almacenamiento */ }
+        el.classList.toggle("is-on", monitorAlerts);
+        return toastInfo(monitorAlerts ? t("Te aviso si la RAM supera el 90%.", "I'll warn you if RAM exceeds 90%.") : t("Alertas desactivadas.", "Alerts off."), "Monitor");
+      case "doc-json":
+        return copyDoctorJson();
+      case "task-md":
+        return copyTasksMarkdown();
       case "set-fast":
         return toggleFastMode();
       case "mon-copy": {
