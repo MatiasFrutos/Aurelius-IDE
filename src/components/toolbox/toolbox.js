@@ -10,7 +10,8 @@ const STORE_KEY = "aurelius.toolbox.v1";
 
 const state = {
   tool: "json",
-  values: {}
+  values: {},
+  favs: []
 };
 
 try {
@@ -21,7 +22,7 @@ try {
 
 function persist() {
   try {
-    localStorage.setItem(STORE_KEY, JSON.stringify({ tool: state.tool, values: state.values }));
+    localStorage.setItem(STORE_KEY, JSON.stringify({ tool: state.tool, values: state.values, favs: state.favs }));
   } catch {
     // ignorado
   }
@@ -1369,6 +1370,48 @@ const TOOLS = [
     }
   },
   {
+    id: "slug",
+    icon: "git-branch",
+    title: t("Slug y ramas", "Slug & branches"),
+    render: () => `
+      ${io({ id: "sl-in", label: t("Título o descripción", "Title or description"), rows: 3, value: val("sl-in", "Añadir login con Google (OAuth)") })}
+      <div class="au-tb__row"><label class="au-tb__field"><span>${t("Prefijo de rama", "Branch prefix")}</span><input id="sl-pre" value="${esc(val("sl-pre", "feat"))}" style="width:130px" spellcheck="false" /></label>
+      <label class="au-tb__field"><span>${t("Ticket (opcional)", "Ticket (optional)")}</span><input id="sl-tk" value="${esc(val("sl-tk"))}" style="width:130px" spellcheck="false" /></label></div>
+      <div class="au-tb__hashes" id="sl-out"></div>`,
+    live: ["sl-in", "sl-pre", "sl-tk"],
+    run() {
+      const raw = $("sl-in").value.trim();
+      const base = raw.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      const words = base.split("-").filter(Boolean);
+      const pre = $("sl-pre").value.trim().replace(/[^\w-]/g, "");
+      const tk = $("sl-tk").value.trim().replace(/[^\w-]/g, "");
+      const branch = [pre, [tk.toLowerCase(), base.slice(0, 48).replace(/-+$/, "")].filter(Boolean).join("-")].filter(Boolean).join("/");
+      const rows = [["slug", base], [t("Rama", "Branch"), branch], ["snake_case", words.join("_")], ["camelCase", words.map((w, i) => (i ? w[0].toUpperCase() + w.slice(1) : w)).join("")], ["PascalCase", words.map((w) => w[0].toUpperCase() + w.slice(1)).join("")], ["CONSTANT_CASE", words.join("_").toUpperCase()], [t("Comando", "Command"), `git switch -c ${branch}`]];
+      $("sl-out").innerHTML = base ? rows.map(([k, v]) => `<button type="button" class="au-tb__hash" data-tb-copy="${esc(v)}" style="text-align:left;cursor:pointer"><b>${esc(k)}</b><code>${esc(v)}</code></button>`).join("") : "";
+      save("sl-in", "sl-pre", "sl-tk");
+    }
+  },
+  {
+    id: "headers",
+    icon: "globe-2",
+    title: t("Cabeceras HTTP", "HTTP headers"),
+    render: () => `
+      ${io({ id: "hd-in", label: t("Cabeceras (una por línea, «Nombre: valor»)", "Headers (one per line, “Name: value”)"), rows: 10, value: val("hd-in", "Content-Type: application/json\nAuthorization: Bearer abc123\nX-Request-Id: 42") })}
+      ${actions([["hd-fetch", "fetch headers", "is-primary"], ["hd-curl", "cURL -H"], ["hd-json", "JSON"], ["copy:hd-out", t("Copiar", "Copy")]])}
+      ${io({ id: "hd-out", label: t("Resultado", "Result"), readonly: true, rows: 10 })}`,
+    run(action) {
+      const pairs = $("hd-in").value.split("\n").map((l) => l.match(/^\s*([^:\s][^:]*):\s*(.*)$/)).filter(Boolean).map((m) => [m[1].trim(), m[2].trim()]);
+      const obj = Object.fromEntries(pairs);
+      const map = {
+        "hd-fetch": () => `headers: ${JSON.stringify(obj, null, 2)}`,
+        "hd-curl": () => pairs.map(([k, v]) => `-H ${JSON.stringify(`${k}: ${v}`)}`).join(" \\\n  "),
+        "hd-json": () => JSON.stringify(obj, null, 2)
+      };
+      if (map[action]) $("hd-out").value = map[action]();
+      save("hd-in");
+    }
+  },
+  {
     id: "gen",
     icon: "zap",
     title: t("Generadores", "Generators"),
@@ -1440,6 +1483,27 @@ function save(...ids) {
   persist();
 }
 
+function renderTabs(tool) {
+  const favs = new Set(state.favs || []);
+  const ordered = [...TOOLS.filter((x) => favs.has(x.id)), ...TOOLS.filter((x) => !favs.has(x.id))];
+
+  return ordered
+    .map((item) => `<button type="button" role="tab" class="au-tb__tab ${item.id === tool.id ? "is-active" : ""} ${favs.has(item.id) ? "is-fav" : ""}" data-tb-tool="${item.id}" data-tb-name="${esc(`${item.title} ${item.id}`.toLowerCase())}"><i data-lucide="${item.icon}"></i>${esc(item.title)}<span class="au-tb__star" role="button" tabindex="-1" data-tb-fav="${item.id}" title="${esc(t("Fijar / quitar favorito", "Pin / unpin favorite"))}">${favs.has(item.id) ? "★" : "☆"}</span></button>`)
+    .join("");
+}
+
+function filterTabs(query) {
+  const q = query.trim().toLowerCase();
+  let shown = 0;
+  document.querySelectorAll(".au-tb__tab").forEach((tab) => {
+    const match = !q || (tab.dataset.tbName || "").includes(q);
+    tab.style.display = match ? "" : "none";
+    if (match) shown += 1;
+  });
+  const counter = $("tb-count");
+  if (counter) counter.textContent = String(shown);
+}
+
 export function renderToolboxPage() {
   const tool = TOOLS.find((item) => item.id === state.tool) || TOOLS[0];
 
@@ -1452,9 +1516,8 @@ export function renderToolboxPage() {
         </div>
         <p>${t("Todo se ejecuta en tu equipo, sin enviar datos a ningún servidor.", "Everything runs locally; no data leaves your machine.")}</p>
       </header>
-      <nav class="au-tb__tabs" role="tablist">
-        ${TOOLS.map((item) => `<button type="button" role="tab" class="au-tb__tab ${item.id === tool.id ? "is-active" : ""}" data-tb-tool="${item.id}"><i data-lucide="${item.icon}"></i>${esc(item.title)}</button>`).join("")}
-      </nav>
+      <div class="au-tb__filter"><i data-lucide="search"></i><input id="tb-filter" type="search" placeholder="${esc(t("Buscar herramienta… (pulsa / para enfocar)", "Search tool… (press / to focus)"))}" spellcheck="false" autocomplete="off" /><span class="au-tb__count" id="tb-count">${TOOLS.length}</span></div>
+      <nav class="au-tb__tabs" role="tablist">${renderTabs(tool)}</nav>
       <div class="au-tb__body" id="au-tb-body">${tool.render()}</div>
     </section>`;
 }
@@ -1474,7 +1537,35 @@ export function bindToolboxEvents() {
   if (bound) return;
   bound = true;
 
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "/" && $("au-toolbox") && !/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName) && !event.target.isContentEditable) {
+      event.preventDefault();
+      $("tb-filter")?.focus();
+    }
+  });
+
+  document.addEventListener("input", (event) => {
+    if (event.target.id === "tb-filter") filterTabs(event.target.value);
+  });
+
   document.addEventListener("click", async (event) => {
+    const fav = event.target.closest("[data-tb-fav]");
+
+    if (fav && $("au-toolbox")) {
+      event.stopPropagation();
+      const id = fav.dataset.tbFav;
+      state.favs = state.favs.includes(id) ? state.favs.filter((x) => x !== id) : [...state.favs, id];
+      persist();
+      const nav = document.querySelector(".au-tb__tabs");
+      const query = $("tb-filter")?.value || "";
+      if (nav) {
+        nav.innerHTML = renderTabs(currentTool());
+        window.lucide?.createIcons?.();
+        filterTabs(query);
+      }
+      return;
+    }
+
     const tab = event.target.closest("[data-tb-tool]");
 
     if (tab) {
@@ -1557,4 +1648,7 @@ export function afterMount() {
   bindToolboxEvents();
   const tool = currentTool();
   if (tool.live) runCurrent("live");
+  const nav = document.querySelector(".au-tb__tabs");
+  const active = nav?.querySelector(".au-tb__tab.is-active");
+  if (nav && active) nav.scrollTop = Math.max(0, active.offsetTop - 4);
 }

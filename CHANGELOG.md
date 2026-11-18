@@ -125,3 +125,11 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - «Expandir» ya no abre carpetas pesadas (`node_modules`, `target`, `dist`, `.git`…) y se detiene al llegar a ~500 filas visibles (aviso si el proyecto es grande).
 - Al abrir un proyecto, las carpetas pesadas arrancan colapsadas.
 - «Revelar» valida que el archivo esté dentro del proyecto, limita el recorrido y hace scroll al archivo activo.
+
+## v3.4 — Buscador del Toolbox y más herramientas
+
+- **Toolbox:** buscador de herramientas (atajo `/`), favoritos con ★ que se fijan al inicio, pestañas compactas con scroll; +2 herramientas: Slug y ramas, Cabeceras HTTP (→ fetch / cURL / JSON).
+- **Monitor:** tabla de procesos ordenable por columna (nombre, PID, CPU, RAM).
+- **Tasks:** filtro de tareas. **Doctor:** filtro «Solo problemas».
+- **Editor:** CRLF ⇄ LF, quitar acentos, colapsar espacios.
+- **Visual:** eliminados los halos de foco restantes en Explorer, Editor, paletas y buscadores (foco con borde nítido, sin glow).

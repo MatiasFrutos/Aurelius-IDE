@@ -67,6 +67,10 @@ const transforms = {
   toArray: (s) => JSON.stringify(s.split("\n").map((l) => l.trim()).filter(Boolean)),
   fromArray: (s) => JSON.parse(s).map(String).join("\n"),
   logSel: (s) => `console.log(${JSON.stringify(s.trim() + ":")}, ${s.trim()});`,
+  crlf2lf: (s) => s.replace(/\r\n/g, "\n"),
+  lf2crlf: (s) => s.replace(/\r?\n/g, "\r\n"),
+  noAccents: (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+  collapseSpaces: (s) => s.replace(/[ \t]+/g, " ").replace(/^ +| +$/gm, ""),
   shuffle: (s) => {
     const a = s.split("\n");
     for (let i = a.length - 1; i > 0; i--) {
@@ -258,6 +262,10 @@ export function createEditorToolCommands() {
       view.dispatch({ changes: { from: Math.min(pos, view.state.doc.length), insert: empty ? text : text } });
       view.focus();
     }, ["duplicate"]),
+    mk("crlf-lf", "Saltos de línea: CRLF → LF", "Line endings: CRLF → LF", "wand-2", () => applyTransform("crlf2lf"), ["eol", "windows"]),
+    mk("lf-crlf", "Saltos de línea: LF → CRLF", "Line endings: LF → CRLF", "wand-2", () => applyTransform("lf2crlf"), ["eol", "windows"]),
+    mk("no-accents", "Quitar acentos", "Remove accents", "wand-2", () => applyTransform("noAccents"), ["diacritics", "tildes"]),
+    mk("collapse-spaces", "Colapsar espacios múltiples", "Collapse repeated spaces", "wand-2", () => applyTransform("collapseSpaces"), ["whitespace"]),
     mk("stats", "Estadísticas del texto", "Text statistics", "activity", showSelectionStats, ["count", "contar", "palabras", "words"]),
     mk("uuid", "Insertar UUID", "Insert UUID", "hash", () => insertText(uuid()), ["uuid", "guid"]),
     mk("iso-date", "Insertar fecha ISO", "Insert ISO date", "clock-3", () => insertText(new Date().toISOString()), ["date", "fecha"]),

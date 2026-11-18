@@ -479,3 +479,9 @@
 .au-px2__search:focus-within { border-color: rgba(var(--au-accent-rgb), 0.6); }
 .au-px2__search svg { width: 15px; height: 15px; color: var(--au-muted); flex: none; }
 .au-px2__search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--au-text); font: inherit; font-size: 13px; }
+
+/* Tabla de procesos ordenable */
+.au-px__table th[data-px2-sort] { cursor: pointer; user-select: none; }
+.au-px__table th[data-px2-sort]:hover { color: var(--au-text); }
+.au-px__table th[data-dir="asc"]::after { content: " ▲"; font-size: 9px; color: var(--au-primary-strong); }
+.au-px__table th[data-dir="desc"]::after { content: " ▼"; font-size: 9px; color: var(--au-primary-strong); }

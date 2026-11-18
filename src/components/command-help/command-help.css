@@ -213,7 +213,7 @@
 .au-command-help__search:focus-within {
   border-color: rgba(var(--au-accent-rgb), 0.34);
   background: var(--au-bg-elevated);
-  box-shadow: 0 0 0 3px rgba(var(--au-accent-rgb), 0.07);
+  box-shadow: none;
 }
 
 .au-command-help__search svg {

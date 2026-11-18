@@ -173,7 +173,7 @@
 .au-search__control:focus-within {
   border-color: rgba(var(--au-accent-rgb), 0.32);
   background: var(--au-bg-elevated);
-  box-shadow: 0 0 0 2px rgba(var(--au-accent-rgb), 0.055);
+  box-shadow: none;
 }
 
 .au-search__control > svg {
