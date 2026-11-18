@@ -143,8 +143,59 @@ export function filterSettings(query) {
   return shown;
 }
 
+/* Monitor: tabla de procesos ordenable */
+const procSort = { col: -1, dir: -1 };
+
+function cellValue(row, col) {
+  const text = row.children[col]?.textContent.trim() || "";
+  const num = parseFloat(text.replace(/[^\d.,-]/g, "").replace(",", "."));
+  if (col === 0) return text.toLowerCase();
+  const mult = /GB/i.test(text) ? 1024 : /KB/i.test(text) ? 1 / 1024 : 1;
+  return Number.isFinite(num) ? num * (col === 3 ? mult : 1) : 0;
+}
+
+export function applyProcessSort() {
+  const table = document.querySelector(".au-px__table");
+  if (!table) return false;
+  const heads = [...table.querySelectorAll("thead th")];
+  heads.forEach((th, i) => {
+    th.dataset.px2Sort = String(i);
+    th.dataset.dir = i === procSort.col ? (procSort.dir > 0 ? "asc" : "desc") : "";
+  });
+  if (procSort.col < 0) return false;
+  const body = table.querySelector("tbody");
+  const rows = [...body.querySelectorAll("tr")];
+  const sorted = [...rows].sort((a, b) => {
+    const x = cellValue(a, procSort.col);
+    const y = cellValue(b, procSort.col);
+    return (x > y ? 1 : x < y ? -1 : 0) * procSort.dir;
+  });
+  if (sorted.every((row, i) => row === rows[i])) return false;
+  sorted.forEach((row) => body.appendChild(row));
+  return false;
+}
+
+export function filterTasks(query) {
+  const q = query.trim().toLowerCase();
+  document.querySelectorAll(".au-task-item").forEach((item) => {
+    item.style.display = !q || item.textContent.toLowerCase().includes(q) ? "" : "none";
+  });
+}
+
+let onlyProblems = false;
+
+export function applyDoctorFilter() {
+  document.querySelectorAll(".au-toolchain-item").forEach((item) => {
+    item.style.display = onlyProblems && item.classList.contains("is-ok") ? "none" : "";
+  });
+}
+
 export function injectMore() {
   let injected = false;
+  injected = addTo('[data-px-bar="tasks"]', `<input class="au-px__input" data-px2-task-filter placeholder="${esc(t("Filtrar tareas…", "Filter tasks…"))}" spellcheck="false" />`) || injected;
+  injected = addTo('[data-px-bar="toolchain"]', `<button type="button" class="au-px__chip ${onlyProblems ? "is-on" : ""}" data-px2="doc-problems">${esc(t("Solo problemas", "Only problems"))}</button>`) || injected;
+  applyProcessSort();
+  applyDoctorFilter();
   injected = addTo('[data-px-bar="explorer"]', b2("exp-tree", "folder-tree", t("Copiar árbol", "Copy tree")) + b2("exp-stats", "activity", t("Por extensión", "By extension"))) || injected;
   injected = addTo('[data-px-bar="git"]', b2("git-copy-branch", "copy", t("Copiar rama", "Copy branch")) + b2("git-copy-commit", "copy", t("Último commit", "Last commit")) + b2("git-remote", "external-link", t("Abrir remoto", "Open remote"))) || injected;
   injected = addTo('[data-px-bar="search"]', ["TODO", "FIXME", "HACK", "console.log"].map((w) => `<button type="button" class="au-px__chip" data-px2="srch-term" data-term="${esc(w)}">${esc(w)}</button>`).join("")) || injected;
@@ -154,6 +205,14 @@ export function injectMore() {
 
 export function initMoreTools() {
   document.addEventListener("click", (event) => {
+    const th = event.target.closest("th[data-px2-sort]");
+    if (th) {
+      const col = Number(th.dataset.px2Sort);
+      procSort.dir = procSort.col === col ? -procSort.dir : col === 0 ? 1 : -1;
+      procSort.col = col;
+      applyProcessSort();
+      return;
+    }
     const el = event.target.closest("[data-px2]");
     if (!el) return;
     switch (el.dataset.px2) {
@@ -167,6 +226,10 @@ export function initMoreTools() {
         return copyLastCommit();
       case "git-remote":
         return openRemote();
+      case "doc-problems":
+        onlyProblems = !onlyProblems;
+        el.classList.toggle("is-on", onlyProblems);
+        return applyDoctorFilter();
       case "srch-term":
         return searchFor(el.dataset.term);
       default:
@@ -174,6 +237,7 @@ export function initMoreTools() {
   });
 
   document.addEventListener("input", (event) => {
+    if (event.target.matches?.("[data-px2-task-filter]")) filterTasks(event.target.value);
     if (event.target.matches?.("[data-px2-settings-search]")) filterSettings(event.target.value);
   });
 }

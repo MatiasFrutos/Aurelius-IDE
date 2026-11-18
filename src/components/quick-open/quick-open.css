@@ -166,7 +166,7 @@
 .au-quick-open__input-wrap:focus-within {
   border-color: rgba(var(--au-accent-rgb), 0.36);
   background: var(--au-bg-elevated);
-  box-shadow: 0 0 0 3px rgba(var(--au-accent-rgb), 0.07);
+  box-shadow: none;
 }
 
 .au-quick-open__input-wrap input {

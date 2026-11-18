@@ -124,3 +124,19 @@
 .au-tb__bar code { color: var(--au-muted); text-align: right; }
 
 .au-tb__tabs { flex-wrap: wrap !important; overflow: visible; row-gap: 0; }
+
+/* Buscador y favoritos del Toolbox */
+.au-tb__filter { display: flex; align-items: center; gap: 8px; margin: 12px 24px 4px; padding: 8px 12px; border: 1px solid var(--au-border); border-radius: 10px; background: var(--au-bg-input); max-width: 520px; }
+.au-tb__filter:focus-within { border-color: rgba(var(--au-accent-rgb), 0.6); }
+.au-tb__filter svg { width: 15px; height: 15px; color: var(--au-muted); flex: none; }
+.au-tb__filter input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--au-text); font: inherit; font-size: 13px; }
+.au-tb__count { color: var(--au-muted); font: 600 11px var(--au-font-mono); }
+.au-tb__star { margin-left: 4px; color: var(--au-muted); font-size: 11px; opacity: 0; transition: opacity var(--au-dur-fast) var(--au-ease), color var(--au-dur-fast) var(--au-ease); cursor: pointer; }
+.au-tb__tab:hover .au-tb__star, .au-tb__tab.is-fav .au-tb__star { opacity: 1; }
+.au-tb__tab.is-fav .au-tb__star { color: var(--au-primary-strong); }
+.au-tb__star:hover { color: var(--au-text); }
+
+/* Pestañas compactas: una banda de 2 filas con scroll interno (hay 40+ herramientas) */
+.au-tb__tabs { max-height: 98px; overflow-y: auto !important; padding: 4px 24px 0; margin-top: 8px; position: relative; gap: 0 2px; scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, 0.28) transparent; }
+.au-tb__tab { padding: 7px 11px; font-size: 12px; }
+.au-tb__tab.is-active { background: var(--au-primary-soft); border-radius: 8px 8px 0 0; }
