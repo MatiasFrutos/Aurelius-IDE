@@ -88,3 +88,17 @@ button:not(:disabled):active { transform: translateY(0.5px) scale(0.99); }
 .au-terminal-list-item.is-active { background: var(--au-primary-soft); border-color: rgba(var(--au-accent-rgb), 0.28); box-shadow: inset 2px 0 0 var(--au-primary); }
 .au-terminal-list-item__icon { box-shadow: none; }
 .au-terminal-empty__icon { box-shadow: none; }
+
+/* ==========================================================================
+   Modo rápido: sin animaciones, transiciones ni capas animadas
+   ========================================================================== */
+:root[data-perf="fast"] *,
+:root[data-perf="fast"] *::before,
+:root[data-perf="fast"] *::after {
+  animation: none !important;
+  transition: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  scroll-behavior: auto !important;
+}
+:root[data-perf="fast"] #au-bg { display: none !important; }

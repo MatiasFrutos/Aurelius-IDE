@@ -1,7 +1,7 @@
 // src/components/features/panel-tools2.js
 // Segunda tanda de herramientas para las páginas existentes. Se inyecta dentro de las barras
 // ya creadas por panel-tools.js (sin añadir filas al grid) y de forma idempotente.
-import { appState } from "../../app/state.js";
+import { appState, closeTab } from "../../app/state.js";
 import { t } from "../../app/i18n.js";
 import { toastError, toastInfo, toastSuccess } from "../ui/toast.js";
 import { openOverlay } from "./features.js";
@@ -107,6 +107,124 @@ function searchFor(term) {
 }
 
 /* ---------------------------------------------------------------- */
+/* Modo rápido                                                       */
+/* ---------------------------------------------------------------- */
+
+const FAST_KEY = "aurelius.perf.fast";
+
+export function isFastMode() {
+  try {
+    return localStorage.getItem(FAST_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function applyFastMode() {
+  if (isFastMode()) document.documentElement.dataset.perf = "fast";
+  else delete document.documentElement.dataset.perf;
+}
+
+export function toggleFastMode() {
+  const next = !isFastMode();
+  try {
+    localStorage.setItem(FAST_KEY, next ? "1" : "0");
+  } catch {
+    // sin almacenamiento
+  }
+  applyFastMode();
+  document.querySelectorAll('[data-px2="set-fast"]').forEach((el) => el.classList.toggle("is-on", next));
+  toastInfo(
+    next ? t("Modo rápido activado: sin animaciones, transiciones ni fondo animado.", "Fast mode on: no animations, transitions or animated background.") : t("Modo rápido desactivado.", "Fast mode off."),
+    t("Rendimiento", "Performance")
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* Explorer: ocultar archivos ocultos                                */
+/* ---------------------------------------------------------------- */
+
+const DOT_KEY = "aurelius.px.hide-dots";
+let hideDots = (() => { try { return localStorage.getItem(DOT_KEY) === "1"; } catch { return false; } })();
+
+export function applyDotfiles() {
+  const tree = document.getElementById("explorer-tree");
+  if (!tree) return;
+  tree.classList.toggle("au-px2-hide-dots", hideDots);
+  if (!hideDots) return;
+  tree.querySelectorAll("[data-tree-item]:not([data-dot-checked])").forEach((item) => {
+    item.dataset.dotChecked = "1";
+    const name = item.querySelector(":scope > .au-tree__row-wrap .au-tree__name")?.textContent || "";
+    if (name.startsWith(".")) item.dataset.dot = "1";
+  });
+}
+
+/* ---------------------------------------------------------------- */
+/* Comandos (paleta)                                                 */
+/* ---------------------------------------------------------------- */
+
+function relPath(abs) {
+  const base = (appState.projectPath || "").replace(/\/+$/, "");
+  return abs && abs.startsWith(`${base}/`) ? abs.slice(base.length + 1) : abs;
+}
+
+async function blameCurrentLine() {
+  const view = appState.editorView;
+  if (!view || !appState.activeFilePath || !appState.projectPath) return toastInfo(t("Abrí un archivo de un proyecto Git.", "Open a file from a Git project."), "Git blame");
+  const line = view.state.doc.lineAt(view.state.selection.main.head).number;
+  const res = await gitRun(appState.projectPath, ["blame", "-L", `${line},${line}`, "--date=short", "--", relPath(appState.activeFilePath)]);
+  if (!res.ok) return toastInfo((res.stderr || "").split("\n")[0] || t("No se pudo obtener el blame.", "Could not get blame."), "Git blame");
+  toastInfo(res.stdout.trim().replace(/\s+/g, " ").slice(0, 160), `Git blame · L${line}`);
+}
+
+async function fileHistory() {
+  if (!appState.activeFilePath || !appState.projectPath) return toastInfo(t("Abrí un archivo de un proyecto Git.", "Open a file from a Git project."), "Git");
+  const rel = relPath(appState.activeFilePath);
+  const res = await gitRun(appState.projectPath, ["log", "--pretty=%h\t%an\t%ad\t%s", "--date=short", "-n", "40", "--", rel]);
+  if (!res.ok) return toastInfo((res.stderr || "").split("\n")[0] || "git log", "Git");
+  const rows = res.stdout.trim().split("\n").filter(Boolean).map((l) => l.split("\t"));
+  openOverlay({
+    title: `${t("Historial de", "History of")} ${rel}`,
+    icon: "history",
+    width: 720,
+    body: rows.length
+      ? `<div class="au-tb__hashes">${rows.map(([h, a, d, m]) => `<button type="button" class="au-tb__hash" data-tb-copy="${esc(h)}" style="text-align:left;cursor:pointer"><b>${esc(h)} · ${esc(d)}</b><code>${esc(a)} — ${esc(m)}</code></button>`).join("")}</div>`
+      : `<p style="color:var(--au-muted)">${t("Este archivo no tiene commits.", "This file has no commits.")}</p>`
+  });
+}
+
+function goTab(step) {
+  const tabs = appState.openTabs;
+  if (tabs.length < 2) return;
+  const i = tabs.findIndex((x) => x.path === appState.activeFilePath);
+  const next = tabs[(i + step + tabs.length) % tabs.length];
+  window.dispatchEvent(new CustomEvent("au:open-file", { detail: { path: next.path } }));
+}
+
+function closeRight() {
+  const i = appState.openTabs.findIndex((x) => x.path === appState.activeFilePath);
+  const targets = appState.openTabs.slice(i + 1).filter((x) => !x.isDirty).map((x) => x.path);
+  if (!targets.length) return toastInfo(t("No hay pestañas a la derecha.", "No tabs to the right."), t("Pestañas", "Tabs"));
+  targets.forEach((p) => closeTab(p));
+  window.dispatchEvent(new CustomEvent("au:rerender"));
+}
+
+export function createMoreCommands() {
+  const mk = (id, es, en, icon, run, group, keywords = []) => ({ id, title: t(es, en), description: t(es, en), group, icon, keywords, run });
+  const tabs = t("Pestañas", "Tabs");
+
+  return [
+    mk("perf-fast", "Rendimiento: alternar modo rápido", "Performance: toggle fast mode", "zap", toggleFastMode, t("Rendimiento", "Performance"), ["fast", "rapido", "animaciones", "performance"]),
+    mk("git-blame-line", "Git: blame de la línea actual", "Git: blame current line", "git-branch", blameCurrentLine, "Git", ["blame", "autor", "linea"]),
+    mk("git-file-history", "Git: historial del archivo activo", "Git: active file history", "history", fileHistory, "Git", ["log", "history", "historial"]),
+    mk("tab-next", "Pestaña siguiente", "Next tab", "arrow-right", () => goTab(1), tabs, ["next", "siguiente"]),
+    mk("tab-prev", "Pestaña anterior", "Previous tab", "arrow-right", () => goTab(-1), tabs, ["prev", "anterior"]),
+    mk("tab-close-right", "Cerrar pestañas a la derecha", "Close tabs to the right", "x", closeRight, tabs, ["close", "derecha"]),
+    mk("tab-close-all", "Cerrar todas las pestañas guardadas", "Close all saved tabs", "x", () => { appState.openTabs.filter((x) => !x.isDirty).map((x) => x.path).forEach((p) => closeTab(p)); window.dispatchEvent(new CustomEvent("au:rerender")); }, tabs, ["close", "todas"])
+  ];
+}
+
+/* ---------------------------------------------------------------- */
 /* Inyectores                                                        */
 /* ---------------------------------------------------------------- */
 
@@ -192,11 +310,14 @@ export function applyDoctorFilter() {
 
 export function injectMore() {
   let injected = false;
+  injected = addTo('[data-px-bar="settings"]', `<div class="au-px__row">${b2("set-fast", "zap", t("Modo rápido (sin animaciones)", "Fast mode (no animations)")).replace('class="au-px__btn"', `class="au-px__btn ${isFastMode() ? "is-on" : ""}"`)}</div>`) || injected;
+  injected = addTo('[data-px-bar="monitor"]', b2("mon-copy", "copy", t("Copiar procesos", "Copy processes"))) || injected;
+  applyDotfiles();
   injected = addTo('[data-px-bar="tasks"]', `<input class="au-px__input" data-px2-task-filter placeholder="${esc(t("Filtrar tareas…", "Filter tasks…"))}" spellcheck="false" />`) || injected;
   injected = addTo('[data-px-bar="toolchain"]', `<button type="button" class="au-px__chip ${onlyProblems ? "is-on" : ""}" data-px2="doc-problems">${esc(t("Solo problemas", "Only problems"))}</button>`) || injected;
   applyProcessSort();
   applyDoctorFilter();
-  injected = addTo('[data-px-bar="explorer"]', b2("exp-tree", "folder-tree", t("Copiar árbol", "Copy tree")) + b2("exp-stats", "activity", t("Por extensión", "By extension"))) || injected;
+  injected = addTo('[data-px-bar="explorer"]', b2("exp-tree", "folder-tree", t("Copiar árbol", "Copy tree")) + b2("exp-stats", "activity", t("Por extensión", "By extension")) + b2("exp-dots", "eye", t("Ocultar .archivos", "Hide dotfiles"))) || injected;
   injected = addTo('[data-px-bar="git"]', b2("git-copy-branch", "copy", t("Copiar rama", "Copy branch")) + b2("git-copy-commit", "copy", t("Último commit", "Last commit")) + b2("git-remote", "external-link", t("Abrir remoto", "Open remote"))) || injected;
   injected = addTo('[data-px-bar="search"]', ["TODO", "FIXME", "HACK", "console.log"].map((w) => `<button type="button" class="au-px__chip" data-px2="srch-term" data-term="${esc(w)}">${esc(w)}</button>`).join("")) || injected;
   injected = injectSettingsSearch() || injected;
@@ -204,6 +325,7 @@ export function injectMore() {
 }
 
 export function initMoreTools() {
+  applyFastMode();
   document.addEventListener("click", (event) => {
     const th = event.target.closest("th[data-px2-sort]");
     if (th) {
@@ -226,6 +348,18 @@ export function initMoreTools() {
         return copyLastCommit();
       case "git-remote":
         return openRemote();
+      case "set-fast":
+        return toggleFastMode();
+      case "mon-copy": {
+        const rows = [...document.querySelectorAll(".au-px__table tbody tr")].map((r) => [...r.children].map((c) => c.textContent.trim()).join("\t"));
+        return rows.length ? copy(`${t("Proceso", "Process")}\tPID\tCPU\tRAM\n${rows.join("\n")}`, "Monitor") : toastInfo(t("Aún no hay datos.", "No data yet."), "Monitor");
+      }
+      case "exp-dots":
+        hideDots = !hideDots;
+        try { localStorage.setItem(DOT_KEY, hideDots ? "1" : "0"); } catch { /* sin almacenamiento */ }
+        el.classList.toggle("is-on", hideDots);
+        document.querySelectorAll("#explorer-tree [data-dot-checked]").forEach((n) => n.removeAttribute("data-dot-checked"));
+        return applyDotfiles();
       case "doc-problems":
         onlyProblems = !onlyProblems;
         el.classList.toggle("is-on", onlyProblems);
