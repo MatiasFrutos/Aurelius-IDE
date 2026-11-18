@@ -628,6 +628,111 @@ function watchTerminalTheme() {
   });
 }
 
+const HISTORY_KEY = "aurelius.terminal.history";
+const HISTORY_MAX = 200;
+
+export function getTerminalHistory() {
+  try {
+    const list = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberCommand(command) {
+  const clean = command.trim();
+
+  if (!clean || clean.length > 500) {
+    return;
+  }
+
+  const list = [clean, ...getTerminalHistory().filter((item) => item !== clean)].slice(0, HISTORY_MAX);
+
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+  } catch {
+    // sin almacenamiento
+  }
+}
+
+// Reconstruye la línea que escribe el usuario (sin secuencias de escape) para el historial propio.
+function trackTypedLine(record, data) {
+  if (data.startsWith("\x1b")) {
+    return;
+  }
+
+  for (const char of data) {
+    if (char === "\r") {
+      rememberCommand(record.lineBuf || "");
+      record.lineBuf = "";
+    } else if (char === "\x7f") {
+      record.lineBuf = (record.lineBuf || "").slice(0, -1);
+    } else if (char === "\x03" || char === "\x15") {
+      record.lineBuf = "";
+    } else if (char >= " ") {
+      record.lineBuf = (record.lineBuf || "") + char;
+    }
+  }
+}
+
+const FONT_BASE = 13;
+
+export function getActiveTerminalText() {
+  const record = getActiveTerminal();
+
+  return record ? getTerminalBufferText(record) : "";
+}
+
+export function hasActiveTerminal() {
+  return Boolean(getActiveTerminal()?.sessionId);
+}
+
+// Envía texto a la terminal activa. Devuelve false si no hay una terminal conectada.
+export function sendToActiveTerminal(text, { enter = true, paste = false } = {}) {
+  const record = getActiveTerminal();
+
+  if (!record?.sessionId) {
+    return false;
+  }
+
+  if (paste && record.terminal) {
+    record.terminal.paste(text);
+  } else {
+    writeTerminal(record.sessionId, text).catch((error) => console.error(error));
+  }
+
+  if (enter) {
+    writeTerminal(record.sessionId, "\r").catch((error) => console.error(error));
+  }
+
+  return true;
+}
+
+export function clearActiveTerminal() {
+  getActiveTerminal()?.terminal?.clear();
+}
+
+export function scrollActiveTerminalToBottom() {
+  getActiveTerminal()?.terminal?.scrollToBottom();
+}
+
+export function adjustTerminalFont(delta) {
+  const record = getActiveTerminal();
+
+  if (!record?.terminal) {
+    return null;
+  }
+
+  const current = Number(record.terminal.options.fontSize) || FONT_BASE;
+  const next = delta === 0 ? Number(appState.settings.editorFontSize || FONT_BASE) : Math.min(24, Math.max(9, current + delta));
+
+  record.terminal.options.fontSize = next;
+  fitTerminalStable(record);
+
+  return next;
+}
+
 const WEBGL_KEY = "aurelius.terminal.webgl";
 
 function isTerminalWebglEnabled() {
@@ -1564,6 +1669,8 @@ function createTerminalView(record, container) {
     if (!record.sessionId) {
       return;
     }
+
+    trackTypedLine(record, data);
 
     writeTerminal(record.sessionId, data).catch((error) => {
       const message = `${t("No se pudo escribir en", "Could not write to")} ${record.title}: ${String(error)}`;

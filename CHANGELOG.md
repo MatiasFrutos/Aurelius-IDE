@@ -156,3 +156,9 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - **Explorer:** mostrar en el gestor de archivos, copiar ruta relativa. **Búsqueda:** copiar rutas de los resultados. **Git:** ranking de autores. **Monitor:** alertas de RAM > 90 %. **Doctor:** copiar JSON. **Tasks:** copiar como Markdown.
 - **IA (paleta):** explicar / arreglar / documentar / simplificar la selección.
 - **Editor (paleta):** copiar ruta relativa.
+
+## v3.8 — Terminal: herramientas nuevas y verificación
+
+- **Verificado el backend PTY** (portable-pty): cwd, UTF-8, redimensionado y cierre/EOF correctos.
+- **Paleta → Terminal (15 comandos):** ejecutar el archivo activo (js, ts, py, sh, go, rs, rb, php, lua, java), ejecutar la selección o línea, `cd` a la carpeta del archivo, nueva terminal en esa carpeta, **historial de comandos** propio (se recuerda lo que escribes), **comandos rápidos** (Git, Node, Rust, Docker, sistema), copiar toda la salida, guardar la salida en un `.log`, limpiar, interrumpir (Ctrl+C), ir al final, fuente +/−/restablecer y **explicar el error con la IA** (envía las últimas 60 líneas al asistente).
+- Los comandos usan la terminal activa si hay una conectada; si no, abren una nueva ya con el comando.

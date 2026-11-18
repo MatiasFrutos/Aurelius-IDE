@@ -20,7 +20,7 @@ export async function refreshMonitorSnapshot({
       renderApp();
     }
 
-    const snapshot = await readMonitorSnapshot();
+    const snapshot = (await readMonitorSnapshot()) || {};
 
     setMonitorSnapshot({
       isLoading: false,
