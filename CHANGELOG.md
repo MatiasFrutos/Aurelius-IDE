@@ -141,3 +141,10 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - **Explorer:** «Ocultar .archivos». **Monitor:** copiar tabla de procesos.
 - **Git (paleta):** blame de la línea actual e historial del archivo activo.
 - **Pestañas (paleta):** siguiente / anterior, cerrar a la derecha, cerrar todas las guardadas.
+
+## v3.6 — Modo Agente en el chat de IA
+
+- **Chip «Agente»** en el chat de la barra derecha (y comandos «IA: alternar modo Agente» / «IA: analizar el proyecto completo»). Funciona con Ollama, OpenAI, OpenRouter y Claude: el protocolo es de etiquetas, no depende de *tool calling* del proveedor.
+- El agente recibe la estructura del proyecto (sin `node_modules`, `target`, etc.), **lee archivos bajo demanda** (`<read/>`, `<list/>`, hasta 8 rondas por consulta) y **propone cambios o archivos nuevos** (`<file path action>`).
+- Cada cambio se **revisa con diff y se aprueba** (individual o «Aplicar todos» con selección). Rutas validadas: sin `..`, sin `.git`, sin `.env`; los archivos abiertos en el editor se modifican en el editor (sin guardar, `Ctrl+Z` deshace).
+- Arranques rápidos: analizar proyecto, buscar bugs, crear tests, mejorar README.

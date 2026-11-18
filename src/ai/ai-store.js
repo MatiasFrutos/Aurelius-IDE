@@ -219,6 +219,7 @@ export const config = {
   maxTokens: 4096,
   instructions: "",
   stream: true,
+  agent: false,
   ctx: { file: true, selection: true, tabs: false, tree: false },
   ...load(CONFIG_KEY, {})
 };
