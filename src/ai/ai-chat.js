@@ -9,6 +9,7 @@ import { toastError, toastInfo, toastSuccess, toastWarning } from "../components
 import { promptModal } from "../components/ui/modal.js";
 import { openOverlay, closeOverlay, openPicker, renderDiff } from "../components/features/features.js";
 import { renderMarkdown } from "../components/features/labs2.js";
+import { avatarHtml, getProfile, profileShows } from "../components/features/profile.js";
 import { MAX_AGENT_ROUNDS, agentPrompt, agentTreeText, applyFile, currentContent, lineStats, parseAgent, resolveTools, safeRelPath } from "./ai-agent.js";
 import {
   activeChat,
@@ -261,6 +262,7 @@ export function renderAiChat() {
 
   return `<section class="au-right-ai au-ai2">
     <header class="au-ai2__header">
+      ${profileShows("right") ? `<button type="button" class="au-ai2__profile" data-profile-open title="${esc(getProfile().name || t("Mi perfil", "My profile"))}">${avatarHtml(30)}</button>` : ""}
       <div class="au-ai2__title"><strong title="${esc(chat.title)}">${esc(chat.title)}</strong>
         <small>${esc(PROVIDERS[runtime.aiProvider] || runtime.aiProvider)} · ${esc(runtime.aiModel)}</small></div>
       <div class="au-ai2__actions">

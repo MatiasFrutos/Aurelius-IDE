@@ -1,6 +1,7 @@
 // src/components/topbar/topbar.js
 import { appState } from "../../app/state.js";
 import { t } from "../../app/i18n.js";
+import { avatarHtml, getProfile, profileShows } from "../features/profile.js";
 
 function escapeHTML(value) {
   return String(value ?? "")
@@ -193,6 +194,7 @@ export function renderTopbar() {
       ${renderTopbarSearch()}
 
       <div class="au-topbar__actions">
+        ${profileShows("topbar") ? `<button type="button" class="au-topbar__profile" data-profile-open title="${t("Mi perfil", "My profile")}${getProfile().name ? ` · ${getProfile().name.replace(/[<>"&]/g, "")}` : ""}" aria-label="${t("Mi perfil", "My profile")}">${avatarHtml(26)}</button>` : ""}
         <button
           class="au-topbar__action ${appState.layout.sidebarVisible ? "is-active" : ""}"
           type="button"

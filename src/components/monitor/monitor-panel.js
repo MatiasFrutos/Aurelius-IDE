@@ -1,6 +1,7 @@
 // src/components/monitor/monitor-panel.js
 import { appState } from "../../app/state.js";
 import { getLanguage, t } from "../../app/i18n.js";
+import { refreshIcons } from "../../app/app-icons.js";
 
 function escapeHTML(value) {
   return String(value ?? "")
@@ -302,4 +303,89 @@ export function renderMonitorPanel() {
       </section>
     </section>
   `;
+}
+
+/* ---------------------------------------------------------------- */
+/* Actualización en el lugar (sin reconstruir la página)             */
+/* ---------------------------------------------------------------- */
+
+const isInjected = (el) => el.nodeType === 1 && (el.classList.contains("au-px") || el.hasAttribute("data-px-bar") || el.hasAttribute("data-px-sysdetails"));
+const meaningful = (node) => node.nodeType === 1 || (node.nodeType === 3 && node.nodeValue.trim() !== "");
+const iconName = (el) => el.getAttribute("data-lucide") || (el.getAttribute("class") || "").match(/lucide-([\w-]+)/)?.[1] || "";
+
+// Sincroniza `oldParent` con `newParent` tocando solo lo que cambió. Devuelve true si cambió algún icono.
+function morph(oldParent, newParent) {
+  const oldKids = [...oldParent.childNodes].filter((n) => meaningful(n) && !isInjected(n));
+  const newKids = [...newParent.childNodes].filter(meaningful);
+  let iconsChanged = false;
+
+  if (oldKids.length !== newKids.length) {
+    throw new Error("estructura distinta");
+  }
+
+  oldKids.forEach((oldNode, index) => {
+    const newNode = newKids[index];
+
+    if (oldNode.nodeType === 3 || newNode.nodeType === 3) {
+      if (oldNode.nodeType === newNode.nodeType) {
+        if (oldNode.nodeValue !== newNode.nodeValue) oldNode.nodeValue = newNode.nodeValue;
+      } else {
+        throw new Error("estructura distinta");
+      }
+      return;
+    }
+
+    const newIsIcon = newNode.tagName === "I" && newNode.hasAttribute("data-lucide");
+
+    if (newIsIcon && oldNode.tagName === "svg") {
+      if (iconName(oldNode) !== iconName(newNode)) {
+        oldNode.replaceWith(newNode.cloneNode(true));
+        iconsChanged = true;
+      }
+      return;
+    }
+
+    if (oldNode.tagName !== newNode.tagName) {
+      oldNode.replaceWith(newNode.cloneNode(true));
+      iconsChanged = true;
+      return;
+    }
+
+    for (const { name, value } of [...newNode.attributes]) {
+      if (oldNode.getAttribute(name) !== value) oldNode.setAttribute(name, value);
+    }
+    for (const { name } of [...oldNode.attributes]) {
+      if (!newNode.hasAttribute(name)) oldNode.removeAttribute(name);
+    }
+
+    if (morph(oldNode, newNode)) iconsChanged = true;
+  });
+
+  return iconsChanged;
+}
+
+// Actualiza las métricas sin reconstruir el DOM (evita parpadeo, pérdida de scroll y re-render de toda la app).
+// Devuelve false si el panel no está en pantalla o su estructura cambió (el llamador hace un render completo).
+export function patchMonitorPanel() {
+  const root = document.querySelector(".au-monitor");
+
+  if (!root) {
+    return false;
+  }
+
+  try {
+    const template = document.createElement("template");
+
+    template.innerHTML = renderMonitorPanel().trim();
+
+    const iconsChanged = morph(root, template.content.firstElementChild);
+
+    if (iconsChanged) {
+      refreshIcons();
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
 }

@@ -7,6 +7,7 @@ import {
 import { t } from "./i18n.js";
 import { getErrorMessage } from "./app-utils.js";
 import { readMonitorSnapshot } from "../services/system.service.js";
+import { patchMonitorPanel } from "../components/monitor/monitor-panel.js";
 import { toastSuccess, toastError } from "../components/ui/toast.js";
 
 export async function refreshMonitorSnapshot({
@@ -14,10 +15,17 @@ export async function refreshMonitorSnapshot({
   silent = false,
   background = false
 } = {}) {
+  // Si el panel del monitor está en pantalla se actualiza en el lugar; si no, render completo.
+  const repaint = () => {
+    if (!patchMonitorPanel() && !background) {
+      renderApp();
+    }
+  };
+
   try {
     if (!background) {
       setMonitorLoading(true);
-      renderApp();
+      repaint();
     }
 
     const snapshot = (await readMonitorSnapshot()) || {};
@@ -40,7 +48,7 @@ export async function refreshMonitorSnapshot({
       }
     });
 
-    renderApp();
+    repaint();
 
     if (!silent) {
       toastSuccess(
@@ -51,7 +59,7 @@ export async function refreshMonitorSnapshot({
   } catch (error) {
     console.error(error);
     setMonitorLoading(false);
-    renderApp();
+    repaint();
 
     if (!silent) {
       toastError(
