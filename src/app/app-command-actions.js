@@ -1,6 +1,7 @@
 // src/app/app-command-actions.js
 import { appState } from "./state.js";
 import { t } from "./i18n.js";
+import { createProfileCommands } from "../components/features/profile.js";
 import { createTerminalCommands } from "../components/bottom-panel/terminal-tools.js";
 import { createMoreCommands } from "../components/features/panel-tools2.js";
 import { toggleTerminalWebgl } from "../components/bottom-panel/bottom-panel.js";
@@ -389,6 +390,6 @@ export function createCommandActions({
       keywords: ["toolbox", "json", "regex", "base64", "hash", "jwt", "uuid", "herramientas", "tools"],
       run: () => handleActivityPanel("toolbox")
     },
-    ...deferAfterRender([...createFeatureCommands(), ...createLabs2Commands(), ...createPersonalizeCommands(), ...createLabs3Commands(), ...createAiCommands(), ...createGitCenterCommands(), ...createProjectCommands(), ...createMoreCommands(), ...createTerminalCommands(), ...createEditorToolCommands()], renderApp)
+    ...deferAfterRender([...createFeatureCommands(), ...createLabs2Commands(), ...createPersonalizeCommands(), ...createLabs3Commands(), ...createAiCommands(), ...createGitCenterCommands(), ...createProjectCommands(), ...createMoreCommands(), ...createTerminalCommands(), ...createProfileCommands(), ...createEditorToolCommands()], renderApp)
   ];
 }

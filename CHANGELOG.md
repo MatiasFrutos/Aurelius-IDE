@@ -162,3 +162,8 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - **Verificado el backend PTY** (portable-pty): cwd, UTF-8, redimensionado y cierre/EOF correctos.
 - **Paleta → Terminal (15 comandos):** ejecutar el archivo activo (js, ts, py, sh, go, rs, rb, php, lua, java), ejecutar la selección o línea, `cd` a la carpeta del archivo, nueva terminal en esa carpeta, **historial de comandos** propio (se recuerda lo que escribes), **comandos rápidos** (Git, Node, Rust, Docker, sistema), copiar toda la salida, guardar la salida en un `.log`, limpiar, interrumpir (Ctrl+C), ir al final, fuente +/−/restablecer y **explicar el error con la IA** (envía las últimas 60 líneas al asistente).
 - Los comandos usan la terminal activa si hay una conectada; si no, abren una nueva ya con el comando.
+
+## v3.9 — Perfil con foto y Monitor sin recargas
+
+- **Perfil** (clic en el avatar, Ajustes → «Mi perfil y foto» o paleta «Perfil: editar mi perfil y foto»): nombre y **foto circular** (se recorta al centro y se reduce a 192×192 JPEG). Se muestra en la **barra superior**, en la **barra derecha** (cabecera del chat), en ambas o en ninguna. Sin foto: iniciales; sin nombre: icono. Se guarda localmente.
+- **Fix Monitor:** la actualización automática y el botón «Refrescar» ya **no reconstruyen la página completa**; solo se actualizan los valores que cambian (sin parpadeo ni pérdida de scroll). Si el Monitor no está en pantalla, el refresco en segundo plano ya no re-renderiza nada.
