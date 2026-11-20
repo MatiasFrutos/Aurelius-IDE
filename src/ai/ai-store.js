@@ -4,6 +4,7 @@ import { t } from "../app/i18n.js";
 const CHATS_KEY = "aurelius.ai.chats.v2";
 const SKILLS_KEY = "aurelius.ai.skills.v2";
 const CONFIG_KEY = "aurelius.ai.config.v2";
+const PROFILES_KEY = "aurelius.ai.profiles.v1";
 const MAX_CHATS = 40;
 const MAX_MESSAGES = 80;
 
@@ -211,6 +212,171 @@ export function importSkills(text) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Perfiles de comportamiento (modo, tono, permisos, límites)           */
+/* ------------------------------------------------------------------ */
+
+export const TONES = {
+  neutral: { es: "Neutro", en: "Neutral", rule: "" },
+  concise: { es: "Conciso", en: "Concise", rule: "Respondé de forma breve y directa, sin introducciones ni resúmenes innecesarios." },
+  detailed: { es: "Detallado", en: "Detailed", rule: "Sé exhaustivo: explicá el razonamiento, las alternativas y sus compromisos (trade-offs)." },
+  didactic: { es: "Didáctico", en: "Didactic", rule: "Explicá como un mentor: paso a paso, con ejemplos simples y señalando por qué se hace así." },
+  critical: { es: "Crítico", en: "Critical", rule: "Sé crítico y directo: señalá los problemas sin rodeos y priorizalos por severidad." }
+};
+
+export const BUILTIN_PROFILES = [
+  { id: "balanced", name: t("Equilibrado", "Balanced"), icon: "sparkles", description: t("Comportamiento por defecto.", "Default behavior."), mode: "chat", tone: "neutral", language: "auto", builtin: true },
+  { id: "concise", name: t("Conciso", "Concise"), icon: "zap", description: t("Respuestas cortas y al grano.", "Short, to-the-point answers."), mode: "chat", tone: "concise", language: "auto", temperature: 0.2, builtin: true },
+  { id: "mentor", name: t("Mentor", "Mentor"), icon: "book-open", description: t("Enseña y explica el porqué.", "Teaches and explains the why."), mode: "chat", tone: "didactic", language: "auto", temperature: 0.5, builtin: true },
+  { id: "reviewer", name: t("Revisor estricto", "Strict reviewer"), icon: "scan-search", description: t("Crítico, prioriza por severidad.", "Critical, prioritizes by severity."), mode: "chat", tone: "critical", language: "auto", temperature: 0.1, context: { file: true, selection: true }, builtin: true },
+  { id: "architect", name: t("Arquitecto (solo análisis)", "Architect (analysis only)"), icon: "folder-tree", description: t("Lee el proyecto y analiza; no propone cambios en archivos.", "Reads the project and analyzes; proposes no file changes."), mode: "agent", tone: "detailed", language: "auto", temperature: 0.2, agentOptions: { allowCreate: false, allowModify: false, maxRounds: 10 }, builtin: true },
+  { id: "engineer", name: t("Agente ingeniero", "Engineer agent"), icon: "bot", description: t("Lee, modifica y crea archivos (con tu aprobación).", "Reads, edits and creates files (with your approval)."), mode: "agent", tone: "concise", language: "auto", temperature: 0.2, agentOptions: { allowCreate: true, allowModify: true, maxRounds: 8 }, builtin: true },
+  { id: "creator", name: t("Agente creador (solo archivos nuevos)", "Creator agent (new files only)"), icon: "file-plus-2", description: t("Puede crear archivos pero nunca modifica los existentes.", "Can create files but never edits existing ones."), mode: "agent", tone: "neutral", language: "auto", temperature: 0.3, agentOptions: { allowCreate: true, allowModify: false, maxRounds: 6 }, builtin: true }
+];
+
+let userProfiles = load(PROFILES_KEY, []);
+const hiddenProfiles = new Set(load(`${PROFILES_KEY}.hidden`, []));
+
+export function listProfiles() {
+  const overrides = new Map(userProfiles.map((p) => [p.id, p]));
+  const base = BUILTIN_PROFILES.filter((p) => !hiddenProfiles.has(p.id)).map((p) => overrides.get(p.id) || p);
+  const custom = userProfiles.filter((p) => !BUILTIN_PROFILES.some((b) => b.id === p.id));
+  return [...base, ...custom];
+}
+
+export function getAiProfile(id) {
+  return listProfiles().find((p) => p.id === id) || listProfiles()[0] || BUILTIN_PROFILES[0];
+}
+
+export function saveAiProfile(profile) {
+  const opts = profile.agentOptions || {};
+  const clean = {
+    id: profile.id || uid("profile"),
+    name: String(profile.name || "").trim() || t("Perfil sin nombre", "Unnamed profile"),
+    icon: profile.icon || "sparkles",
+    description: String(profile.description || "").trim(),
+    mode: profile.mode === "agent" ? "agent" : "chat",
+    tone: TONES[profile.tone] ? profile.tone : "neutral",
+    language: ["auto", "es", "en"].includes(profile.language) ? profile.language : "auto",
+    instructions: String(profile.instructions || "").trim(),
+    temperature: Number.isFinite(profile.temperature) ? Math.min(1.5, Math.max(0, profile.temperature)) : undefined,
+    maxTokens: Number.isFinite(profile.maxTokens) ? Math.min(64000, Math.max(256, Math.round(profile.maxTokens))) : undefined,
+    model: String(profile.model || "").trim() || undefined,
+    context: profile.context && Object.keys(profile.context).length ? profile.context : undefined,
+    agentOptions: {
+      allowCreate: opts.allowCreate !== false,
+      allowModify: opts.allowModify !== false,
+      maxRounds: Math.min(12, Math.max(1, Math.round(Number(opts.maxRounds) || 8))),
+      blocked: (Array.isArray(opts.blocked) ? opts.blocked : String(opts.blocked || "").split(/[\n,]+/)).map((x) => String(x).trim().replace(/^\.?\//, "").replace(/\/+$/, "")).filter(Boolean).slice(0, 30)
+    },
+    builtin: false
+  };
+
+  const index = userProfiles.findIndex((p) => p.id === clean.id);
+  if (index === -1) userProfiles.push(clean);
+  else userProfiles[index] = clean;
+
+  save(PROFILES_KEY, userProfiles);
+  return clean;
+}
+
+export function deleteAiProfile(id) {
+  if (BUILTIN_PROFILES.some((p) => p.id === id)) {
+    hiddenProfiles.add(id);
+    save(`${PROFILES_KEY}.hidden`, [...hiddenProfiles]);
+  }
+
+  userProfiles = userProfiles.filter((p) => p.id !== id);
+  save(PROFILES_KEY, userProfiles);
+
+  if (config.profileId === id) {
+    config.profileId = listProfiles()[0]?.id || "balanced";
+    saveConfig();
+  }
+}
+
+export function resetAiProfiles() {
+  userProfiles = [];
+  hiddenProfiles.clear();
+  save(PROFILES_KEY, userProfiles);
+  save(`${PROFILES_KEY}.hidden`, []);
+}
+
+export function exportAiProfiles() {
+  return JSON.stringify({ aurelius: "profiles", version: 1, profiles: userProfiles }, null, 2);
+}
+
+export function importAiProfiles(text) {
+  const data = JSON.parse(text);
+  const list = Array.isArray(data) ? data : data.profiles;
+
+  if (!Array.isArray(list)) throw new Error(t("El JSON no contiene una lista de perfiles.", "The JSON has no profiles list."));
+
+  let count = 0;
+  for (const raw of list) {
+    if (raw && typeof raw === "object" && raw.name) {
+      saveAiProfile({ ...raw, id: raw.id && !BUILTIN_PROFILES.some((b) => b.id === raw.id) ? raw.id : uid("profile") });
+      count += 1;
+    }
+  }
+
+  return count;
+}
+
+// Perfil activo + opciones de agente ya normalizadas (con valores por defecto).
+export function activeProfile() {
+  const profile = getAiProfile(config.profileId);
+  const opts = profile.agentOptions || {};
+
+  return {
+    ...profile,
+    agentOptions: { allowCreate: opts.allowCreate !== false, allowModify: opts.allowModify !== false, maxRounds: opts.maxRounds || 8, blocked: opts.blocked || [] }
+  };
+}
+
+export function selectProfile(id) {
+  const profile = getAiProfile(id);
+
+  config.profileId = profile.id;
+  config.agent = profile.mode === "agent";
+
+  if (profile.context) config.ctx = { ...config.ctx, ...profile.context };
+
+  saveConfig();
+
+  return profile;
+}
+
+/* ------------------------------------------------------------------ */
+/* Biblioteca de prompts                                                */
+/* ------------------------------------------------------------------ */
+
+const PROMPTS_KEY = "aurelius.ai.prompts.v1";
+
+const SEED_PROMPTS = [
+  { id: "seed-error", title: t("Explicar un error", "Explain an error"), text: "Este es el error que me aparece. Explicá la causa más probable y cómo arreglarlo, con pasos concretos:\n\n" },
+  { id: "seed-review", title: t("Revisar mis cambios", "Review my changes"), text: "Revisá estos cambios como lo haría un revisor senior: bugs, casos borde, legibilidad y tests que faltan. Listá hallazgos por severidad.\n\n" },
+  { id: "seed-plan", title: t("Plan de refactor", "Refactor plan"), text: "Proponé un plan de refactor por pasos pequeños y seguros para este código, indicando riesgos y cómo verificar cada paso.\n\n" }
+];
+
+let userPrompts = load(PROMPTS_KEY, null) ?? SEED_PROMPTS;
+
+export function listPrompts() {
+  return userPrompts;
+}
+
+export function savePromptEntry(title, text) {
+  const clean = { id: uid("prompt"), title: String(title || "").trim().slice(0, 60) || t("Prompt", "Prompt"), text: String(text || "") };
+  userPrompts = [clean, ...userPrompts].slice(0, 100);
+  save(PROMPTS_KEY, userPrompts);
+  return clean;
+}
+
+export function deletePromptEntry(id) {
+  userPrompts = userPrompts.filter((p) => p.id !== id);
+  save(PROMPTS_KEY, userPrompts);
+}
+
+/* ------------------------------------------------------------------ */
 /* Configuración                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -220,6 +386,7 @@ export const config = {
   instructions: "",
   stream: true,
   agent: false,
+  profileId: "balanced",
   ctx: { file: true, selection: true, tabs: false, tree: false },
   ...load(CONFIG_KEY, {})
 };

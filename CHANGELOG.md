@@ -167,3 +167,9 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 
 - **Perfil** (clic en el avatar, Ajustes → «Mi perfil y foto» o paleta «Perfil: editar mi perfil y foto»): nombre y **foto circular** (se recorta al centro y se reduce a 192×192 JPEG). Se muestra en la **barra superior**, en la **barra derecha** (cabecera del chat), en ambas o en ninguna. Sin foto: iniciales; sin nombre: icono. Se guarda localmente.
 - **Fix Monitor:** la actualización automática y el botón «Refrescar» ya **no reconstruyen la página completa**; solo se actualizan los valores que cambian (sin parpadeo ni pérdida de scroll). Si el Monitor no está en pantalla, el refresco en segundo plano ya no re-renderiza nada.
+
+## v4.0 — Perfiles de comportamiento, interfaz renovada y biblioteca de prompts
+
+- **Perfiles de comportamiento de la IA** (selector en el chat, `Ctrl+Alt+P` para rotar, «IA: gestionar perfiles»): cada perfil define **modo** (Chat / Agente), **tono** (neutro, conciso, detallado, didáctico, crítico), **idioma**, **reglas propias** que se añaden al prompt de sistema, temperatura, máx. tokens y **modelo** opcionales, y para el agente: **permisos** (crear / modificar archivos), **máx. rondas de lectura** y **rutas vedadas** (no se leen ni se tocan). Incluye 7 perfiles integrados (Equilibrado, Conciso, Mentor, Revisor estricto, Arquitecto solo análisis, Agente ingeniero, Agente creador) y se pueden crear, duplicar, importar/exportar y restaurar. Los permisos se aplican en la interfaz y al escribir; toda modificación sigue requiriendo tu aprobación con diff.
+- **Biblioteca de prompts:** «IA: usar / guardar el borrador como / borrar un prompt» (3 de ejemplo incluidos).
+- **Interfaz:** botones de panel «fantasma» (sin pastillas con borde), cabecera del editor neutra, **Ajustes con cabecera compacta**, diálogos con foco nítido y botones planos, avisos más discretos, pestañas con subrayado de acento, formularios de skills/perfiles unificados.
