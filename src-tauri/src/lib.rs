@@ -57,6 +57,15 @@ use commands::shell_commands::{
     read_system_details_snapshot,
 };
 
+use commands::voice_commands::{
+    voice_record_cancel,
+    voice_record_start,
+    voice_record_stop,
+    voice_speak,
+    voice_stop_speaking,
+    voice_tools,
+};
+
 use commands::system_commands::{
     read_monitor_snapshot,
 };
@@ -80,7 +89,14 @@ pub fn run() {
         .manage(TerminalManager::default())
         .manage(LiveServerManager::default())
         .manage(AiStreams::default())
+        .manage(crate::core::voice::VoiceState::default())
         .invoke_handler(tauri::generate_handler![
+            voice_tools,
+            voice_record_start,
+            voice_record_stop,
+            voice_record_cancel,
+            voice_speak,
+            voice_stop_speaking,
             open_project_dialog,
             read_project_tree,
             read_file,

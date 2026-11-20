@@ -363,7 +363,7 @@ export async function handleCreateFile({ renderApp, baseDirectoryPath = "" }) {
     }
 
     const baseRelativePath = getCreateBaseRelativePath(baseDirectoryPath);
-    const defaultValue = joinRelativePath(baseRelativePath, "nuevo-archivo.js");
+    const defaultValue = joinRelativePath(baseRelativePath, t("nuevo-archivo.js", "new-file.js"));
 
     const relativePath = await promptModal({
       title: t("Crear archivo", "Create file"),
@@ -372,7 +372,7 @@ export async function handleCreateFile({ renderApp, baseDirectoryPath = "" }) {
         "Enter the relative path inside the project."
       ),
       defaultValue,
-      placeholder: baseRelativePath ? `${baseRelativePath}/componente.js` : "src/nuevo-archivo.js",
+      placeholder: baseRelativePath ? `${baseRelativePath}/${t("componente.js", "component.js")}` : t("src/nuevo-archivo.js", "src/new-file.js"),
       confirmText: t("Crear archivo", "Create file"),
       cancelText: t("Cancelar", "Cancel"),
       fieldLabel: t("Ruta del archivo", "File path"),
