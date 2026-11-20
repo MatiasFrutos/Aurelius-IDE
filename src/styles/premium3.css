@@ -1,0 +1,66 @@
+/* src/styles/premium3.css — pulido global de la interfaz: botones, cabeceras, ajustes y diálogos. Sin glow. */
+
+/* ======================== BOTONES DE PANEL (barras de herramientas) ======================== */
+.au-px { padding: 8px 10px; gap: 2px 4px; }
+.au-px__btn { height: 26px; padding: 0 9px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--au-muted-strong); font-size: 11.5px; font-weight: 550; }
+.au-px__btn:hover { background: var(--au-button-bg-hover); color: var(--au-text); }
+.au-px__btn svg { width: 13px; height: 13px; color: var(--au-muted); }
+.au-px__btn:hover svg { color: var(--au-text); }
+.au-px__btn.is-primary { border-color: transparent; background: var(--au-primary); color: var(--au-primary-contrast); }
+.au-px__btn.is-primary svg { color: inherit; }
+.au-px__chip { border-radius: 7px; border-color: var(--au-border); background: transparent; }
+.au-px__chip.is-on { background: var(--au-primary-soft); border-color: rgba(var(--au-accent-rgb), 0.5); }
+.au-px__select, .au-px__input { border-radius: 8px; box-shadow: none; }
+.au-px__input:focus, .au-px__select:focus { border-color: rgba(var(--au-accent-rgb), 0.55); outline: 0; }
+
+/* ======================== EDITOR: cabecera del archivo ======================== */
+.au-editor__pill { border-radius: 999px; border: 1px solid var(--au-border); background: transparent; color: var(--au-muted-strong); box-shadow: none; font-weight: 550; }
+.au-editor__action { width: 28px; height: 28px; border: 0; border-radius: 8px; background: transparent; color: var(--au-muted); box-shadow: none; }
+.au-editor__action:hover { background: var(--au-button-bg-hover); color: var(--au-text); }
+.au-editor__action--danger, .au-editor__action--close-all { color: var(--au-muted); background: transparent; border: 0; }
+.au-editor__action--danger:hover, .au-editor__action--close-all:hover { background: rgba(239, 68, 68, 0.12); color: #f87171; }
+
+/* ======================== AJUSTES: cabecera compacta ======================== */
+.au-settings__hero { grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px; }
+.au-settings__hero-copy { padding: 14px 16px; background: transparent; border: 0; border-bottom: 1px solid var(--au-border); border-radius: 0; box-shadow: none; }
+.au-settings__hero-copy h1, .au-settings__hero-copy h2 { font-size: 20px; letter-spacing: -0.02em; margin: 2px 0 4px; }
+.au-settings__hero-copy p { margin: 0; font-size: 12.5px; color: var(--au-muted); }
+.au-settings__hero-tags { display: none; }
+.au-settings__hero-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
+.au-settings__hero-status article { min-height: 0; padding: 8px 10px; gap: 8px; border-radius: 10px; }
+.au-settings__hero-status article strong { font-size: 12.5px; }
+
+/* ======================== MONITOR / PÁGINAS ======================== */
+.au-monitor__refresh { height: 30px; width: auto; justify-self: end; padding: 0 14px; border-radius: 8px; }
+
+/* ======================== DIÁLOGOS: foco nítido, sin doble borde ======================== */
+.au-modal__input { outline: 0; }
+.au-modal__input-wrap:focus-within, .au-modal__input:focus { border-color: rgba(var(--au-accent-rgb), 0.6); outline: 0; box-shadow: none; }
+.au-modal__input-wrap { border-radius: 9px; }
+.au-modal__field > span, .au-modal__label { color: var(--au-muted); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.au-modal__footer { gap: 8px; padding: 12px 16px 16px; }
+.au-modal__button { height: 32px; padding: 0 14px; border: 1px solid var(--au-border-strong); background: transparent; color: var(--au-text); font-weight: 550; }
+.au-modal__button:hover { background: var(--au-button-bg-hover); }
+.au-modal__button--primary { border-color: transparent; }
+.au-modal--delete .au-modal__button--primary { background: #dc2626; color: #fff; }
+
+/* ======================== AVISOS ======================== */
+.au-toast { width: min(340px, 100%); padding: 10px 12px 12px; }
+.au-toast__accent { display: none; }
+.au-toast__icon { border-radius: 50%; }
+.au-toast__body strong { font-size: 13px; font-weight: 650; }
+.au-toast__body p { font-size: 12px; }
+
+/* ======================== OVERLAYS INTERNOS (skills, perfiles, historial…) ======================== */
+.au-sk__list button { border: 1px solid transparent; border-radius: 9px; }
+.au-sk__list button.is-on { background: var(--au-primary-soft); box-shadow: inset 2px 0 0 var(--au-primary); }
+.au-sk__form label > span, .au-fx-section h4 { color: var(--au-muted); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.au-sk__form input, .au-sk__form select, .au-sk__form textarea { border-radius: 8px; border: 1px solid var(--au-border); background: var(--au-bg-input); box-shadow: none; }
+.au-sk__form input:focus, .au-sk__form select:focus, .au-sk__form textarea:focus { border-color: rgba(var(--au-accent-rgb), 0.55); outline: 0; }
+
+/* ======================== PESTAÑAS DEL EDITOR ======================== */
+.aurelius-tab { border-radius: 8px 8px 0 0; box-shadow: none; }
+.aurelius-tab.is-active { box-shadow: inset 0 -2px 0 var(--au-primary); }
+
+/* ======================== ESTADO VACÍO / TARJETAS ======================== */
+.au-terminal-empty__icon, .au-explorer__empty-icon { border-radius: 12px; box-shadow: none; }

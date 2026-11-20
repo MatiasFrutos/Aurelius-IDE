@@ -10,7 +10,7 @@ import { promptModal } from "../components/ui/modal.js";
 import { openOverlay, closeOverlay, openPicker, renderDiff } from "../components/features/features.js";
 import { renderMarkdown } from "../components/features/labs2.js";
 import { avatarHtml, getProfile, profileShows } from "../components/features/profile.js";
-import { MAX_AGENT_ROUNDS, agentPrompt, agentTreeText, applyFile, currentContent, lineStats, parseAgent, resolveTools, safeRelPath } from "./ai-agent.js";
+import { agentPolicy, agentPrompt, agentTreeText, applyFile, currentContent, lineStats, parseAgent, policyBlock, resolveTools, safeRelPath } from "./ai-agent.js";
 import {
   activeChat,
   addMessage,
@@ -28,6 +28,7 @@ import {
   touchChats,
   uid
 } from "./ai-store.js";
+import { TONES, activeProfile, deletePromptEntry, listPrompts, listProfiles, savePromptEntry, selectProfile } from "./ai-store.js";
 
 const esc = (value) =>
   String(value ?? "")
@@ -98,10 +99,30 @@ export function buildContextBlock(flags) {
   return parts.length ? `<contexto>\n${parts.join("\n\n")}\n</contexto>\n\n` : "";
 }
 
+function profileBlock(profile) {
+  const lines = [`PERFIL ACTIVO «${profile.name}»${profile.description ? `: ${profile.description}` : ""}`];
+  const tone = TONES[profile.tone]?.rule;
+  if (tone) lines.push(tone);
+  if (profile.instructions) lines.push(profile.instructions);
+
+  if (config.agent) {
+    const { allowCreate, allowModify, blocked } = profile.agentOptions;
+    if (!allowCreate && !allowModify) lines.push("MODO SOLO ANÁLISIS: no uses bloques <file>; respondé únicamente con texto (podés seguir leyendo archivos).");
+    else {
+      if (!allowCreate) lines.push("No propongas archivos nuevos.");
+      if (!allowModify) lines.push("No propongas modificar archivos existentes: solo podés crear archivos nuevos.");
+    }
+    if (blocked.length) lines.push(`No leas ni toques estas rutas: ${blocked.join(", ")}.`);
+  }
+
+  return lines.join("\n");
+}
+
 function buildSystemPrompt(skill) {
-  const lang = document.documentElement.lang === "en" ? "Reply in English." : "Respondé en español.";
+  const profile = activeProfile();
+  const lang = profile.language === "en" ? "Reply in English." : profile.language === "es" ? "Respondé en español." : document.documentElement.lang === "en" ? "Reply in English." : "Respondé en español.";
   const agent = config.agent ? `${agentPrompt()}\n\nEstructura del proyecto (${appState.projectName || ""}):\n${agentTreeText()}` : "";
-  return [skill.instructions, agent, config.instructions?.trim() && `Instrucciones del usuario:\n${config.instructions.trim()}`, `${lang} Usá Markdown. El contexto del proyecto, si existe, llega dentro de <contexto>.`].filter(Boolean).join("\n\n");
+  return [skill.instructions, agent, profileBlock(profile), config.instructions?.trim() && `Instrucciones del usuario:\n${config.instructions.trim()}`, `${lang} Usá Markdown. El contexto del proyecto, si existe, llega dentro de <contexto>.`].filter(Boolean).join("\n\n");
 }
 
 /* ====================================================================== */
@@ -143,9 +164,11 @@ function renderAgentCard(file, idx, message) {
   const applied = message?.applied?.[file.path];
   const lines = file.content ? file.content.split("\n").length : 0;
   const allowed = Boolean(safeRelPath(file.path));
+  const blocked = policyBlock(file);
+  const blockedText = { readonly: t("Perfil de solo análisis", "Analysis-only profile"), nocreate: t("El perfil no permite crear", "Profile doesn't allow creating"), nomodify: t("El perfil no permite modificar", "Profile doesn't allow editing") }[blocked];
   return `<div class="au-ag ${applied ? "is-applied" : ""} ${allowed ? "" : "is-bad"}" data-ag-idx="${idx}">
     <header><i data-lucide="file-code"></i><b title="${esc(file.path)}">${esc(file.path)}</b><span class="au-ag__tag">${file.action === "create" ? t("Nuevo", "New") : t("Modificar", "Modify")}</span></header>
-    <div class="au-ag__row"><small>${lines} ${lines === 1 ? t("línea", "line") : t("líneas", "lines")}</small>${!allowed ? `<span class="au-ag__bad">${t("Ruta no permitida", "Path not allowed")}</span>` : applied ? `<span class="au-ag__ok">✓ ${t("Aplicado", "Applied")}</span>` : file.complete ? `<button type="button" data-ai="ag-review" data-idx="${idx}">${t("Revisar y aplicar", "Review & apply")}</button>` : `<span class="au-ag__wip">${t("Generando…", "Generating…")}</span>`}</div>
+    <div class="au-ag__row"><small>${lines} ${lines === 1 ? t("línea", "line") : t("líneas", "lines")}</small>${!allowed ? `<span class="au-ag__bad">${t("Ruta no permitida", "Path not allowed")}</span>` : blocked && !applied ? `<span class="au-ag__bad">${esc(blockedText)}</span>` : applied ? `<span class="au-ag__ok">✓ ${t("Aplicado", "Applied")}</span>` : file.complete ? `<button type="button" data-ai="ag-review" data-idx="${idx}">${t("Revisar y aplicar", "Review & apply")}</button>` : `<span class="au-ag__wip">${t("Generando…", "Generating…")}</span>`}</div>
   </div>`;
 }
 
@@ -211,7 +234,7 @@ function renderMessage(message, chat, isLast) {
 
 function renderApplyAll(message) {
   const { files } = parseAgent(message.content || "");
-  const pending = files.filter((f) => f.complete && safeRelPath(f.path) && safeApplied(message, f) === false);
+  const pending = files.filter((f) => f.complete && safeRelPath(f.path) && !policyBlock(f) && safeApplied(message, f) === false);
   if (!files.length || !pending.length) return "";
   return `<div class="au-ag__all"><button type="button" data-ai="ag-all">${t("Revisar y aplicar todos", "Review & apply all")} (${pending.length})</button></div>`;
 }
@@ -264,7 +287,7 @@ export function renderAiChat() {
     <header class="au-ai2__header">
       ${profileShows("right") ? `<button type="button" class="au-ai2__profile" data-profile-open title="${esc(getProfile().name || t("Mi perfil", "My profile"))}">${avatarHtml(30)}</button>` : ""}
       <div class="au-ai2__title"><strong title="${esc(chat.title)}">${esc(chat.title)}</strong>
-        <small>${esc(PROVIDERS[runtime.aiProvider] || runtime.aiProvider)} · ${esc(runtime.aiModel)}</small></div>
+        <small>${esc(PROVIDERS[runtime.aiProvider] || runtime.aiProvider)} · ${esc(activeProfile().model || runtime.aiModel)} · ${esc(activeProfile().name)}</small></div>
       <div class="au-ai2__actions">
         <button type="button" data-ai="history" title="${t("Historial de conversaciones", "Conversation history")}"><i data-lucide="history"></i></button>
         <button type="button" data-ai="new" title="${t("Nueva conversación", "New conversation")}"><i data-lucide="file-plus-2"></i></button>
@@ -279,6 +302,10 @@ export function renderAiChat() {
     <form class="au-ai2__composer" id="au-ai-form">
       <div class="au-ai2__slash" id="au-ai-slash" hidden></div>
       <div class="au-ai2__chips">
+        <div class="au-dd" data-dd>
+          <button type="button" class="au-dd__trigger" data-ai="dd-toggle" aria-haspopup="listbox" aria-expanded="false" title="${t("Perfil de comportamiento", "Behavior profile")}"><i data-lucide="${esc(activeProfile().icon || "sparkles")}"></i><span>${esc(activeProfile().name)}</span><i data-lucide="chevron-down" class="au-dd__caret"></i></button>
+          <div class="au-dd__menu" role="listbox" hidden>${listProfiles().map((p) => `<button type="button" role="option" class="au-dd__item ${p.id === activeProfile().id ? "is-on" : ""}" data-ai="pf-pick" data-profile="${esc(p.id)}"><i data-lucide="${esc(p.icon || "sparkles")}"></i><span><b>${esc(p.name)}</b><small>${p.mode === "agent" ? t("Agente", "Agent") : "Chat"} · ${esc(TONES[p.tone]?.[document.documentElement.lang === "en" ? "en" : "es"] || "")}</small></span>${p.id === activeProfile().id ? '<i data-lucide="check" class="au-dd__check"></i>' : ""}</button>`).join("")}<button type="button" class="au-dd__item au-dd__manage" data-ai="profiles"><i data-lucide="settings-2"></i><span><b>${t("Gestionar perfiles…", "Manage profiles…")}</b></span></button></div>
+        </div>
         <button type="button" class="au-ai2__chip ${config.agent ? "is-on" : ""}" data-ai="agent" title="${t("Modo Agente: lee el proyecto, propone cambios y crea archivos (con tu aprobación)", "Agent mode: reads the project, proposes changes and creates files (with your approval)")}"><i data-lucide="sparkles"></i> ${t("Agente", "Agent")}</button>
         <div class="au-dd" data-dd>
           <button type="button" class="au-dd__trigger" data-ai="dd-toggle" aria-haspopup="listbox" aria-expanded="false" title="${t("Skill activa", "Active skill")}"><i data-lucide="${esc(skill.icon || "sparkles")}"></i><span>${esc(skill.name)}</span><i data-lucide="chevron-down" class="au-dd__caret"></i></button>
@@ -404,7 +431,7 @@ async function maybeContinueAgent(chat, message) {
   const { tools } = parseAgent(message.content || "");
   if (!tools.length || chatState.streaming) return;
 
-  if ((chatState.agentRounds || 0) >= MAX_AGENT_ROUNDS) {
+  if ((chatState.agentRounds || 0) >= agentPolicy().maxRounds) {
     toastInfo(t("El agente alcanzó el máximo de lecturas por consulta. Pedile que continúe.", "The agent reached the maximum number of reads for this request. Ask it to continue."), "Aurelius AI");
     return;
   }
@@ -485,6 +512,7 @@ export async function sendPrompt(rawPrompt) {
 
 async function streamReply(chat, skill, reply, userContent, includeContext) {
   const runtime = normalizeAiRuntimeSettings(appState.settings);
+  const profile = activeProfile();
   const streamId = uid("s");
   chatState.streaming = { streamId, chatId: chat.id, messageId: reply.id };
   repaintPanel();
@@ -493,9 +521,9 @@ async function streamReply(chat, skill, reply, userContent, includeContext) {
     provider: runtime.aiProvider,
     baseUrl: runtime.aiBaseUrl,
     apiKey: runtime.aiApiKey,
-    model: runtime.aiModel,
-    temperature: config.agent ? Math.min(skill.temperature ?? config.temperature, 0.3) : skill.temperature ?? config.temperature,
-    maxTokens: config.agent ? Math.max(config.maxTokens, 8192) : config.maxTokens,
+    model: profile.model || runtime.aiModel,
+    temperature: profile.temperature ?? (config.agent ? Math.min(skill.temperature ?? config.temperature, 0.3) : skill.temperature ?? config.temperature),
+    maxTokens: profile.maxTokens ?? (config.agent ? Math.max(config.maxTokens, 8192) : config.maxTokens),
     messages: buildPayload(chat, skill, userContent, includeContext)
   };
 
@@ -628,6 +656,7 @@ function markApplied(message, paths) {
 async function reviewAgentFile(message, idx) {
   const file = parseAgent(message.content || "").files[idx];
   if (!file?.complete) return;
+  if (policyBlock(file)) return toastInfo(t("El perfil activo no permite este cambio.", "The active profile doesn't allow this change."), "Aurelius AI");
 
   let cur;
   try {
@@ -658,7 +687,7 @@ async function reviewAgentFile(message, idx) {
 }
 
 async function reviewAllAgentFiles(message) {
-  const files = parseAgent(message.content || "").files.filter((f) => f.complete && !message.applied?.[f.path]);
+  const files = parseAgent(message.content || "").files.filter((f) => f.complete && !message.applied?.[f.path] && !policyBlock(f));
   if (!files.length) return;
 
   const rows = [];
@@ -815,7 +844,13 @@ export function initAiChat() {
     dd.querySelector(".au-dd__menu")?.setAttribute("hidden", "");
     dd.querySelector("[data-ai=dd-toggle]")?.setAttribute("aria-expanded", "false");
   });
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDropdowns(); });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeDropdowns();
+    if (event.ctrlKey && event.altKey && !event.shiftKey && event.key.toLowerCase() === "p") {
+      event.preventDefault();
+      cycleProfile();
+    }
+  });
 
   document.addEventListener("click", async (event) => {
     if (!event.target.closest("[data-dd]")) closeDropdowns();
@@ -872,6 +907,13 @@ export function initAiChat() {
         break;
       case "stop":
         stopStream();
+        break;
+      case "pf-pick":
+        selectProfile(button.dataset.profile);
+        repaintPanel({ keepFocus: true });
+        break;
+      case "profiles":
+        (await import("./ai-profiles-ui.js")).openProfilesManager(() => repaintPanel());
         break;
       case "agent":
         config.agent = !config.agent;
@@ -959,6 +1001,25 @@ export function openHistory() {
   });
 }
 
+// Pone texto en la caja del chat (renderAiChat lee el valor del DOM, así que hay que escribir ahí).
+function setDraft(text) {
+  chatState.draft = text;
+  const input = document.getElementById("au-ai-input");
+  if (!input) return;
+  input.value = text;
+  autosize(input);
+  input.focus();
+  input.setSelectionRange(text.length, text.length);
+}
+
+function cycleProfile() {
+  const list = listProfiles();
+  const i = list.findIndex((p) => p.id === config.profileId);
+  const next = selectProfile(list[(i + 1) % list.length].id);
+  repaintPanel();
+  toastInfo(`${next.name} · ${next.mode === "agent" ? t("Agente", "Agent") : "Chat"}`, t("Perfil de IA", "AI profile"));
+}
+
 export function createAiCommands() {
   const group = "Aurelius AI";
   const exportChat = () => {
@@ -976,6 +1037,12 @@ export function createAiCommands() {
     { id: "ai-config", title: t("IA: configuración del asistente", "AI: assistant settings"), description: t("Temperatura, tokens, instrucciones y contexto.", "Temperature, tokens, instructions and context."), group, icon: "settings-2", keywords: ["ia", "ai", "temperatura", "config"], run: async () => (await import("./ai-ui.js")).openAiConfig(() => repaintPanel()) },
     { id: "ai-export", title: t("IA: exportar conversación (.md)", "AI: export conversation (.md)"), description: t("Descarga el chat activo como Markdown.", "Download the active chat as Markdown."), group, icon: "save", keywords: ["ia", "ai", "exportar"], run: exportChat },
     ...[["ai-explain-sel", "IA: explicar la selección", "AI: explain the selection", "Explicá en detalle qué hace la selección actual (o el archivo activo si no hay selección), paso a paso y señalando riesgos."], ["ai-fix-sel", "IA: arreglar bugs de la selección", "AI: fix bugs in the selection", "Buscá bugs en la selección actual (o el archivo activo) y proponé el código corregido con una breve explicación."], ["ai-comment-sel", "IA: documentar la selección", "AI: document the selection", "Agregá documentación (docstrings/JSDoc y comentarios útiles) a la selección actual sin cambiar su lógica. Devolvé el código completo."], ["ai-types-sel", "IA: simplificar la selección", "AI: simplify the selection", "Simplificá la selección actual manteniendo el comportamiento y devolvé el código resultante."]].map(([id, es, en, prompt]) => ({ id, title: t(es, en), description: t(es, en), group, icon: "sparkles", keywords: ["ia", "ai", "seleccion", "selection"], run: () => { const flags = config.ctx; flags.selection = true; flags.file = true; return sendPrompt(prompt); } })),
+    { id: "ai-prompt-use", title: t("IA: usar un prompt guardado…", "AI: use a saved prompt…"), description: t("Inserta un prompt de tu biblioteca en el chat para editarlo y enviarlo.", "Inserts a prompt from your library into the chat to edit and send."), group, icon: "notebook-text", keywords: ["ia", "ai", "prompt", "biblioteca", "plantilla"], run: () => { const list = listPrompts(); if (!list.length) return toastInfo(t("Tu biblioteca está vacía. Guarda un borrador con «IA: guardar el borrador como prompt».", "Your library is empty. Save a draft with “AI: save draft as prompt”."), "Aurelius AI"); openPicker({ title: t("Biblioteca de prompts", "Prompt library"), icon: "notebook-text", items: list.map((p) => ({ kind: "prompt", name: p.title, meta: p.text.replace(/\s+/g, " ").slice(0, 70), value: p.id })), onPick: (item) => { const found = list.find((p) => p.id === item.value); if (!found) return; setDraft(found.text); } }); } },
+    { id: "ai-prompt-save", title: t("IA: guardar el borrador como prompt…", "AI: save the draft as a prompt…"), description: t("Guarda lo que escribiste en el chat en tu biblioteca de prompts.", "Saves what you typed in the chat to your prompt library."), group, icon: "save", keywords: ["ia", "ai", "prompt", "guardar", "biblioteca"], run: async () => { const text = (document.getElementById("au-ai-input")?.value || chatState.draft || "").trim(); if (!text) return toastInfo(t("Escribe algo en el chat primero.", "Type something in the chat first."), "Aurelius AI"); const title = await promptModal({ title: t("Guardar prompt", "Save prompt"), message: t("Dale un nombre corto.", "Give it a short name."), placeholder: t("Mi prompt", "My prompt"), confirmText: t("Guardar", "Save"), defaultValue: text.slice(0, 40) }); if (!title) return; savePromptEntry(title, text); toastSuccess(String(title), t("Prompt guardado", "Prompt saved")); } },
+    { id: "ai-prompt-delete", title: t("IA: borrar un prompt guardado…", "AI: delete a saved prompt…"), description: t("Quita un prompt de tu biblioteca.", "Removes a prompt from your library."), group, icon: "trash-2", keywords: ["ia", "ai", "prompt", "borrar"], run: () => { const list = listPrompts(); if (!list.length) return toastInfo(t("Tu biblioteca está vacía.", "Your library is empty."), "Aurelius AI"); openPicker({ title: t("Borrar prompt", "Delete prompt"), icon: "trash-2", items: list.map((p) => ({ kind: "prompt", name: p.title, meta: p.text.replace(/\s+/g, " ").slice(0, 70), value: p.id })), onPick: (item) => { deletePromptEntry(item.value); toastSuccess(item.name, t("Prompt borrado", "Prompt deleted")); } }); } },
+    { id: "ai-profiles", title: t("IA: gestionar perfiles de comportamiento", "AI: manage behavior profiles"), description: t("Crea y edita perfiles: modo, tono, permisos y límites del agente.", "Create and edit profiles: mode, tone, permissions and agent limits."), group, icon: "bot", keywords: ["ia", "ai", "perfil", "perfiles", "profile", "agente"], run: async () => (await import("./ai-profiles-ui.js")).openProfilesManager(() => repaintPanel()) },
+    { id: "ai-profile-next", title: t("IA: siguiente perfil", "AI: next profile"), description: t("Cambia al siguiente perfil de comportamiento.", "Switch to the next behavior profile."), group, icon: "sparkles", shortcut: "Ctrl+Alt+P", keywords: ["ia", "ai", "perfil", "siguiente", "profile", "next"], run: cycleProfile },
+    ...listProfiles().map((p) => ({ id: `ai-profile-${p.id}`, title: `${t("IA perfil", "AI profile")}: ${p.name}`, description: p.description || p.name, group, icon: p.icon || "sparkles", keywords: ["ia", "ai", "perfil", "profile", p.name], run: () => { selectProfile(p.id); repaintPanel(); toastInfo(p.name, t("Perfil de IA", "AI profile")); } })),
     { id: "ai-agent-toggle", title: t("IA: alternar modo Agente", "AI: toggle Agent mode"), description: t("El agente lee el proyecto, propone cambios y crea archivos (con tu aprobación).", "The agent reads the project, proposes changes and creates files (with your approval)."), group, icon: "sparkles", keywords: ["ia", "ai", "agente", "agent"], run: () => { config.agent = !config.agent; saveConfig(); repaintPanel(); toastInfo(config.agent ? t("Modo Agente activado.", "Agent mode on.") : t("Modo Agente desactivado.", "Agent mode off."), "Aurelius AI"); } },
     { id: "ai-agent-analyze", title: t("IA: analizar el proyecto completo (Agente)", "AI: analyze the whole project (Agent)"), description: t("El agente lee los archivos clave y propone mejoras.", "The agent reads key files and proposes improvements."), group, icon: "search", keywords: ["ia", "ai", "analizar", "proyecto", "agente"], run: () => analyzeProjectWithAgent() },
     { id: "ai-copy-last", title: t("IA: copiar última respuesta", "AI: copy last response"), description: t("Copia la última respuesta del asistente.", "Copy the assistant's last response."), group, icon: "copy", keywords: ["ia", "ai", "copiar", "copy"], run: async () => { const last = [...activeChat().messages].reverse().find((m) => m.role === "assistant"); if (!last) return toastInfo(t("Aún no hay respuestas.", "No responses yet."), "Aurelius AI"); await navigator.clipboard.writeText(last.content); toastSuccess(t("Respuesta copiada.", "Response copied."), "Aurelius AI"); } },

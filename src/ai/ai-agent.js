@@ -3,8 +3,14 @@
 // con <file path="…" action="write|create">contenido</file>. Nada se escribe sin la aprobación del usuario.
 import { appState } from "../app/state.js";
 import { createFile, readFile, writeFile } from "../services/fs.service.js";
+import { activeProfile } from "./ai-store.js";
 
 export const MAX_AGENT_ROUNDS = 8;
+
+export function agentPolicy() {
+  const { agentOptions } = activeProfile();
+  return agentOptions;
+}
 const MAX_FILE_READ = 20000;
 const MAX_ROUND_CHARS = 60000;
 const HEAVY = new Set(["node_modules", "target", "dist", "build", ".git", "vendor", ".next", ".nuxt", ".svelte-kit", ".cache", "coverage", "__pycache__", ".venv", "venv"]);
@@ -86,6 +92,8 @@ export function safeRelPath(raw) {
   const parts = rel.split("/");
   if (parts.some((p) => p === ".." || p === "" || p === ".")) return null;
   if (parts[0] === ".git" || parts.some((p) => /^\.env(\..*)?$/.test(p))) return null;
+  // Rutas vedadas por el perfil activo (prefijo de carpeta/archivo)
+  if (agentPolicy().blocked.some((b) => rel === b || rel.startsWith(`${b}/`))) return null;
   return rel;
 }
 
@@ -166,6 +174,10 @@ export async function applyFile(file) {
   if (!appState.projectPath) throw new Error("Abrí un proyecto primero.");
   const cur = await currentContent(file);
   const text = file.content.endsWith("\n") ? file.content : `${file.content}\n`;
+  const policy = agentPolicy();
+
+  if (cur.exists && !policy.allowModify) throw new Error("El perfil activo no permite modificar archivos existentes.");
+  if (!cur.exists && !policy.allowCreate) throw new Error("El perfil activo no permite crear archivos nuevos.");
 
   if (cur.exists) {
     if (appState.activeFilePath === cur.abs && appState.editorView) {
@@ -182,6 +194,15 @@ export async function applyFile(file) {
   const created = await createFile(appState.projectPath, cur.rel);
   await writeFile(created, text);
   return { rel: cur.rel, mode: "created" };
+}
+
+// Motivo por el que el perfil bloquea un cambio (o null si está permitido).
+export function policyBlock(file) {
+  const policy = agentPolicy();
+  if (!policy.allowCreate && !policy.allowModify) return "readonly";
+  if (file.action === "create" && !policy.allowCreate) return "nocreate";
+  if (file.action !== "create" && !policy.allowModify) return "nomodify";
+  return null;
 }
 
 export function lineStats(before, after) {
