@@ -155,7 +155,12 @@ sudo dpkg -i src-tauri/target/release/bundle/deb/*.deb && sudo apt install -f
 ./src-tauri/target/release/aurelius-ide
 ```
 
-Para Arch hay un `PKGBUILD` en [`packaging/arch`](packaging/arch).
+**Arch / Omarchy** (genera un `.pkg.tar.zst` instalable con `pacman`):
+
+```bash
+./packaging/arch/build-pkg.sh --install   # compila, empaqueta e instala
+./packaging/arch/build-pkg.sh             # solo crea release/aurelius-ide-<versión>-1-x86_64.pkg.tar.zst
+```
 
 ---
 
