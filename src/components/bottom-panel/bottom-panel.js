@@ -3,7 +3,6 @@ import { Terminal as XtermTerminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { SearchAddon } from "@xterm/addon-search";
-import { WebglAddon } from "@xterm/addon-webgl";
 import { Unicode11Addon } from "@xterm/addon-unicode11";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
@@ -1640,19 +1639,25 @@ function createTerminalView(record, container) {
   record.terminal.open(container);
   record.mounted = true;
 
-  // Renderer WebGL (opcional): más rápido en equipos con buena GPU; por defecto se usa el renderer estable.
-  try {
-    if (!isTerminalWebglEnabled()) {
-      throw new Error("webgl desactivado");
-    }
+  // Renderer WebGL (opcional, carga diferida): más rápido con buena GPU; por defecto se usa el renderer estable.
+  record.webglAddon = null;
 
-    const webgl = new WebglAddon();
+  if (isTerminalWebglEnabled()) {
+    import("@xterm/addon-webgl")
+      .then(({ WebglAddon }) => {
+        if (!record.terminal) {
+          return;
+        }
 
-    webgl.onContextLoss(() => webgl.dispose());
-    record.terminal.loadAddon(webgl);
-    record.webglAddon = webgl;
-  } catch {
-    record.webglAddon = null;
+        const webgl = new WebglAddon();
+
+        webgl.onContextLoss(() => webgl.dispose());
+        record.terminal.loadAddon(webgl);
+        record.webglAddon = webgl;
+      })
+      .catch(() => {
+        record.webglAddon = null;
+      });
   }
 
   fitTerminalStable(record);

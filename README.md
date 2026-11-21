@@ -51,7 +51,9 @@ Editor, terminal real, Git, IA con skills y más de 30 herramientas de desarroll
 |---|---|
 | **Nativo y liviano** | Rust + Tauri sobre WebKitGTK. Abre rápido y consume poco; nada de Electron. |
 | **Todo a mano** | Editor, terminal, Git, tareas del proyecto, monitor del sistema y diagnóstico del entorno en la misma ventana. |
-| **IA que controlas** | Ollama local, OpenAI, OpenRouter o Claude, con *skills* propias y respuestas en streaming. Tus claves se quedan en tu equipo. |
+| **IA que controlas** | Ollama local, OpenAI, OpenRouter o Claude, con *skills*, **perfiles de comportamiento**, **modo Agente** (lee tu proyecto y propone cambios con tu aprobación) y respuestas en streaming. Tus claves se quedan en tu equipo. |
+| **Voz** | Órdenes y dictado por voz, y lectura de respuestas. Reconocimiento local con whisper.cpp: el audio no sale de tu equipo. |
+| **Español e inglés** | Toda la interfaz en ambos idiomas, cambio al vuelo (Ajustes, paleta o por voz). |
 | **Diseño sobrio** | Superficies planas, líneas finas, paletas y packs de iconos configurables. **Sin glow.** |
 
 ---
@@ -99,7 +101,7 @@ Paletas de color, packs de iconos, superficies *Midnight* (AMOLED) y *Graphite*,
 
 ## ◇ Asistente de IA
 
-Panel lateral (`Ctrl+I`) con conversaciones, historial y **skills** editables (revisor de código, tests, documentación, refactor, seguridad, commit…). Escribe `/` para invocarlas.
+Panel lateral (`Ctrl+I`) con conversaciones, historial, **perfiles de comportamiento** (modo, tono, permisos y rutas vedadas), **modo Agente**, biblioteca de prompts y **skills** editables (revisor de código, tests, documentación, refactor, seguridad, commit…). Escribe `/` para invocarlas.
 
 | Proveedor | Notas |
 |---|---|
@@ -167,6 +169,7 @@ Para Arch hay un `PKGBUILD` en [`packaging/arch`](packaging/arch).
 | Explorer · Terminal · Panel IA | `Ctrl+B` · `Ctrl+J` · `Ctrl+I` |
 | **Centro de Git** | `Ctrl+Shift+G` |
 | Ayuda de comandos | `Ctrl+K` |
+| Hablar con el asistente · Siguiente perfil de IA | `Ctrl+Alt+V` · `Ctrl+Alt+P` |
 | Cerrar pestaña | `Ctrl+W` |
 | Modo Zen · Apariencia | `Alt+Z` · `Alt+A` |
 | Historial local · Scratchpad · Flow timer | `Alt+H` · `Alt+J` · `Alt+T` |
@@ -201,7 +204,7 @@ Principios: el frontend nunca ejecuta comandos arbitrarios; todo pasa por *comma
 
 ## ✓ Calidad
 
-El frontend se prueba con suites e2e de Playwright (Tauri simulado y `git` real en repositorios temporales); el backend de shell/Git se valida con tests de Rust. `npm run build` debe pasar antes de cada PR.
+El frontend se prueba con suites e2e de Playwright (Tauri simulado y `git` real en repositorios temporales); el backend (shell/Git y voz) se valida con tests de Rust (`cargo test`) y `cargo clippy` sin avisos. `npm run build`, `cargo test` y `cargo clippy` corren en CI en cada PR.
 
 ---
 

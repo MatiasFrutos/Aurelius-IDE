@@ -182,3 +182,11 @@ Historial de cambios de Aurelius IDE (movido desde el README).
   - **Dictado al chat**: «pregunta …» o cualquier frase que no sea una orden (modo automático); también modos «solo órdenes» y «solo chat».
   - **Lectura en voz alta**: botón «Leer» en cada respuesta, «lee la última respuesta», «para», y lectura automática opcional. El código se resume como «(bloque de código)».
   - **Motores**: Web Speech si el WebView lo trae; en Linux/WebKitGTK usa grabación del sistema (`pw-record`/`parecord`/`arecord`) + **whisper.cpp local** (nada sale de tu equipo) y `spd-say`/`espeak-ng` para hablar. Configuración en «Voz: configuración» (muestra qué falta instalar).
+
+## v4.2 — Revisión general y calidad
+
+- **Backend verificado de verdad:** el crate de Tauri compila completo (`cargo check`), `cargo clippy --all-targets -D warnings` sin avisos (se corrigieron 3) y **10 tests de Rust** nuevos en el repo (`cargo test`): Git con lista blanca y rechazos, timeout y tope de salida, parsers de procesos/discos/red, y todo el flujo de voz con binarios falsos.
+- **CI** (`.github/workflows/ci.yml`): en cada PR corren `npm run build`, `cargo clippy` y `cargo test`.
+- **Copia de seguridad** (Ajustes o paleta): exporta/importa perfil, IA (perfiles, skills, prompts), voz, apariencia y favoritos en un JSON (sin conversaciones ni claves); la importación solo acepta claves de Aurelius.
+- **Rendimiento de arranque:** el renderer WebGL del terminal se carga solo si está activado (−110 KB en el bundle principal).
+- Atajos nuevos en la lista de Ajustes; README actualizado.

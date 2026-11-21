@@ -1,6 +1,7 @@
 // src/app/app-command-actions.js
 import { appState } from "./state.js";
 import { t } from "./i18n.js";
+import { createBackupCommands } from "../components/features/backup.js";
 import { createVoiceCommands } from "../components/voice/voice.js";
 import { createProfileCommands } from "../components/features/profile.js";
 import { createTerminalCommands } from "../components/bottom-panel/terminal-tools.js";
@@ -391,6 +392,6 @@ export function createCommandActions({
       keywords: ["toolbox", "json", "regex", "base64", "hash", "jwt", "uuid", "herramientas", "tools"],
       run: () => handleActivityPanel("toolbox")
     },
-    ...deferAfterRender([...createFeatureCommands(), ...createLabs2Commands(), ...createPersonalizeCommands(), ...createLabs3Commands(), ...createAiCommands(), ...createGitCenterCommands(), ...createProjectCommands(), ...createMoreCommands(), ...createTerminalCommands(), ...createProfileCommands(), ...createVoiceCommands(), ...createEditorToolCommands()], renderApp)
+    ...deferAfterRender([...createFeatureCommands(), ...createLabs2Commands(), ...createPersonalizeCommands(), ...createLabs3Commands(), ...createAiCommands(), ...createGitCenterCommands(), ...createProjectCommands(), ...createMoreCommands(), ...createTerminalCommands(), ...createProfileCommands(), ...createVoiceCommands(), ...createBackupCommands(), ...createEditorToolCommands()], renderApp)
   ];
 }

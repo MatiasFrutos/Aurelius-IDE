@@ -396,7 +396,8 @@ function injectToolchain() {
 const SHORTCUTS = [
   ["Ctrl+P", t("Abrir archivo rápido", "Quick open")], ["Ctrl+Shift+P", t("Paleta de comandos", "Command palette")], ["Ctrl+Shift+O", t("Ir a símbolo", "Go to symbol")],
   ["Ctrl+S", t("Guardar", "Save")], ["Alt+Z", "Zen"], ["Alt+A", t("Apariencia", "Appearance")], ["Alt+H", t("Historial local", "Local history")],
-  ["Alt+D", t("Cambios sin guardar", "Unsaved changes")], ["Alt+B", t("Marcador", "Bookmark")], ["Alt+J", "Scratchpad"], ["Alt+T", "Flow timer"], ["Alt+W", t("Ajuste de línea", "Word wrap")]
+  ["Alt+D", t("Cambios sin guardar", "Unsaved changes")], ["Alt+B", t("Marcador", "Bookmark")], ["Alt+J", "Scratchpad"], ["Alt+T", "Flow timer"], ["Alt+W", t("Ajuste de línea", "Word wrap")],
+  ["Ctrl+Shift+G", t("Centro de Git", "Git center")], ["Ctrl+Alt+P", t("Siguiente perfil de IA", "Next AI profile")], ["Ctrl+Alt+V", t("Hablar con el asistente", "Talk to the assistant")]
 ];
 
 function injectSettings() {

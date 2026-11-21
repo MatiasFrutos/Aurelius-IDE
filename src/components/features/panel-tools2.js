@@ -7,6 +7,7 @@ import { toastError, toastInfo, toastSuccess } from "../ui/toast.js";
 import { openOverlay } from "./features.js";
 import { initProfile, openProfile } from "./profile.js";
 import { openVoiceSettings } from "../voice/voice.js";
+import { exportBackup, importBackupFromFile } from "./backup.js";
 import { gitRun } from "../../services/shell.service.js";
 import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
 
@@ -388,7 +389,7 @@ export function applyDoctorFilter() {
 
 export function injectMore() {
   let injected = false;
-  injected = addTo('[data-px-bar="settings"]', `<div class="au-px__row">${b2("set-profile", "user", t("Mi perfil y foto", "My profile & photo"))}${b2("set-voice", "mic", t("Voz", "Voice"))}${b2("set-lang", "languages", t("Cambiar idioma (English / Español)", "Change language (English / Español)"))}${b2("set-fast", "zap", t("Modo rápido (sin animaciones)", "Fast mode (no animations)")).replace('class="au-px__btn"', `class="au-px__btn ${isFastMode() ? "is-on" : ""}"`)}</div>`) || injected;
+  injected = addTo('[data-px-bar="settings"]', `<div class="au-px__row">${b2("set-profile", "user", t("Mi perfil y foto", "My profile & photo"))}${b2("set-voice", "mic", t("Voz", "Voice"))}${b2("set-backup", "save", t("Copia de seguridad", "Backup"))}${b2("set-restore", "file-plus-2", t("Restaurar copia", "Restore backup"))}${b2("set-lang", "languages", t("Cambiar idioma (English / Español)", "Change language (English / Español)"))}${b2("set-fast", "zap", t("Modo rápido (sin animaciones)", "Fast mode (no animations)")).replace('class="au-px__btn"', `class="au-px__btn ${isFastMode() ? "is-on" : ""}"`)}</div>`) || injected;
   injected = addTo('[data-px-bar="monitor"]', b2("mon-copy", "copy", t("Copiar procesos", "Copy processes")) + `<button type="button" class="au-px__btn ${monitorAlerts ? "is-on" : ""}" data-px2="mon-alerts" title="${esc(t("Avisar si la RAM supera el 90%", "Warn when RAM exceeds 90%"))}"><i data-lucide="activity"></i><span>${esc(t("Alertas", "Alerts"))}</span></button>`) || injected;
   applyDotfiles();
   injected = addTo('[data-px-bar="tasks"]', `<input class="au-px__input" data-px2-task-filter placeholder="${esc(t("Filtrar tareas…", "Filter tasks…"))}" spellcheck="false" />` + b2("task-md", "copy", t("Copiar como Markdown", "Copy as Markdown"))) || injected;
@@ -445,6 +446,10 @@ export function initMoreTools() {
         return copyDoctorJson();
       case "task-md":
         return copyTasksMarkdown();
+      case "set-backup":
+        return exportBackup();
+      case "set-restore":
+        return importBackupFromFile();
       case "set-voice":
         return openVoiceSettings();
       case "set-lang":
