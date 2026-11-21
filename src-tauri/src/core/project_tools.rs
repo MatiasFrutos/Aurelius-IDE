@@ -76,6 +76,7 @@ pub fn run_project_task(command: String, cwd: String) -> Result<ProjectTaskRunRe
     })
 }
 
+#[allow(clippy::vec_init_then_push)]
 pub fn read_toolchain_doctor() -> Result<Vec<ToolchainItem>, String> {
     let mut items = Vec::new();
 

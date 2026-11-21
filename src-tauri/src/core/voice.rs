@@ -371,3 +371,93 @@ pub fn speak(state: &VoiceState, text: &str, lang: &str, rate: f32) -> Result<()
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn language_codes_are_validated() {
+        assert!(valid_lang("es") && valid_lang("en") && valid_lang("pt-BR"));
+        assert!(!valid_lang("") && !valid_lang("es; rm -rf /") && !valid_lang("EN") && !valid_lang("e") && !valid_lang("es_ES"));
+    }
+
+    #[test]
+    fn transcript_is_cleaned() {
+        assert_eq!(clean_transcript("[00:00:01.000 --> 00:00:02.000]  hola   mundo\n\n  adiós "), "hola mundo adiós");
+        assert_eq!(clean_transcript("   \n  "), "");
+    }
+
+    #[test]
+    fn speech_text_is_sanitized_and_capped() {
+        assert_eq!(sanitize_speech("  hola\u{7}mundo  "), "hola mundo");
+        assert_eq!(sanitize_speech(&"a".repeat(MAX_SPEAK_CHARS + 500)).len(), MAX_SPEAK_CHARS);
+    }
+
+    #[test]
+    fn recorder_args_per_tool() {
+        let wav = Path::new("/tmp/x.wav");
+        assert_eq!(recorder_args("arecord", wav).last().unwrap(), "/tmp/x.wav");
+        assert!(recorder_args("parecord", wav).iter().any(|a| a == "--file-format=wav"));
+        assert!(recorder_args("pw-record", wav).iter().any(|a| a == "16000"));
+    }
+
+    // Binarios falsos en un PATH temporal: graba → transcribe → habla. Es el único test que toca PATH.
+    #[test]
+    fn full_flow_with_fake_tools() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let dir = std::env::temp_dir().join(format!("aurelius-voice-test-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+
+        let write = |name: &str, body: &str| {
+            let path = dir.join(name);
+            fs::write(&path, body).unwrap();
+            fs::set_permissions(&path, fs::Permissions::from_mode(0o755)).unwrap();
+        };
+
+        write("arecord", "#!/bin/bash\nf=\"${@: -1}\"\nhead -c 4096 /dev/urandom > \"$f\"\ntrap 'exit 0' INT TERM\nwhile true; do sleep 0.1; done\n");
+        write("whisper-cli", "#!/bin/bash\nprintf '[00:00:00.000 --> 00:00:02.000]   hola   mundo\\n'\n");
+        write("spd-say", &format!("#!/bin/bash\necho \"$@\" > {}/spd.txt\nexec sleep 30\n", dir.display()));
+        fs::write(dir.join("model.bin"), "x").unwrap();
+
+        std::env::set_var("PATH", format!("{}:/usr/bin:/bin", dir.display()));
+
+        let tools = detect_tools();
+        assert_eq!(tools.recorder.as_deref(), Some("arecord"));
+        assert_eq!(tools.speaker.as_deref(), Some("spd-say"));
+        assert_eq!(tools.transcriber.as_deref(), Some("whisper-cli"));
+
+        let state = VoiceState::default();
+        start_recording(&state).unwrap();
+        assert!(start_recording(&state).is_err(), "no se permite grabar dos veces");
+        std::thread::sleep(Duration::from_millis(250));
+        let wav = stop_recording(&state).unwrap();
+        assert!(stop_recording(&state).is_err());
+
+        let model = dir.join("model.bin");
+        assert!(transcribe(&wav, "es; x", model.to_str().unwrap()).is_err(), "idioma inválido");
+        assert!(!wav.exists(), "el WAV se borra aunque falle");
+
+        start_recording(&state).unwrap();
+        std::thread::sleep(Duration::from_millis(250));
+        let wav = stop_recording(&state).unwrap();
+        assert!(transcribe(&wav, "es", "/no/existe.bin").is_err(), "modelo inexistente");
+
+        start_recording(&state).unwrap();
+        std::thread::sleep(Duration::from_millis(250));
+        let wav = stop_recording(&state).unwrap();
+        assert_eq!(transcribe(&wav, "es", model.to_str().unwrap()).unwrap(), "hola mundo");
+        assert!(!wav.exists());
+
+        speak(&state, "Hola -rf", "es", 1.5).unwrap();
+        std::thread::sleep(Duration::from_millis(300));
+        let args = fs::read_to_string(dir.join("spd.txt")).unwrap();
+        assert!(args.contains("-l es") && args.contains("-r 50") && args.contains("-- Hola -rf"), "{args}");
+        assert!(speak(&state, "x", "xx; ls", 1.0).is_err());
+        stop_speaking(&state);
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+}

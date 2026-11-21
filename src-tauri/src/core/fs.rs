@@ -280,7 +280,7 @@ pub fn get_recent_projects() -> Result<Vec<RecentProject>, String> {
         path.exists() && path.is_dir()
     });
 
-    projects.sort_by(|a, b| b.opened_at.cmp(&a.opened_at));
+    projects.sort_by_key(|project| std::cmp::Reverse(project.opened_at));
     projects.truncate(MAX_RECENT_PROJECTS);
 
     Ok(projects)
