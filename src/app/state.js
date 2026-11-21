@@ -1,5 +1,21 @@
 // src/app/state.js
 
+// Idioma inicial, síncrono: así los textos definidos al cargar los módulos (skills, perfiles, herramientas…)
+// ya salen en el idioma elegido (la preferencia se guarda en localStorage al cambiarla).
+function initialLanguage() {
+  try {
+    const stored = localStorage.getItem("aurelius-ide-language");
+
+    if (stored === "en" || stored === "es") {
+      return stored;
+    }
+
+    return "es";
+  } catch {
+    return "es";
+  }
+}
+
 export const appState = {
   projectPath: null,
   projectName: null,
@@ -86,7 +102,7 @@ export const appState = {
 
   settings: {
     theme: "dark",
-    language: "es",
+    language: initialLanguage(),
     uiScale: 1,
     sidebarWidth: 286,
     editorFontSize: 14,

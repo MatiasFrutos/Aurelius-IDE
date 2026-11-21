@@ -20,3 +20,14 @@ export function languageValue(es, en) {
 export function getLanguageLabel(language = getLanguage()) {
   return language === "en" ? "English" : "Español";
 }
+
+// Los textos definidos al cargar los módulos no se reevalúan en caliente: tras cambiar de idioma se recarga la ventana.
+export function reloadForLanguage(language, delay = 500) {
+  try {
+    localStorage.setItem("aurelius-ide-language", language === "en" ? "en" : "es");
+  } catch {
+    // sin almacenamiento
+  }
+
+  setTimeout(() => window.location.reload(), delay);
+}

@@ -397,3 +397,94 @@ fn read_battery() -> (Option<u8>, Option<String>) {
 
     (None, None)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn tmp(name: &str) -> std::path::PathBuf {
+        let dir = std::env::temp_dir().join(format!("aurelius-shell-{name}-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    fn git(dir: &Path, args: &[&str]) -> CommandOutput {
+        let args: Vec<String> = args.iter().map(|s| s.to_string()).collect();
+        run_git(dir.to_str().unwrap(), &args).unwrap()
+    }
+
+    #[test]
+    fn git_flow_init_commit_log() {
+        let dir = tmp("flow");
+        assert!(git(&dir, &["init"]).ok);
+        git(&dir, &["config", "--get", "user.name"]); // lectura permitida
+        fs::write(dir.join("a.txt"), "hola\n").unwrap();
+        assert!(git(&dir, &["add", "a.txt"]).ok);
+        let commit = {
+            let args: Vec<String> = ["-c", "x"].iter().map(|s| s.to_string()).collect();
+            run_git(dir.to_str().unwrap(), &args)
+        };
+        assert!(commit.is_err(), "'-c' debe rechazarse");
+        let out = git(&dir, &["status", "--porcelain=v1"]);
+        assert!(out.stdout.contains("A  a.txt"), "{}", out.stdout);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn git_rejects_dangerous_input() {
+        let dir = tmp("reject");
+        let run = |args: &[&str]| {
+            let args: Vec<String> = args.iter().map(|s| s.to_string()).collect();
+            run_git(dir.to_str().unwrap(), &args)
+        };
+        assert!(run(&[]).is_err());
+        assert!(run(&["rm", "-rf", "."]).is_err(), "subcomando fuera de la lista blanca");
+        assert!(run(&["fetch", "--upload-pack=evil"]).is_err());
+        assert!(run(&["diff", "--ext-diff"]).is_err());
+        assert!(run(&["config", "user.name", "x"]).is_err(), "config solo lectura");
+        assert!(run_git("/no/existe/nunca", &["status".to_string()]).is_err());
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn timeout_kills_and_output_is_capped() {
+        let mut slow = Command::new("sleep");
+        slow.arg("5");
+        let out = run_with_timeout(slow, Duration::from_millis(150)).unwrap();
+        assert!(out.timed_out && !out.ok);
+
+        let mut big = Command::new("sh");
+        big.args(["-c", "head -c 3000000 /dev/zero | tr '\\0' 'a'"]);
+        let out = run_with_timeout(big, Duration::from_secs(20)).unwrap();
+        assert!(out.truncated);
+        assert_eq!(out.stdout.len(), MAX_OUTPUT_BYTES);
+    }
+
+    #[test]
+    fn parsers_handle_real_formats() {
+        let ps = "  PID %CPU %MEM   RSS COMMAND\n 1 0.5 1.0 2048 systemd\n 22 12.5 3.2 4096 my app --flag\n bad line\n";
+        let procs = parse_ps(ps);
+        assert_eq!(procs.len(), 2);
+        assert_eq!(procs[1].name, "my app --flag");
+        assert_eq!(procs[1].memory_bytes, 4096 * 1024);
+
+        let df = "Filesystem 1K-blocks Used Available Use% Mounted on\n/dev/sda1 1000 400 600 40% /\ntmpfs 10 1 9 1% /run\n/dev/sda1 1000 400 600 40% /mnt/dup\n/dev/sdb1 2000 100 1900 5% /mnt/my disk\n";
+        let disks = parse_df(df);
+        assert_eq!(disks.len(), 2, "sin tmpfs ni duplicados");
+        assert_eq!(disks[1].mount, "/mnt/my disk");
+
+        let net = "Inter-|   Receive\n face |bytes\n    lo: 100 0 0 0 0 0 0 0 100 0 0 0 0 0 0 0\n  eth0: 5000 1 0 0 0 0 0 0 800 1 0 0 0 0 0 0\n";
+        let nets = parse_net_dev(net);
+        assert_eq!(nets.len(), 1, "sin loopback");
+        assert_eq!((nets[0].rx_bytes, nets[0].tx_bytes), (5000, 800));
+    }
+
+    #[test]
+    fn probes_only_whitelisted_tools() {
+        let found = probe_tools(&["sh".to_string(), "rm".to_string(), "no-existe-xyz".to_string()]);
+        // `rm` no está en la lista blanca: nunca se ejecuta (se reporta como no encontrado)
+        let rm = found.iter().find(|p| p.name == "rm");
+        assert!(rm.map(|p| !p.found).unwrap_or(true));
+    }
+}

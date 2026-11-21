@@ -305,7 +305,7 @@ fn parse_status_entry(entry: &str, next_entry: Option<&String>) -> Option<GitFil
         return None;
     }
 
-    let index_status = entry.chars().nth(0).unwrap_or(' ').to_string();
+    let index_status = entry.chars().next().unwrap_or(' ').to_string();
     let worktree_status = entry.chars().nth(1).unwrap_or(' ').to_string();
 
     let raw_path = entry.get(3..)?.trim();

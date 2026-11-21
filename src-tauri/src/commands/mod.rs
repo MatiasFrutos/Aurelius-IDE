@@ -9,3 +9,4 @@ pub mod shell_commands;
 pub mod system_commands;
 pub mod project_tools_commands;
 pub mod live_server_commands;
+pub mod voice_commands;

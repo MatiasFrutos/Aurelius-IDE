@@ -14,7 +14,8 @@ import {
   toggleFolder
 } from "./state.js";
 
-import { t } from "./i18n.js";
+import { reloadForLanguage, t } from "./i18n.js";
+import { initVoice } from "../components/voice/voice.js";
 
 import {
   applyLayoutPreferences,
@@ -638,7 +639,8 @@ async function handleToggleLanguage() {
     updateSetting("language", nextLanguage);
     await persistSettings();
 
-    renderApp();
+    // Recarga para reevaluar todos los textos (también los definidos al cargar los módulos).
+    reloadForLanguage(nextLanguage);
 
     toastSuccess(
       nextLanguage === "en"
@@ -725,6 +727,19 @@ function handleCommandHelpInput(event) {
   });
 }
 
+// Un comando que falla (p. ej. portapapeles sin permiso) debe avisar, no dejar una promesa rechazada sin capturar.
+function runCommandSafely(action) {
+  try {
+    Promise.resolve(action.run()).catch((error) => {
+      console.error(error);
+      toastError(getErrorMessage(error), action.title || t("Comando", "Command"));
+    });
+  } catch (error) {
+    console.error(error);
+    toastError(getErrorMessage(error), action.title || t("Comando", "Command"));
+  }
+}
+
 function executeCommandHelpAction(actionId) {
   const action = getCommandActions().find((item) => item.id === actionId);
 
@@ -735,7 +750,7 @@ function executeCommandHelpAction(actionId) {
   commandHelpOpen = false;
   commandHelpQuery = "";
 
-  action.run();
+  runCommandSafely(action);
 }
 
 function handleOpenQuickOpen() {
@@ -831,7 +846,7 @@ function executeCommandAction(actionId) {
   commandPaletteQuery = "";
   commandPaletteActiveIndex = 0;
 
-  action.run();
+  runCommandSafely(action);
 }
 
 function handleCommandPaletteInput(event) {
@@ -1138,8 +1153,13 @@ async function handleSettingsSave(event) {
       document.getElementById("settings-topbar-visible")?.value !== "false";
 
     const nextSettings = getSettingsFormValues();
+    const languageChanged = nextSettings.language !== appState.settings.language;
 
     await saveSettings(nextSettings);
+
+    if (languageChanged) {
+      reloadForLanguage(nextSettings.language);
+    }
 
     handleSetTopbarVisible(nextTopbarVisible);
     setSidebarWidth(nextSettings.sidebarWidth);
@@ -1957,7 +1977,21 @@ function bindGlobalEvents() {
 
 export async function initAureliusApp() {
   initFeatures();
+  const bootLanguage = appState.settings.language;
+
   await loadSettings();
+
+  // Los textos definidos al cargar los módulos usaron `bootLanguage`: si el archivo de ajustes dice otro idioma, recarga una vez.
+  if (appState.settings.language !== bootLanguage && !sessionStorage.getItem("aurelius.lang.reloaded")) {
+    try {
+      sessionStorage.setItem("aurelius.lang.reloaded", "1");
+    } catch {
+      // sin sessionStorage
+    }
+
+    reloadForLanguage(appState.settings.language, 0);
+    return;
+  }
   applyPersonalization();
   applyAppearance();
 
@@ -1978,6 +2012,7 @@ export async function initAureliusApp() {
   renderApp();
   bindGlobalEvents();
   initPanelTools();
+  initVoice();
   initLabs2();
   initAiChat();
   initBranchWatcher();
@@ -2007,6 +2042,11 @@ export async function initAureliusApp() {
   });
 
   window.addEventListener("au:rerender", () => renderApp());
+  window.addEventListener("au:toggle-language", () => handleToggleLanguage());
+  // El asistente de voz pide la lista de comandos de la paleta para resolver órdenes habladas.
+  window.addEventListener("au:voice-find-command", (event) => {
+    event.detail.actions = getCommandActions().map(({ id, title, keywords, run }) => ({ id, title, keywords, run }));
+  });
   window.addEventListener("au:refresh-project", () => {
     handleRefreshProject();
   });

@@ -173,3 +173,20 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - **Perfiles de comportamiento de la IA** (selector en el chat, `Ctrl+Alt+P` para rotar, «IA: gestionar perfiles»): cada perfil define **modo** (Chat / Agente), **tono** (neutro, conciso, detallado, didáctico, crítico), **idioma**, **reglas propias** que se añaden al prompt de sistema, temperatura, máx. tokens y **modelo** opcionales, y para el agente: **permisos** (crear / modificar archivos), **máx. rondas de lectura** y **rutas vedadas** (no se leen ni se tocan). Incluye 7 perfiles integrados (Equilibrado, Conciso, Mentor, Revisor estricto, Arquitecto solo análisis, Agente ingeniero, Agente creador) y se pueden crear, duplicar, importar/exportar y restaurar. Los permisos se aplican en la interfaz y al escribir; toda modificación sigue requiriendo tu aprobación con diff.
 - **Biblioteca de prompts:** «IA: usar / guardar el borrador como / borrar un prompt» (3 de ejemplo incluidos).
 - **Interfaz:** botones de panel «fantasma» (sin pastillas con borde), cabecera del editor neutra, **Ajustes con cabecera compacta**, diálogos con foco nítido y botones planos, avisos más discretos, pestañas con subrayado de acento, formularios de skills/perfiles unificados.
+
+## v4.1 — Idioma de toda la app y asistentes de voz
+
+- **Idioma (Español / English)** en toda la app: Ajustes, botón «Cambiar idioma» en Ajustes, paleta («Switch to English» / «Cambiar a Español») y por voz. Al cambiar, la ventana se recarga para que **todo** (también skills, perfiles, herramientas y plantillas, que se definían al cargar) salga en el idioma elegido. Corregido: antes esos textos siempre salían en español.
+- **Asistentes de voz** (`Ctrl+Alt+V` o el botón del micrófono en el chat):
+  - **Órdenes por voz**: «abre monitor», «abre git», «abre la terminal», «crea archivo», «cambia el idioma a inglés», «analiza el proyecto»… (coincidencia difusa con todos los comandos de la paleta).
+  - **Dictado al chat**: «pregunta …» o cualquier frase que no sea una orden (modo automático); también modos «solo órdenes» y «solo chat».
+  - **Lectura en voz alta**: botón «Leer» en cada respuesta, «lee la última respuesta», «para», y lectura automática opcional. El código se resume como «(bloque de código)».
+  - **Motores**: Web Speech si el WebView lo trae; en Linux/WebKitGTK usa grabación del sistema (`pw-record`/`parecord`/`arecord`) + **whisper.cpp local** (nada sale de tu equipo) y `spd-say`/`espeak-ng` para hablar. Configuración en «Voz: configuración» (muestra qué falta instalar).
+
+## v4.2 — Revisión general y calidad
+
+- **Backend verificado de verdad:** el crate de Tauri compila completo (`cargo check`), `cargo clippy --all-targets -D warnings` sin avisos (se corrigieron 3) y **10 tests de Rust** nuevos en el repo (`cargo test`): Git con lista blanca y rechazos, timeout y tope de salida, parsers de procesos/discos/red, y todo el flujo de voz con binarios falsos.
+- **CI** (`.github/workflows/ci.yml`): en cada PR corren `npm run build`, `cargo clippy` y `cargo test`.
+- **Copia de seguridad** (Ajustes o paleta): exporta/importa perfil, IA (perfiles, skills, prompts), voz, apariencia y favoritos en un JSON (sin conversaciones ni claves); la importación solo acepta claves de Aurelius.
+- **Rendimiento de arranque:** el renderer WebGL del terminal se carga solo si está activado (−110 KB en el bundle principal).
+- Atajos nuevos en la lista de Ajustes; README actualizado.

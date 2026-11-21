@@ -36,7 +36,21 @@ import "./components/git-pro/git-pro.css";
 import "./styles/premium.css";
 import "./styles/premium2.css";
 import "./styles/premium3.css";
+import "./components/voice/voice.css";
 
 import { initAureliusApp } from "./app/app.js";
+import { toastError } from "./components/ui/toast.js";
+
+// Red de seguridad: una promesa rechazada sin capturar (p. ej. portapapeles sin permiso) avisa en vez de pasar en silencio.
+window.addEventListener("unhandledrejection", (event) => {
+  event.preventDefault();
+  console.warn(event.reason);
+
+  const message = String(event.reason?.message || event.reason || "");
+
+  if (message && !/abort/i.test(message)) {
+    toastError(message.slice(0, 200), "Aurelius");
+  }
+});
 
 initAureliusApp();

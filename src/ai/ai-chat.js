@@ -9,6 +9,7 @@ import { toastError, toastInfo, toastSuccess, toastWarning } from "../components
 import { promptModal } from "../components/ui/modal.js";
 import { openOverlay, closeOverlay, openPicker, renderDiff } from "../components/features/features.js";
 import { renderMarkdown } from "../components/features/labs2.js";
+import { getVoiceSettings, isSpeaking, speakText, stopSpeaking } from "../components/voice/voice.js";
 import { avatarHtml, getProfile, profileShows } from "../components/features/profile.js";
 import { agentPolicy, agentPrompt, agentTreeText, applyFile, currentContent, lineStats, parseAgent, policyBlock, resolveTools, safeRelPath } from "./ai-agent.js";
 import {
@@ -226,6 +227,7 @@ function renderMessage(message, chat, isLast) {
       ${!streaming && config.agent ? renderApplyAll(message) : ""}
       ${!streaming ? `<div class="au-ai2__tools">
         <button type="button" data-ai="copy">${t("Copiar", "Copy")}</button>
+        <button type="button" data-ai="speak" title="${t("Leer en voz alta", "Read aloud")}">${t("Leer", "Read")}</button>
         ${isLast ? `<button type="button" data-ai="regen">${t("Regenerar", "Regenerate")}</button>` : ""}
         <button type="button" data-ai="del">${t("Eliminar", "Delete")}</button></div>` : ""}
     </div>
@@ -315,6 +317,7 @@ export function renderAiChat() {
       </div>
       <div class="au-ai2__inputrow">
         <textarea id="au-ai-input" rows="1" placeholder="${config.agent ? t("Pedile al agente: analizar, arreglar, crear archivos…", "Ask the agent: analyze, fix, create files…") : t("Preguntá o escribí / para skills…", "Ask or type / for skills…")}" spellcheck="false">${esc(chatState.draft)}</textarea>
+        <button type="button" class="au-ai2__mic" data-voice-mic title="${t("Hablar (Ctrl+Alt+V)", "Talk (Ctrl+Alt+V)")}" aria-label="${t("Hablar", "Talk")}"><i data-lucide="mic"></i></button>
         ${streaming
           ? `<button type="button" class="au-ai2__send is-stop" data-ai="stop" title="${t("Detener", "Stop")}"><i data-lucide="square"></i></button>`
           : `<button type="submit" class="au-ai2__send" title="${t("Enviar (Enter)", "Send (Enter)")}"><i data-lucide="send"></i></button>`}
@@ -423,6 +426,8 @@ function finishStream(messageId, error = "") {
   }
 
   repaintPanel();
+
+  if (!error && found && getVoiceSettings().ttsAuto && found.message.content) speakText(found.message.content);
 
   if (!error && found && config.agent) maybeContinueAgent(found.chat, found.message);
 }
@@ -908,6 +913,13 @@ export function initAiChat() {
       case "stop":
         stopStream();
         break;
+      case "speak": {
+        const found = findMessage(messageId);
+        if (!found) break;
+        if (isSpeaking()) await stopSpeaking();
+        else await speakText(found.message.content);
+        break;
+      }
       case "pf-pick":
         selectProfile(button.dataset.profile);
         repaintPanel({ keepFocus: true });
