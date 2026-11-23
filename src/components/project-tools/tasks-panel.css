@@ -102,7 +102,7 @@
   background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.075em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -127,7 +127,7 @@
   color: var(--au-text);
   font-size: 16px;
   line-height: 1.05;
-  font-weight: 950;
+  font-weight: 600;
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;
 }
@@ -154,7 +154,7 @@
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
   font-size: 13px;
-  font-weight: 880;
+  font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
   transition:
@@ -250,7 +250,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 900;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -268,7 +268,7 @@
   background: rgba(var(--au-accent-rgb), 0.078);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -351,7 +351,7 @@
 .au-task-item__content strong {
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 880;
+  font-weight: 600;
 }
 
 .au-task-item__content code {
@@ -411,7 +411,7 @@
   max-width: 100%;
   padding: 0 8px;
   font-size: 12.5px;
-  font-weight: 880;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -493,7 +493,7 @@
 .au-tasks__empty strong {
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .au-tasks__empty p {
@@ -538,7 +538,7 @@
   display: block;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.075em;
 }
@@ -549,7 +549,7 @@
   margin-top: 2px;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 880;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -561,7 +561,7 @@
   padding: 3px 7px;
   border-radius: 999px;
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .au-task-output b.is-ok {

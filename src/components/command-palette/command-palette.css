@@ -135,7 +135,7 @@
   min-width: 0;
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.095em;
   text-transform: uppercase;
   overflow: hidden;
@@ -147,7 +147,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 14.2px;
-  font-weight: 940;
+  font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1;
   overflow: hidden;
@@ -239,13 +239,13 @@
   background: transparent;
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 720;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .au-command-palette__search input::placeholder {
   color: var(--au-muted);
-  font-weight: 640;
+  font-weight: 600;
 }
 
 .au-command-palette__search-key {
@@ -259,7 +259,7 @@
   background: var(--au-bg-card);
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 860;
+  font-weight: 600;
   letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
@@ -270,7 +270,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -317,7 +317,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   overflow: hidden;
@@ -331,7 +331,7 @@
   margin-top: 4px;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 920;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -478,7 +478,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 860;
+  font-weight: 600;
   letter-spacing: -0.008em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -494,7 +494,7 @@
   background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -538,7 +538,7 @@
     var(--au-bg-card);
   color: var(--au-muted-strong);
   font-size: 10.5px;
-  font-weight: 820;
+  font-weight: 600;
   font-family: inherit;
   letter-spacing: 0;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.14);
@@ -585,7 +585,7 @@
 .au-command-palette__empty small {
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.095em;
   text-transform: uppercase;
 }
@@ -593,7 +593,7 @@
 .au-command-palette__empty strong {
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 920;
+  font-weight: 600;
 }
 
 .au-command-palette__empty p {
@@ -628,7 +628,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 12px;
-  font-weight: 740;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -48,7 +48,7 @@
 .au-toast { width: min(340px, 100%); padding: 10px 12px 12px; }
 .au-toast__accent { display: none; }
 .au-toast__icon { border-radius: 50%; }
-.au-toast__body strong { font-size: 13px; font-weight: 650; }
+.au-toast__body strong { font-size: 13px; font-weight: 600; }
 .au-toast__body p { font-size: 12px; }
 
 /* ======================== OVERLAYS INTERNOS (skills, perfiles, historial…) ======================== */

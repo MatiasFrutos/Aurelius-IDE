@@ -38,6 +38,7 @@ import "./styles/premium2.css";
 import "./styles/premium3.css";
 import "./components/voice/voice.css";
 import "./styles/future.css";
+import "./styles/density.css";
 import "./styles/responsive.css";
 
 // Estilo visual (futurista por defecto): se aplica antes de pintar para evitar parpadeo.

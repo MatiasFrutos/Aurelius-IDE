@@ -81,7 +81,7 @@
   gap: 5px;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.085em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -106,7 +106,7 @@
   max-width: 150px;
   color: var(--au-text);
   font-size: 12.5px;
-  font-weight: 860;
+  font-weight: 600;
   letter-spacing: -0.008em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -125,7 +125,7 @@
   background: rgba(var(--au-accent-rgb), 0.07);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
 }
 
 /* ==========================================================================
@@ -148,7 +148,7 @@
   margin-bottom: 5px;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.085em;
   text-transform: uppercase;
 }
@@ -196,7 +196,7 @@
   background: transparent;
   color: var(--au-text);
   font-size: 12.5px;
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .au-search__control input::placeholder {
@@ -214,7 +214,7 @@
   background: rgba(148, 163, 184, 0.1);
   color: var(--au-muted-strong);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .au-search__submit {
@@ -230,7 +230,7 @@
   background: rgba(var(--au-accent-rgb), 0.085);
   color: var(--au-primary-strong);
   font-size: 12.5px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.03) inset;
   transition:
@@ -310,7 +310,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.065em;
   overflow: hidden;
@@ -324,7 +324,7 @@
   margin-top: 3px;
   color: var(--au-text);
   font-size: 12.5px;
-  font-weight: 920;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -368,7 +368,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -377,7 +377,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 12px;
-  font-weight: 860;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -395,7 +395,7 @@
   background: rgba(var(--au-accent-rgb), 0.055);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 850;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -441,7 +441,7 @@
 .au-search__empty strong {
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .au-search__empty p {
@@ -579,7 +579,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 12.5px;
-  font-weight: 880;
+  font-weight: 600;
   line-height: 1.18;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -620,7 +620,7 @@
   border-radius: 999px;
   font-style: normal;
   font-size: 10.5px;
-  font-weight: 850;
+  font-weight: 600;
   line-height: 1;
   overflow: hidden;
   text-overflow: ellipsis;

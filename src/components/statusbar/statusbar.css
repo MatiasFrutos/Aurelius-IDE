@@ -156,7 +156,7 @@
 
 .au-statusbar__project {
   max-width: clamp(96px, 13vw, 160px);
-  font-weight: 820;
+  font-weight: 600;
   color: var(--au-text);
 }
 
@@ -192,7 +192,7 @@
    ========================================================================== */
 
 .au-statusbar__state {
-  font-weight: 820;
+  font-weight: 600;
 }
 
 .au-statusbar__state.is-saved {
@@ -234,7 +234,7 @@
 
 .au-statusbar__version {
   padding-right: 3px;
-  font-weight: 760;
+  font-weight: 600;
   letter-spacing: 0.005em;
 }
 
@@ -248,7 +248,7 @@
 
 .au-statusbar__live-server {
   max-width: clamp(116px, 16vw, 180px);
-  font-weight: 820;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   user-select: none;
 }

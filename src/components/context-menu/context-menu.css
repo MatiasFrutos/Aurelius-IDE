@@ -122,7 +122,7 @@
   overflow: hidden;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 850;
+  font-weight: 600;
   letter-spacing: -0.01em;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -133,7 +133,7 @@
   overflow: hidden;
   color: var(--au-muted);
   font-size: 11.5px;
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: 0.01em;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -286,7 +286,7 @@
   overflow: hidden;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 760;
+  font-weight: 600;
   line-height: 1.22;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -323,7 +323,7 @@
   background: rgba(2, 6, 23, 0.24);
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 800;
+  font-weight: 600;
   font-family: inherit;
   line-height: 1;
 }
@@ -401,7 +401,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 11.5px;
-  font-weight: 720;
+  font-weight: 600;
 }
 
 .au-context-menu__footer svg {

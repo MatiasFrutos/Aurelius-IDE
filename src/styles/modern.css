@@ -331,7 +331,7 @@ button[class*="primary"],
 [class*="__badge"],
 .au-tb__eyebrow {
   letter-spacing: 0.04em !important;
-  font-weight: 650 !important;
+  font-weight: 600 !important;
 }
 
 /* Inicio: títulos sobrios en vez de marketing */
@@ -341,7 +341,7 @@ button[class*="primary"],
   font-size: clamp(24px, 2.4vw, 32px) !important;
   line-height: 1.2 !important;
   letter-spacing: -0.015em !important;
-  font-weight: 650 !important;
+  font-weight: 600 !important;
 }
 
 /* Tarjetas: borde fino, sin relleno de color, hover discreto */

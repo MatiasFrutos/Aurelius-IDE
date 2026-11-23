@@ -121,7 +121,7 @@
   background: transparent;
   color: var(--au-muted);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 600;
   line-height: 1;
   letter-spacing: 0;
   cursor: pointer;
@@ -172,7 +172,7 @@
   background: rgba(var(--au-accent-rgb), 0.12);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 950;
+  font-weight: 600;
 }
 
 .au-bottom-panel__main-tab {
@@ -234,7 +234,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 #diagnostics-run-btn:hover {
@@ -391,7 +391,7 @@
   color: var(--au-primary-strong);
   background: rgba(var(--au-accent-rgb), 0.09);
   font-size: 11px;
-  font-weight: 950;
+  font-weight: 600;
 }
 
 .au-terminal-real__meta strong[data-state="success"] {
@@ -532,7 +532,7 @@
 .au-terminal-sidebar__header strong {
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 600;
 }
 
 .au-terminal-sidebar__header span {
@@ -668,7 +668,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 900;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -814,7 +814,7 @@
 .au-output-item span {
   color: var(--au-primary-strong);
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -916,7 +916,7 @@
   display: block;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 600;
   margin-bottom: 3px;
 }
 
@@ -962,7 +962,7 @@
 .au-log-item strong {
   color: var(--au-primary-strong);
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 600;
 }
 
 .au-log-item p {
@@ -1027,7 +1027,7 @@
   margin: 0;
   color: var(--au-text);
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 600;
   line-height: 1.2;
 }
 
@@ -1087,7 +1087,7 @@
 .au-terminal-empty strong {
   color: var(--au-text);
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 600;
 }
 
 .au-terminal-empty p {
@@ -1110,7 +1110,7 @@
   background: var(--au-primary-soft);
   color: var(--au-primary-strong);
   font-size: 13.5px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
   transition:
     border-color var(--au-transition-fast),

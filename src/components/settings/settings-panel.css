@@ -84,7 +84,7 @@
   color: var(--au-text);
   font-size: 20px;
   line-height: 1;
-  font-weight: 950;
+  font-weight: 600;
   letter-spacing: -0.045em;
 }
 
@@ -114,7 +114,7 @@
   background: rgba(255, 255, 255, 0.016);
   color: var(--au-muted-strong);
   font-size: 11.5px;
-  font-weight: 820;
+  font-weight: 600;
 }
 
 .au-settings__hero-tags svg {
@@ -168,7 +168,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.075em;
   text-transform: uppercase;
 }
@@ -177,7 +177,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 880;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -282,7 +282,7 @@
   min-width: 0;
   color: inherit;
   font-size: 13.5px;
-  font-weight: 880;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -388,7 +388,7 @@
   margin-bottom: 2px;
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.085em;
   text-transform: uppercase;
 }
@@ -398,7 +398,7 @@
   color: var(--au-text);
   font-size: 15px;
   line-height: 1.1;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: -0.025em;
 }
 
@@ -451,7 +451,7 @@
 .au-settings__field strong {
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 880;
+  font-weight: 600;
 }
 
 .au-settings__field small {
@@ -578,7 +578,7 @@
   background: rgba(var(--au-accent-rgb), 0.078);
   color: var(--au-primary-strong);
   font-size: 12.5px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 /* ==========================================================================
@@ -618,7 +618,7 @@
 .au-settings__font-preview span {
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.075em;
   text-transform: uppercase;
 }
@@ -627,7 +627,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 780;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -641,7 +641,7 @@
   background: rgba(var(--au-accent-rgb), 0.078);
   color: var(--au-primary-strong);
   font-size: 11.5px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .au-settings__font-preview code {
@@ -681,7 +681,7 @@
   display: block;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.075em;
   text-transform: uppercase;
 }
@@ -692,7 +692,7 @@
   margin-top: 4px;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 900;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -773,7 +773,7 @@
 .au-settings__providers strong {
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 880;
+  font-weight: 600;
 }
 
 .au-settings__providers small {
@@ -822,7 +822,7 @@
 .au-settings__footer strong {
   color: var(--au-text);
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .au-settings__footer small {
@@ -841,7 +841,7 @@
   background: rgba(var(--au-accent-rgb), 0.14);
   color: var(--au-primary-strong);
   font-size: 13.5px;
-  font-weight: 900;
+  font-weight: 600;
   box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.16) inset;
   transition:
     transform var(--au-transition-fast),

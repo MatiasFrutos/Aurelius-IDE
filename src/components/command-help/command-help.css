@@ -115,7 +115,7 @@
   background: rgba(var(--au-accent-rgb), 0.07);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.075em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -129,7 +129,7 @@
   color: var(--au-text);
   font-size: clamp(16px, 2vw, 20px);
   line-height: 1.05;
-  font-weight: 950;
+  font-weight: 600;
   letter-spacing: -0.035em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -231,7 +231,7 @@
   color: var(--au-text);
   font: inherit;
   font-size: 13.5px;
-  font-weight: 620;
+  font-weight: 600;
 }
 
 .au-command-help__search input::placeholder {
@@ -248,7 +248,7 @@
   background: var(--au-bg-card);
   color: var(--au-muted);
   font-size: 12px;
-  font-weight: 760;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -291,7 +291,7 @@
   margin-bottom: 7px;
   color: var(--au-muted-strong);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.055em;
   text-transform: uppercase;
 }
@@ -309,7 +309,7 @@
   flex: 0 0 auto;
   color: var(--au-muted);
   font-size: 11px;
-  font-weight: 740;
+  font-weight: 600;
 }
 
 .au-command-help__quick {
@@ -372,7 +372,7 @@
   overflow: hidden;
   color: var(--au-text);
   font-size: 12.5px;
-  font-weight: 840;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -472,7 +472,7 @@
   overflow: hidden;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 820;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -515,7 +515,7 @@
   color: var(--au-muted-strong);
   font-family: inherit;
   font-size: 10.5px;
-  font-weight: 820;
+  font-weight: 600;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.14);
 }
 
@@ -551,7 +551,7 @@
 .au-command-help__empty strong {
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .au-command-help__empty span {
