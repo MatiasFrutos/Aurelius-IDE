@@ -185,6 +185,25 @@ function copyTasksMarkdown() {
 }
 
 /* ---------------------------------------------------------------- */
+/* Estilo visual: futurista / clásico                                */
+/* ---------------------------------------------------------------- */
+
+export function toggleVisualStyle() {
+  const next = document.documentElement.dataset.style === "future" ? "classic" : "future";
+
+  document.documentElement.dataset.style = next;
+
+  try {
+    localStorage.setItem("aurelius.style.v1", next);
+  } catch {
+    // sin almacenamiento
+  }
+
+  document.querySelectorAll('[data-px2="set-style"]').forEach((el) => el.classList.toggle("is-on", next === "future"));
+  toastInfo(next === "future" ? t("Estilo futurista activado.", "Futuristic style on.") : t("Estilo clásico activado.", "Classic style on."), t("Apariencia", "Appearance"));
+}
+
+/* ---------------------------------------------------------------- */
 /* Modo rápido                                                       */
 /* ---------------------------------------------------------------- */
 
@@ -293,6 +312,7 @@ export function createMoreCommands() {
 
   return [
     mk("copy-relpath", "Copiar ruta relativa del archivo", "Copy relative file path", "copy", copyRelativePath, t("Editor", "Editor"), ["path", "ruta", "relativa"]),
+    mk("style-toggle", "Apariencia: alternar estilo futurista / clásico", "Appearance: toggle futuristic / classic style", "sparkles", toggleVisualStyle, t("Apariencia", "Appearance"), ["estilo", "style", "futurista", "futuristic", "clasico", "classic", "hud"]),
     mk("perf-fast", "Rendimiento: alternar modo rápido", "Performance: toggle fast mode", "zap", toggleFastMode, t("Rendimiento", "Performance"), ["fast", "rapido", "animaciones", "performance"]),
     mk("git-blame-line", "Git: blame de la línea actual", "Git: blame current line", "git-branch", blameCurrentLine, "Git", ["blame", "autor", "linea"]),
     mk("git-file-history", "Git: historial del archivo activo", "Git: active file history", "history", fileHistory, "Git", ["log", "history", "historial"]),
@@ -389,7 +409,7 @@ export function applyDoctorFilter() {
 
 export function injectMore() {
   let injected = false;
-  injected = addTo('[data-px-bar="settings"]', `<div class="au-px__row">${b2("set-profile", "user", t("Mi perfil y foto", "My profile & photo"))}${b2("set-voice", "mic", t("Voz", "Voice"))}${b2("set-backup", "save", t("Copia de seguridad", "Backup"))}${b2("set-restore", "file-plus-2", t("Restaurar copia", "Restore backup"))}${b2("set-lang", "languages", t("Cambiar idioma (English / Español)", "Change language (English / Español)"))}${b2("set-fast", "zap", t("Modo rápido (sin animaciones)", "Fast mode (no animations)")).replace('class="au-px__btn"', `class="au-px__btn ${isFastMode() ? "is-on" : ""}"`)}</div>`) || injected;
+  injected = addTo('[data-px-bar="settings"]', `<div class="au-px__row">${b2("set-profile", "user", t("Mi perfil y foto", "My profile & photo"))}${b2("set-style", "sparkles", t("Estilo futurista", "Futuristic style")).replace('class="au-px__btn"', `class="au-px__btn ${document.documentElement.dataset.style === "future" ? "is-on" : ""}"`)}${b2("set-voice", "mic", t("Voz", "Voice"))}${b2("set-backup", "save", t("Copia de seguridad", "Backup"))}${b2("set-restore", "file-plus-2", t("Restaurar copia", "Restore backup"))}${b2("set-lang", "languages", t("Cambiar idioma (English / Español)", "Change language (English / Español)"))}${b2("set-fast", "zap", t("Modo rápido (sin animaciones)", "Fast mode (no animations)")).replace('class="au-px__btn"', `class="au-px__btn ${isFastMode() ? "is-on" : ""}"`)}</div>`) || injected;
   injected = addTo('[data-px-bar="monitor"]', b2("mon-copy", "copy", t("Copiar procesos", "Copy processes")) + `<button type="button" class="au-px__btn ${monitorAlerts ? "is-on" : ""}" data-px2="mon-alerts" title="${esc(t("Avisar si la RAM supera el 90%", "Warn when RAM exceeds 90%"))}"><i data-lucide="activity"></i><span>${esc(t("Alertas", "Alerts"))}</span></button>`) || injected;
   applyDotfiles();
   injected = addTo('[data-px-bar="tasks"]', `<input class="au-px__input" data-px2-task-filter placeholder="${esc(t("Filtrar tareas…", "Filter tasks…"))}" spellcheck="false" />` + b2("task-md", "copy", t("Copiar como Markdown", "Copy as Markdown"))) || injected;
@@ -450,6 +470,8 @@ export function initMoreTools() {
         return exportBackup();
       case "set-restore":
         return importBackupFromFile();
+      case "set-style":
+        return toggleVisualStyle();
       case "set-voice":
         return openVoiceSettings();
       case "set-lang":

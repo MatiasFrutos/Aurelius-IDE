@@ -627,6 +627,42 @@ function watchTerminalTheme() {
   });
 }
 
+// Entrada del usuario → PTY, en orden. Los comandos async de Tauri se ejecutan en paralelo: escribir cada tecla con su propio
+// invoke podía reordenar los caracteres (verificado en la app real). Se encola y se agrupa lo que llega mientras hay una escritura en curso.
+function sendInput(record, data) {
+  if (!record?.sessionId || !data) {
+    return;
+  }
+
+  record.inputBuf = (record.inputBuf || "") + data;
+
+  if (record.inputBusy) {
+    return;
+  }
+
+  record.inputBusy = true;
+
+  (async () => {
+    while (record.inputBuf) {
+      const chunk = record.inputBuf;
+
+      record.inputBuf = "";
+
+      try {
+        await writeTerminal(record.sessionId, chunk);
+      } catch (error) {
+        const message = `${t("No se pudo escribir en", "Could not write to")} ${record.title}: ${String(error)}`;
+
+        console.error(error);
+        addOutput("error", record.title, message);
+        addLog("error", message);
+      }
+    }
+
+    record.inputBusy = false;
+  })();
+}
+
 const HISTORY_KEY = "aurelius.terminal.history";
 const HISTORY_MAX = 200;
 
@@ -696,13 +732,13 @@ export function sendToActiveTerminal(text, { enter = true, paste = false } = {})
   }
 
   if (paste && record.terminal) {
-    record.terminal.paste(text);
+    record.terminal.paste(text); // pasa por onData → sendInput
   } else {
-    writeTerminal(record.sessionId, text).catch((error) => console.error(error));
+    sendInput(record, text);
   }
 
   if (enter) {
-    writeTerminal(record.sessionId, "\r").catch((error) => console.error(error));
+    sendInput(record, "\r");
   }
 
   return true;
@@ -1279,6 +1315,11 @@ function writeBanner(record, message) {
   const banner = `\r\n\x1b[32m${message}\x1b[0m\r\n\r\n`;
 
   appendTerminalBuffer(record, banner);
+
+  if (record.replayPending) {
+    return;
+  }
+
   record.terminal.write(banner, () => {
     try {
       record.terminal?.scrollToBottom?.();
@@ -1334,7 +1375,7 @@ const EARLY_OUTPUT_LIMIT = 200000;
 
 // Agrupa la salida en un solo write por frame: mucho más fluido con salidas masivas (builds, logs).
 function writeToTerminalView(record, data) {
-  if (!record?.terminal) {
+  if (!record?.terminal || record.replayPending) {
     return;
   }
 
@@ -1437,7 +1478,7 @@ async function ensureTerminalListeners() {
 
       appendTerminalBuffer(record, exitMessage);
 
-      if (record.terminal) {
+      if (record.terminal && !record.replayPending) {
         record.terminal.write(exitMessage, () => {
           try {
             record.terminal?.scrollToBottom?.();
@@ -1638,6 +1679,8 @@ function createTerminalView(record, container) {
   watchTerminalTheme();
   record.terminal.open(container);
   record.mounted = true;
+  // Hasta que se reproduce el búfer, lo que llegue ya queda guardado en él: escribirlo también en vivo lo duplicaría.
+  record.replayPending = true;
 
   // Renderer WebGL (opcional, carga diferida): más rápido con buena GPU; por defecto se usa el renderer estable.
   record.webglAddon = null;
@@ -1663,6 +1706,7 @@ function createTerminalView(record, container) {
   fitTerminalStable(record);
 
   requestAnimationFrame(() => {
+    record.replayPending = false;
     writeTerminalBuffer(record);
 
     requestAnimationFrame(() => {
@@ -1676,14 +1720,7 @@ function createTerminalView(record, container) {
     }
 
     trackTypedLine(record, data);
-
-    writeTerminal(record.sessionId, data).catch((error) => {
-      const message = `${t("No se pudo escribir en", "Could not write to")} ${record.title}: ${String(error)}`;
-
-      console.error(error);
-      addOutput("error", record.title, message);
-      addLog("error", message);
-    });
+    sendInput(record, data);
   });
 
   record.resizeObserver = new ResizeObserver(() => {
@@ -2128,14 +2165,7 @@ function sendCommandToTerminal(record, command) {
     return;
   }
 
-  const commandToSend = `${command}\r`;
-
-  writeTerminal(record.sessionId, commandToSend).catch((error) => {
-    const message = `${t("No se pudo ejecutar comando", "Could not run command")}: ${String(error)}`;
-
-    addOutput("error", record.title, message);
-    addLog("error", message);
-  });
+  sendInput(record, `${command}\r`);
 }
 
 export async function runDiagnosticsAndPopulate() {

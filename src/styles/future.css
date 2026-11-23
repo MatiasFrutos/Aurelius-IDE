@@ -1,0 +1,190 @@
+/* src/styles/future.css — estilo FUTURISTA: geometría precisa, líneas finas, esquinas tipo HUD, cuadrícula sutil, tipografía técnica.
+   Sin glow: nada de sombras de color, halos ni desenfoques. Se activa con <html data-style="future"> (por defecto). */
+
+:root[data-style="future"] {
+  --fx-accent: rgb(var(--au-accent-rgb));
+  --fx-line: rgba(var(--au-accent-rgb), 0.26);
+  --fx-line-strong: rgba(var(--au-accent-rgb), 0.62);
+  --fx-grid: rgba(148, 163, 184, 0.04);
+  --fx-r: 5px;
+  --fx-mono: var(--au-font-mono, "JetBrains Mono", ui-monospace, monospace);
+}
+:root[data-style="future"][data-theme="light"] { --fx-grid: rgba(15, 23, 42, 0.05); }
+
+/* ---------- Rejilla técnica en páginas ---------- */
+:root[data-style="future"] .au-page,
+:root[data-style="future"] .aurelius-welcome,
+:root[data-style="future"] .au-monitor,
+:root[data-style="future"] .au-tb {
+  background-image:
+    linear-gradient(var(--fx-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fx-grid) 1px, transparent 1px) !important;
+  background-size: 28px 28px;
+  background-position: -1px -1px;
+}
+
+/* ---------- Geometría: radios más rectos ---------- */
+:root[data-style="future"] .au-fx-card,
+:root[data-style="future"] .au-modal,
+:root[data-style="future"] .au-command-palette,
+:root[data-style="future"] .au-monitor-card,
+:root[data-style="future"] .au-px__card,
+:root[data-style="future"] .au-settings__section,
+:root[data-style="future"] .au-settings__hero-status article,
+:root[data-style="future"] .au-settings__nav,
+:root[data-style="future"] .aurelius-welcome__hero,
+:root[data-style="future"] .au-tb__hash,
+:root[data-style="future"] .au-sk__form,
+:root[data-style="future"] .au-ag,
+:root[data-style="future"] .au-vs__tools,
+:root[data-style="future"] .au-toast { border-radius: var(--fx-r); }
+:root[data-style="future"] .au-px__btn,
+:root[data-style="future"] .au-px__chip,
+:root[data-style="future"] .au-px__input,
+:root[data-style="future"] .au-px__select,
+:root[data-style="future"] .au-modal__button,
+:root[data-style="future"] .au-modal__input,
+:root[data-style="future"] .au-fx-btn,
+:root[data-style="future"] .au-prof__seg,
+:root[data-style="future"] .au-prof__seg button,
+:root[data-style="future"] .au-ai2__chip,
+:root[data-style="future"] .au-dd__trigger,
+:root[data-style="future"] .au-dd__menu,
+:root[data-style="future"] .au-dd__item,
+:root[data-style="future"] .au-explorer__filter label,
+:root[data-style="future"] .au-tree__row,
+:root[data-style="future"] .au-editor__pill,
+:root[data-style="future"] .au-topbar__search,
+:root[data-style="future"] .au-ai2__skills button,
+:root[data-style="future"] .au-ai2__inputrow textarea,
+:root[data-style="future"] .au-ai2__send,
+:root[data-style="future"] .au-ai2__mic { border-radius: 3px; }
+
+/* ---------- Esquinas tipo HUD (marcas en L, 1 px, acento) ---------- */
+:root[data-style="future"] .au-fx-card,
+:root[data-style="future"] .au-modal,
+:root[data-style="future"] .au-command-palette,
+:root[data-style="future"] .au-monitor-card,
+:root[data-style="future"] .au-px__card,
+:root[data-style="future"] .au-settings__section,
+:root[data-style="future"] .aurelius-welcome__hero { position: relative; }
+:root[data-style="future"] .au-fx-card::after,
+:root[data-style="future"] .au-modal::after,
+:root[data-style="future"] .au-command-palette::after,
+:root[data-style="future"] .au-monitor-card::after,
+:root[data-style="future"] .au-px__card::after,
+:root[data-style="future"] .au-settings__section::after,
+:root[data-style="future"] .aurelius-welcome__hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background:
+    linear-gradient(var(--fx-line-strong), var(--fx-line-strong)) top left / 12px 1px no-repeat,
+    linear-gradient(var(--fx-line-strong), var(--fx-line-strong)) top left / 1px 12px no-repeat,
+    linear-gradient(var(--fx-line-strong), var(--fx-line-strong)) top right / 12px 1px no-repeat,
+    linear-gradient(var(--fx-line-strong), var(--fx-line-strong)) top right / 1px 12px no-repeat,
+    linear-gradient(var(--fx-line-strong), var(--fx-line-strong)) bottom left / 12px 1px no-repeat,
+    linear-gradient(var(--fx-line-strong), var(--fx-line-strong)) bottom left / 1px 12px no-repeat,
+    linear-gradient(var(--fx-line-strong), var(--fx-line-strong)) bottom right / 12px 1px no-repeat,
+    linear-gradient(var(--fx-line-strong), var(--fx-line-strong)) bottom right / 1px 12px no-repeat !important;
+}
+
+/* ---------- Botones primarios con esquina cortada (chaflán) ---------- */
+:root[data-style="future"] .au-fx-btn,
+:root[data-style="future"] .au-modal__button--primary,
+:root[data-style="future"] .au-px__btn.is-primary,
+:root[data-style="future"] .au-voice__btn:not(.is-ghost),
+:root[data-style="future"] .au-ai2__send {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  letter-spacing: 0.03em;
+}
+
+/* ---------- Pestañas del editor ---------- */
+:root[data-style="future"] .aurelius-tab {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+}
+:root[data-style="future"] .aurelius-tab.is-active { box-shadow: inset 0 -2px 0 var(--fx-accent); }
+
+/* ---------- Barra superior: línea con segmento de acento y barrido sutil ---------- */
+:root[data-style="future"] .au-topbar { border-bottom: 1px solid var(--fx-line); }
+:root[data-style="future"] .au-topbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 132px;
+  height: 2px;
+  background: var(--fx-accent);
+  pointer-events: none;
+}
+:root[data-style="future"] body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: -30vw;
+  width: 30vw;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--au-accent-rgb), 0.85), transparent);
+  pointer-events: none;
+  z-index: 9990;
+  animation: fxScan 11s linear infinite;
+}
+@keyframes fxScan { from { transform: translateX(0); } to { transform: translateX(160vw); } }
+
+/* ---------- Barra de actividad ---------- */
+:root[data-style="future"] .au-activity__item.is-active,
+:root[data-style="future"] .au-activity button.is-active { box-shadow: inset 2px 0 0 var(--fx-accent); border-radius: 0 3px 3px 0; }
+
+/* ---------- Tipografía técnica ---------- */
+:root[data-style="future"] .au-monitor__eyebrow,
+:root[data-style="future"] .au-tb__eyebrow,
+:root[data-style="future"] .au-settings__section-head > div > span,
+:root[data-style="future"] .au-explorer__title > span,
+:root[data-style="future"] .au-px h4,
+:root[data-style="future"] .au-px h3,
+:root[data-style="future"] .au-prof__field > span,
+:root[data-style="future"] .au-sk__form label > span,
+:root[data-style="future"] .au-fx-section h4,
+:root[data-style="future"] .au-git-panel__header strong {
+  font-family: var(--fx-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+}
+:root[data-style="future"] .au-monitor-card__value,
+:root[data-style="future"] .au-monitor__summary-ring strong,
+:root[data-style="future"] .au-statusbar,
+:root[data-style="future"] .au-statusbar *,
+:root[data-style="future"] .au-px__table td,
+:root[data-style="future"] .au-px__table th,
+:root[data-style="future"] .au-tb__count,
+:root[data-style="future"] kbd { font-family: var(--fx-mono); font-variant-numeric: tabular-nums; }
+:root[data-style="future"] .au-statusbar { letter-spacing: 0.02em; font-size: 11px; }
+
+/* ---------- Barras de progreso y medidores: segmentados ---------- */
+:root[data-style="future"] .au-monitor-meter,
+:root[data-style="future"] .au-px__bar { border-radius: 0; }
+:root[data-style="future"] .au-monitor-meter i,
+:root[data-style="future"] .au-px__bar i { border-radius: 0; }
+:root[data-style="future"] .au-monitor-meter {
+  background-image: repeating-linear-gradient(90deg, transparent 0 7px, var(--au-bg-panel) 7px 8px) !important;
+}
+
+/* ---------- Scrollbars cuadradas y finas ---------- */
+:root[data-style="future"] *::-webkit-scrollbar { width: 7px; height: 7px; }
+:root[data-style="future"] *::-webkit-scrollbar-thumb { border-radius: 0; border-width: 1px; background: rgba(148, 163, 184, 0.28); background-clip: padding-box; }
+
+/* ---------- Foco: línea nítida con marca de esquina ---------- */
+:root[data-style="future"] :where(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 1px solid var(--fx-line-strong); outline-offset: 2px; border-radius: 2px; }
+
+/* ---------- HUD de voz y avatar conservan su forma ---------- */
+:root[data-style="future"] #au-voice-hud { border-radius: 3px; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); border-color: var(--fx-line-strong); }
+:root[data-style="future"] .au-avatar { border-radius: 50%; }
+
+/* ---------- Animación reducida / modo rápido ---------- */
+@media (prefers-reduced-motion: reduce) { :root[data-style="future"] body::after { display: none; } }
+:root[data-perf="fast"][data-style="future"] body::after { display: none; }
