@@ -190,3 +190,11 @@ Historial de cambios de Aurelius IDE (movido desde el README).
 - **Copia de seguridad** (Ajustes o paleta): exporta/importa perfil, IA (perfiles, skills, prompts), voz, apariencia y favoritos en un JSON (sin conversaciones ni claves); la importación solo acepta claves de Aurelius.
 - **Rendimiento de arranque:** el renderer WebGL del terminal se carga solo si está activado (−110 KB en el bundle principal).
 - Atajos nuevos en la lista de Ajustes; README actualizado.
+
+## v4.3 — Estilo futurista, terminal y editor verificados en la app real
+
+- **Estilo futurista** (por defecto; «Apariencia: alternar estilo futurista / clásico» o Ajustes): geometría precisa, líneas de 1 px, **marcas de esquina tipo HUD** en tarjetas y ventanas, **rejilla técnica** sutil en las páginas, botones y pestañas con **esquina cortada (chaflán)**, etiquetas y cifras en tipografía técnica, medidores segmentados, línea de barrido en la barra superior y segmento de acento. **Sin glow**: ni sombras de color, ni halos, ni desenfoque.
+- **Pruebas en la app real** (Tauri + WebKitGTK + PTY, con `tauri-driver`; ver `scripts/e2e-real/`): terminal y editor verificados de punta a punta.
+  - **Bug corregido (terminal):** las teclas podían llegar **desordenadas** al shell al escribir rápido (cada tecla era un `invoke` concurrente). Ahora la entrada va en una cola ordenada (0/30 rondas desordenadas; antes 4/30).
+  - **Bug corregido (terminal):** el aviso «Terminal N conectada» salía **duplicado**.
+- **Diseño adaptable por tamaño de panel** (`responsive.js`): la cabecera del editor ya no corta «Guardado»/nombre de archivo, las pestañas del panel inferior caben, la lista de terminales pasa a un riel de iconos cuando el panel es angosto. Auditoría automática de solapamientos y textos cortados en 4 tamaños de ventana (1024, 1280, 1366, 1920): sin hallazgos.

@@ -1,0 +1,61 @@
+/* src/styles/responsive.css — adaptación por tamaño de panel (ver app/responsive.js) */
+
+/* ---- Panel inferior: pestañas y acciones compactas ---- */
+.au-bottom-panel__tabs { overflow: hidden; }
+.au-bottom-panel__left { overflow: hidden; }
+.au-bottom-panel__main-tab small { flex: none; }
+.au-bottom-panel[data-w="md"] .au-bottom-panel__actions button span,
+.au-bottom-panel[data-w="sm"] .au-bottom-panel__actions button span,
+.au-bottom-panel[data-w="xs"] .au-bottom-panel__actions button span { display: none; }
+.au-bottom-panel[data-w="md"] .au-bottom-panel__actions button,
+.au-bottom-panel[data-w="sm"] .au-bottom-panel__actions button,
+.au-bottom-panel[data-w="xs"] .au-bottom-panel__actions button { padding: 0 7px; min-width: 28px; }
+.au-bottom-panel[data-w="sm"] .au-bottom-panel__main-tab:not(.is-active) span,
+.au-bottom-panel[data-w="xs"] .au-bottom-panel__main-tab:not(.is-active) span { display: none; }
+.au-bottom-panel[data-w="xs"] .au-bottom-panel__main-tab small { display: none; }
+
+/* ---- Cabecera del editor ---- */
+.au-editor[data-w="md"] .au-editor__pill.is-path,
+.au-editor[data-w="sm"] .au-editor__pill.is-path,
+.au-editor[data-w="xs"] .au-editor__pill.is-path,
+.au-editor[data-w="sm"] .au-editor__pill--language,
+.au-editor[data-w="xs"] .au-editor__pill--language,
+.au-editor[data-w="sm"] .au-editor__breadcrumbs,
+.au-editor[data-w="xs"] .au-editor__breadcrumbs,
+.au-editor[data-w="sm"] .au-editor__project,
+.au-editor[data-w="xs"] .au-editor__project { display: none !important; }
+/* el nombre del archivo es lo más útil: nunca se oculta */
+.au-editor .au-editor__file-copy strong { display: block !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.au-editor .au-editor__file-icon { display: grid !important; }
+.au-editor[data-w="sm"] .au-editor__pill[data-file-state],
+.au-editor[data-w="xs"] .au-editor__pill[data-file-state] { font-size: 0 !important; gap: 0; width: 28px; max-width: 28px; padding: 0; justify-content: center; }
+.au-editor[data-w="sm"] .au-editor__pill[data-file-state] svg,
+.au-editor[data-w="xs"] .au-editor__pill[data-file-state] svg { width: 12px; height: 12px; }
+.au-editor__top { overflow: hidden; }
+.au-editor__meta { flex-shrink: 0; }
+.au-editor__pill, .au-editor__action { flex: none; white-space: nowrap; }
+
+/* ---- Lista de terminales: riel de iconos cuando el panel es angosto ---- */
+.au-terminal-layout[data-w="sm"], .au-terminal-layout[data-w="xs"] { grid-template-columns: 46px minmax(0, 1fr) !important; }
+.au-terminal-layout[data-w="md"] { grid-template-columns: 148px minmax(0, 1fr) !important; }
+.au-terminal-layout[data-w="sm"] .au-terminal-sidebar__header div,
+.au-terminal-layout[data-w="xs"] .au-terminal-sidebar__header div,
+.au-terminal-layout[data-w="sm"] .au-terminal-list-item__copy,
+.au-terminal-layout[data-w="xs"] .au-terminal-list-item__copy,
+.au-terminal-layout[data-w="sm"] .au-terminal-list-item__status,
+.au-terminal-layout[data-w="xs"] .au-terminal-list-item__status,
+.au-terminal-layout[data-w="sm"] .au-terminal-list-item__delete,
+.au-terminal-layout[data-w="xs"] .au-terminal-list-item__delete { display: none; }
+.au-terminal-layout[data-w="sm"] .au-terminal-sidebar__header,
+.au-terminal-layout[data-w="xs"] .au-terminal-sidebar__header { justify-content: center; padding: 8px 4px; }
+.au-terminal-layout[data-w="sm"] .au-terminal-list-item__main,
+.au-terminal-layout[data-w="xs"] .au-terminal-list-item__main { justify-content: center; padding: 6px 0; grid-template-columns: 1fr; }
+
+/* ---- Páginas: cabeceras con texto que no se corta ---- */
+.au-settings__hero-copy, .aurelius-welcome__hero-copy { overflow: visible; min-width: 0; }
+.au-settings__section--featured, .au-settings__section { overflow: visible; }
+.au-bottom-panel[data-w="sm"] .au-bottom-panel__main-tab:not(.is-active) small,
+.au-bottom-panel[data-w="md"] .au-bottom-panel__main-tab:not(.is-active) small { display: none; }
+.au-bottom-panel[data-w="md"] .au-bottom-panel__main-tab, .au-bottom-panel[data-w="sm"] .au-bottom-panel__main-tab, .au-bottom-panel[data-w="xs"] .au-bottom-panel__main-tab { padding: 0 5px; gap: 4px; font-size: 12px; }
+.au-bottom-panel[data-w="md"] .au-bottom-panel__left, .au-bottom-panel[data-w="sm"] .au-bottom-panel__left { gap: 1px; }
+.au-bottom-panel[data-w="md"] .au-bottom-panel__tabs { gap: 4px; padding: 0 4px; }

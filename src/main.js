@@ -37,6 +37,15 @@ import "./styles/premium.css";
 import "./styles/premium2.css";
 import "./styles/premium3.css";
 import "./components/voice/voice.css";
+import "./styles/future.css";
+import "./styles/responsive.css";
+
+// Estilo visual (futurista por defecto): se aplica antes de pintar para evitar parpadeo.
+try {
+  document.documentElement.dataset.style = localStorage.getItem("aurelius.style.v1") === "classic" ? "classic" : "future";
+} catch {
+  document.documentElement.dataset.style = "future";
+}
 
 import { initAureliusApp } from "./app/app.js";
 import { toastError } from "./components/ui/toast.js";

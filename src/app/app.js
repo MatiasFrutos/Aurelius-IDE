@@ -16,6 +16,7 @@ import {
 
 import { reloadForLanguage, t } from "./i18n.js";
 import { initVoice } from "../components/voice/voice.js";
+import { initResponsive } from "./responsive.js";
 
 import {
   applyLayoutPreferences,
@@ -2013,6 +2014,7 @@ export async function initAureliusApp() {
   bindGlobalEvents();
   initPanelTools();
   initVoice();
+  initResponsive();
   initLabs2();
   initAiChat();
   initBranchWatcher();
