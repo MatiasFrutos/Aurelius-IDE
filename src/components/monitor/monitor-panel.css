@@ -112,7 +112,7 @@
   background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.075em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -137,7 +137,7 @@
   color: var(--au-text);
   font-size: 16px;
   line-height: 1.05;
-  font-weight: 950;
+  font-weight: 600;
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;
 }
@@ -153,7 +153,7 @@
 
 .au-monitor__header p strong {
   color: var(--au-muted-strong);
-  font-weight: 850;
+  font-weight: 600;
 }
 
 .au-monitor__summary {
@@ -203,7 +203,7 @@
   z-index: 1;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 600;
   letter-spacing: -0.035em;
 }
 
@@ -217,7 +217,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -229,7 +229,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13.5px;
-  font-weight: 920;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -257,7 +257,7 @@
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
   font-size: 13px;
-  font-weight: 880;
+  font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
   transition:
@@ -377,7 +377,7 @@
   min-width: 0;
   color: var(--au-muted);
   font-size: 11.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.072em;
   text-transform: uppercase;
   overflow: hidden;
@@ -393,7 +393,7 @@
   background: rgba(var(--au-accent-rgb), 0.09);
   color: var(--au-primary-strong);
   font-size: 11px;
-  font-weight: 920;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -411,7 +411,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 14px;
-  font-weight: 940;
+  font-weight: 600;
   letter-spacing: -0.025em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -490,7 +490,7 @@
 .au-monitor__section-head span {
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
@@ -499,7 +499,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 880;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -510,7 +510,7 @@
   max-width: 92px;
   color: var(--au-primary-strong);
   font-size: 11.5px;
-  font-weight: 820;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -561,7 +561,7 @@
   max-width: 120px;
   color: var(--au-muted-strong);
   font-size: 13px;
-  font-weight: 820;
+  font-weight: 600;
   text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;

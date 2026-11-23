@@ -81,7 +81,7 @@
   background: rgba(var(--au-accent-rgb), 0.075);
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -135,7 +135,7 @@
   color: var(--au-text);
   font-size: 18px;
   line-height: 1;
-  font-weight: 950;
+  font-weight: 600;
   letter-spacing: -0.045em;
 }
 
@@ -169,7 +169,7 @@
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
   font-size: 12.5px;
-  font-weight: 880;
+  font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
   overflow: hidden;
@@ -240,7 +240,7 @@
   margin-bottom: 4px;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.065em;
   text-transform: uppercase;
   overflow: hidden;
@@ -253,7 +253,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -376,7 +376,7 @@
   margin-bottom: 3px;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.065em;
   text-transform: uppercase;
   overflow: hidden;
@@ -391,7 +391,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 880;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -432,7 +432,7 @@
   margin: 0;
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: -0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -581,7 +581,7 @@
 .au-ai__conversation-head span {
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -590,7 +590,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 880;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -601,7 +601,7 @@
   max-width: 160px;
   color: var(--au-primary-strong);
   font-size: 11.5px;
-  font-weight: 820;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -646,7 +646,7 @@
   margin-bottom: 5px;
   color: var(--au-primary-strong);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.095em;
   text-transform: uppercase;
 }
@@ -654,7 +654,7 @@
 .au-ai__empty strong {
   color: var(--au-text);
   font-size: 15px;
-  font-weight: 920;
+  font-weight: 600;
   letter-spacing: -0.025em;
 }
 
@@ -718,7 +718,7 @@
     var(--au-bg-card);
   color: var(--au-muted-strong);
   font-size: 12.5px;
-  font-weight: 880;
+  font-weight: 600;
   overflow: hidden;
   cursor: pointer;
   transition:
@@ -775,7 +775,7 @@
   max-width: 100%;
   color: var(--au-muted);
   font-size: 10.5px;
-  font-weight: 760;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -851,7 +851,7 @@
   gap: 6px;
   color: var(--au-primary-strong);
   font-size: 12.5px;
-  font-weight: 900;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -868,7 +868,7 @@
   flex: 0 0 auto;
   color: var(--au-muted);
   font-size: 11px;
-  font-weight: 760;
+  font-weight: 600;
 }
 
 .au-ai__message pre {
@@ -939,7 +939,7 @@
   background: var(--au-button-bg);
   color: var(--au-muted-strong);
   font-size: 11.5px;
-  font-weight: 850;
+  font-weight: 600;
   cursor: pointer;
   overflow: hidden;
   transition:
@@ -1037,7 +1037,7 @@
   gap: 7px;
   color: var(--au-muted-strong);
   font-size: 12.5px;
-  font-weight: 720;
+  font-weight: 600;
 }
 
 .au-ai__include input {
@@ -1133,7 +1133,7 @@
   background: rgba(var(--au-accent-rgb), 0.092);
   color: var(--au-primary-strong);
   font-size: 12.5px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: 0 0 0 1px rgba(var(--au-accent-rgb), 0.035) inset;
   overflow: hidden;

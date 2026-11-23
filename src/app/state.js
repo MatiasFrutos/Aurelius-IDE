@@ -1,4 +1,5 @@
 // src/app/state.js
+import { applyWebviewZoom } from "./zoom.js";
 
 // Idioma inicial, síncrono: así los textos definidos al cargar los módulos (skills, perfiles, herramientas…)
 // ya salen en el idioma elegido (la preferencia se guarda en localStorage al cambiarla).
@@ -605,6 +606,7 @@ function applyUiScaleCss(userScale, { notify = true } = {}) {
   document.documentElement.dataset.effectiveUiScale = String(effectiveScale);
 
   document.documentElement.style.fontSize = "";
+  applyWebviewZoom(safeUserScale);
 
   if (document.body) {
     document.body.style.zoom = "";

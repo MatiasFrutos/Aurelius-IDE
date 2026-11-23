@@ -18,9 +18,9 @@
   padding: 20px 28px 12px;
 }
 
-.au-tb__eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--au-primary-strong); font-weight: 700; }
+.au-tb__eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--au-primary-strong); font-weight: 600; }
 .au-tb__eyebrow svg { width: 12px; height: 12px; }
-.au-tb__header h2 { margin: 4px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.au-tb__header h2 { margin: 4px 0 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
 .au-tb__header p { margin: 0; color: var(--au-muted); font-size: 12px; }
 
 .au-tb__tabs { display: flex; gap: 2px; padding: 0 24px; border-bottom: 1px solid var(--au-border); overflow-x: auto; }
@@ -48,7 +48,7 @@
 
 .au-tb__field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .au-tb__field.grow { flex: 1; min-width: 220px; }
-.au-tb__field > span { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--au-muted); font-weight: 650; }
+.au-tb__field > span { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--au-muted); font-weight: 600; }
 
 .au-tb textarea,
 .au-tb input {
@@ -93,11 +93,11 @@
 
 .au-tb__hashes { display: grid; gap: 8px; }
 .au-tb__hash { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 10px 12px; border: 1px solid var(--au-border); border-radius: 8px; background: var(--au-bg-editor); font-size: 12px; }
-.au-tb__hash b { color: var(--au-muted); font-weight: 650; }
+.au-tb__hash b { color: var(--au-muted); font-weight: 600; }
 .au-tb__hash code { word-break: break-all; user-select: all; }
 
 .au-tb__colors { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 14px; align-items: start; }
-.au-tb__swatch { grid-row: span 2; height: 160px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--au-border-strong); font-size: 34px; font-weight: 700; }
+.au-tb__swatch { grid-row: span 2; height: 160px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--au-border-strong); font-size: 34px; font-weight: 600; }
 .au-tb__shades { display: flex; height: 44px; border-radius: 8px; overflow: hidden; border: 1px solid var(--au-border); }
 .au-tb__shades span { flex: 1; }
 

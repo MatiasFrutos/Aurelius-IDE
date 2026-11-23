@@ -177,12 +177,12 @@
   background: transparent;
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 740;
+  font-weight: 600;
 }
 
 .au-quick-open__input-wrap input::placeholder {
   color: var(--au-muted);
-  font-weight: 650;
+  font-weight: 600;
   opacity: 0.86;
 }
 
@@ -196,7 +196,7 @@
   background: rgba(148, 163, 184, 0.075);
   color: var(--au-muted);
   font-size: 11px;
-  font-weight: 880;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -321,7 +321,7 @@
   min-width: 0;
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 880;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -376,7 +376,7 @@
 .au-quick-open__empty strong {
   color: var(--au-text);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .au-quick-open__empty p {
@@ -431,7 +431,7 @@
   background: rgba(2, 6, 23, 0.3);
   color: var(--au-text);
   font-size: 11px;
-  font-weight: 820;
+  font-weight: 600;
   font-family: inherit;
 }
 

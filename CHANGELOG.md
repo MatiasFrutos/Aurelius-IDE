@@ -198,3 +198,9 @@ Historial de cambios de Aurelius IDE (movido desde el README).
   - **Bug corregido (terminal):** las teclas podían llegar **desordenadas** al shell al escribir rápido (cada tecla era un `invoke` concurrente). Ahora la entrada va en una cola ordenada (0/30 rondas desordenadas; antes 4/30).
   - **Bug corregido (terminal):** el aviso «Terminal N conectada» salía **duplicado**.
 - **Diseño adaptable por tamaño de panel** (`responsive.js`): la cabecera del editor ya no corta «Guardado»/nombre de archivo, las pestañas del panel inferior caben, la lista de terminales pasa a un riel de iconos cuando el panel es angosto. Auditoría automática de solapamientos y textos cortados en 4 tamaños de ventana (1024, 1280, 1366, 1920): sin hallazgos.
+
+## v4.4 — Interfaz más pequeña y refinada
+
+- **Escala real del WebView al 90 %** («densidad compacta», por defecto): toda la app, incluidos editor y terminal, se ve más pequeña y deja más espacio útil. Se aplica con el zoom nativo de Tauri (no CSS `zoom`), así el cursor, la selección y la rejilla de la terminal miden bien. Se combina con «Escala total» de Ajustes. Alternar en Ajustes o con «Apariencia: densidad compacta / cómoda».
+- **Pesos tipográficos más finos:** se eliminaron los 900/920/950 repartidos por toda la hoja de estilos (más de 200 declaraciones) → todo pasa a 600/500; la interfaz deja de verse «tosca».
+- **Controles y títulos más pequeños:** campos y selectores de 28 px, botones de 24 px, filas del árbol de 24 px, títulos de página de 17 px, hero de inicio de 23 px, diálogos de 388 px y paleta de 560 px, chat de IA más compacto, paleta con filas más bajas.

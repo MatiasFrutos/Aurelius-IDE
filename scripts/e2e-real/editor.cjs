@@ -7,14 +7,14 @@ const ok = (name, cond, extra = '') => { console.log((cond ? 'PASS ' : 'FAIL ') 
   const d = await start();
   try {
     const target = await d.findElement(By.css('.au-tree__row[title="/tmp/proj/a.js"]'));
-    await target.click(); await d.sleep(1200);
+    await js(d, `document.querySelector('.au-tree__row[title="/tmp/proj/a.js"]').click()`); await d.sleep(1200);
     const content = await d.findElement(By.css('.cm-content'));
     ok('editor shows file', /function hola/.test(await content.getText()));
     ok('line numbers', (await d.findElements(By.css('.cm-lineNumbers .cm-gutterElement'))).length >= 4);
     ok('syntax highlighting spans', (await js(d, `return document.querySelectorAll('.cm-content span[class]').length`)) > 5);
     ok('minimap/gutter present', true, 'tabs=' + (await d.findElements(By.css('.aurelius-tab'))).length);
     // escribir: ir al final y teclear
-    await content.click();
+    await js(d, `document.querySelector('.cm-content').focus()`);
     await content.sendKeys(Key.chord(Key.CONTROL, Key.END));
     await content.sendKeys('const y = [1, (2');
     await d.sleep(300);
@@ -39,7 +39,7 @@ const ok = (name, cond, extra = '') => { console.log((cond ? 'PASS ' : 'FAIL ') 
     ok('Ctrl+F opens search panel', (await d.findElements(By.css('.cm-search, .cm-panel'))).length > 0);
     await d.actions().sendKeys(Key.ESCAPE).perform(); await d.sleep(300);
     // autocompletado
-    await content.click(); await content.sendKeys(Key.chord(Key.CONTROL, Key.END)); await content.sendKeys(Key.ENTER, 'hol'); await d.sleep(700);
+    await js(d, `document.querySelector('.cm-content').focus()`); await content.sendKeys(Key.chord(Key.CONTROL, Key.END)); await content.sendKeys(Key.ENTER, 'hol'); await d.sleep(700);
     ok('autocomplete tooltip', (await d.findElements(By.css('.cm-tooltip-autocomplete'))).length > 0);
     await d.actions().sendKeys(Key.ESCAPE).perform();
     // mover línea

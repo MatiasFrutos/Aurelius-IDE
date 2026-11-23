@@ -4,7 +4,7 @@
 
 .au-ai2__header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--au-border); }
 .au-ai2__title { min-width: 0; display: grid; gap: 1px; }
-.au-ai2__title strong { font-size: 13px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.au-ai2__title strong { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .au-ai2__title small { color: var(--au-muted); font-size: 11px; }
 .au-ai2__actions { display: flex; gap: 2px; }
 .au-ai2__actions button { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 6px; background: transparent; color: var(--au-muted); padding: 0; }

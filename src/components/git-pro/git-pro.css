@@ -8,7 +8,7 @@
 .au-gp__tabs button.is-on::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: -1px; height: 2px; background: var(--au-primary); }
 .au-gp__tabs em { font-style: normal; color: var(--au-muted); font-weight: 500; margin-left: 2px; }
 .au-gp__branch { display: grid; margin-left: auto; text-align: right; font-size: 12.5px; line-height: 1.2; }
-.au-gp__branch span { font-weight: 650; font-family: var(--au-font-mono); }
+.au-gp__branch span { font-weight: 600; font-family: var(--au-font-mono); }
 .au-gp__branch small { color: var(--au-muted); font-size: 10.5px; }
 .au-gp__sync { display: flex; gap: 4px; }
 .au-gp__sync button, .au-gp__acts button, .au-gp__section header button {
@@ -18,7 +18,7 @@
 .au-gp__body { flex: 1; min-height: 0; display: flex; }
 .au-gp__changes, .au-gp__history { display: grid; grid-template-columns: 320px minmax(0, 1fr); flex: 1; min-height: 0; }
 .au-gp__files, .au-gp__commits { overflow: auto; border-right: 1px solid var(--au-border); padding: 6px; list-style: none; margin: 0; }
-.au-gp__section header { display: flex; justify-content: space-between; align-items: center; padding: 8px 6px 4px; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--au-muted); font-weight: 650; }
+.au-gp__section header { display: flex; justify-content: space-between; align-items: center; padding: 8px 6px 4px; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--au-muted); font-weight: 600; }
 .au-gp__section em { font-style: normal; color: var(--au-muted-strong); }
 .au-gp__file { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 5px 6px; border-radius: 6px; cursor: pointer; }
 .au-gp__file:hover { background: var(--au-button-bg); }
@@ -28,7 +28,7 @@
 .au-gp__path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .au-gp__acts { display: flex; gap: 3px; opacity: 0; }
 .au-gp__file:hover .au-gp__acts, .au-gp__row:hover .au-gp__acts { opacity: 1; }
-.au-gp__st { width: 16px; height: 16px; display: grid; place-items: center; border-radius: 4px; font-size: 10px; font-weight: 700; background: var(--au-button-bg); color: var(--au-muted-strong); }
+.au-gp__st { width: 16px; height: 16px; display: grid; place-items: center; border-radius: 4px; font-size: 10px; font-weight: 600; background: var(--au-button-bg); color: var(--au-muted-strong); }
 .au-gp__st.st-m { color: var(--au-warning); } .au-gp__st.st-a, .au-gp__st.st-u { color: var(--au-success-strong); } .au-gp__st.st-d { color: var(--au-danger); } .au-gp__st.st-r { color: var(--au-primary-strong); }
 .au-gp__empty { color: var(--au-muted); font-size: 12px; padding: 6px; margin: 0; }
 .au-gp__right { display: flex; flex-direction: column; min-width: 0; min-height: 0; }

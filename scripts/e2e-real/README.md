@@ -4,9 +4,9 @@ Las suites de `Playwright` (en el entorno de desarrollo) usan un Tauri simulado.
 (Tauri + WebKitGTK + PTY del sistema) con `tauri-driver` y Selenium, dentro de un display virtual (Xvfb).
 
 ```bash
-sudo apt install xvfb webkit2gtk-driver      # o el equivalente de tu distro
+sudo apt install xvfb xdotool webkit2gtk-driver      # o el equivalente de tu distro
 cargo install tauri-driver --locked
-./scripts/e2e-real/run.sh                    # terminal + editor
+./scripts/e2e-real/run.sh                    # terminal + editor + ratón real
 ./scripts/e2e-real/run.sh terminal           # solo una
 ```
 
